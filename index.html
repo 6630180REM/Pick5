@@ -860,7 +860,7 @@ function loadPage(page) {
         mobileLink.classList.add("active");
     }
 
-    fetch(`https://script.google.com/macros/s/12GmuAbKtct2hAjZisPNkBUbd4FhDvGxtp5rPA6PXXaSsXVFjoNbVVl90/exec?action=getPageContent&page=${page}`)
+    fetch(`https://script.google.com/macros/s/AKfycbxAMCNwLZwQV1si3u3XXq_2q6xP_cGxvHp_B26o5yVjZp_bJ6RwPLKWn2MHKwYi00k/exec?action=getPageContent&page=${page}`)
         .then(response => response.text())
         .then(html => {
             console.log("✅ HTML received:", html);
