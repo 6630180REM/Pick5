@@ -1,0 +1,2162 @@
+<!-- <base target="_top">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1"> -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<!-- <link rel="stylesheet" href="styles.min.css"><script src="scripts.min.js"></script> -->
+
+<style>
+  .team-logo {
+    width: auto;
+    height: 30px;
+    mx-auto: d-block;
+    align-items: baseline;
+    object-fit: contain;
+    background-size: cover;
+    white-space: nowrap;
+    padding-top: 1px;
+    padding-bottom: 0px;
+    padding-left: 0px;
+    padding-right: 0px;
+  }
+
+  /* :root {
+    --gradient: linear-gradient(90deg, #0067d5, #000000);
+  } */
+
+.popover {
+  position: absolute;
+  z-index: 1000;
+  background-color: white;
+  color: black;
+  text-align: left;
+  border-radius: 5px;
+  padding: 3px;
+  border: 2px solid black;
+  box-shadow: 0px 0px 8px rgba(3, 4, 8, 0.75);
+  display: none;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1;
+}
+
+.popover.visible {
+  display: block;
+}
+
+.popover-header {
+  font-weight: bold;
+  text-align: center;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 2px;
+  margin-bottom: 0px;
+  line-height: 1;
+}
+
+/* Arrow with border */
+.popover::before,
+.popover::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  border-style: solid;
+}
+
+/* Arrow border */
+.popover::before {
+  top: -12px; /* Adjust for border alignment */
+  border-width: 6px;
+  border-color: black transparent transparent transparent;
+}
+
+/* Arrow fill */
+.popover::after {
+  top: -10px;
+  border-width: 5px;
+  border-color: white transparent transparent transparent;
+}
+
+/* Arrow on the bottom */
+.popover.arrow-bottom::before,
+.popover.arrow-bottom::after {
+  bottom: auto;
+  top: -18px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.popover.arrow-bottom::before {
+  border-width: 9px;
+  border-color: transparent transparent black transparent;
+}
+
+.popover.arrow-bottom::after {
+  top: -15px;
+  border-width: 8px;
+  border-color: transparent transparent white transparent;
+}
+
+/* Arrow on the right */
+.popover.arrow-right::before,
+.popover.arrow-right::after {
+  left: 100%;
+  top: 50%;
+  transform: translateY(-50%) rotate(270deg);
+}
+
+.popover.arrow-right::before {
+  border-width: 9px;
+  border-color: black transparent transparent transparent;
+}
+
+.popover.arrow-right::after {
+  border-width: 8px;
+  border-color: white transparent transparent transparent;
+}
+
+  .popover-team-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1px 0;
+    line-height: 1;
+  }
+
+  .popover-team-logo {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+    margin-right: 5px;
+    line-height: 1;
+  }
+
+  .popover-team-name {
+    font-weight: bold;
+    flex-grow: 1;
+    line-height: 1;
+  }
+
+  .popover-team-score {
+    font-size: 14px;
+    font-weight: bold;
+    line-height: 1;
+  }
+
+  .team-logo-wrapper {
+    background-color: var(--team-color, transparent);
+    padding: 0px;
+    border-radius: 0px;
+  }
+
+  .team-row {
+    text-align: center;
+    table-cell-padding: 0px;
+    layout: "fitData";
+    white-space: nowrap;
+    overflow: hidden;
+    overflow-x: auto;
+    text-overflow: ellipsis;
+    vertical-align: middle;
+    table-layout: fixed;
+    background-color: white;
+  }
+
+  .team-pick {
+    border-radius: 0px;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    min-width: 90px;
+    font-size: 13px;
+    font-weight: 700;
+    text-overflow: ellipsis;
+    vertical-align: middle;
+    padding-top: 0px;
+    padding-bottom: 1px;
+    padding-left: 3px;
+    padding-right: 3px;
+    text-shadow: -1px 0 rgba(0, 0, 0, 0.05), 0 1px rgba(0, 0, 0, 0.05), 1px 0 rgba(0, 0, 0, 0.05), 0 -1px rgba(0, 0, 0, 0.05);
+
+  }
+
+  .container {
+    text-align: center;
+    text-black: 50;
+    table-cell-padding: 0px;
+    max-width: fit-content;
+    layout: "fitData";
+    padding-right: 1px;
+    padding-left: 1px;
+    margin-right: auto;
+    margin-left: auto;
+    padding-top: 0px;
+  }
+
+  .form-control {
+    display: block;
+    height: calc(1.5em + .75rem + 2px);
+    padding: .375rem .75rem;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #495057;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #ced4da;
+    border-radius: .25rem;
+    transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+  }
+
+  /* body {
+     font-family: Arial, sans-serif; 
+     background: #e6e6e6; 
+     color: white;
+    padding: 0px;
+    background-attachment: fixed;
+    background-repeat: round;
+    background-size: cover;
+    margin: 0; // 1
+    line-height: revert;
+    width: 100%; \
+  } */
+
+
+  .form-check-input {
+    position: relative;
+    width: 20px;
+    height: 20px;
+  }
+
+  label {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  /* .headers {
+    font-size: 14pt;
+    color: white;
+    white-space: nowrap;
+    max-width: fit-content;
+    height: 45px;
+    font-weight: 900;
+    text-shadow: 2px 2px 3px black;
+  } */
+  /* .header-border {
+  border: 5px solid transparent;
+  border-image-source: linear-gradient(90deg, #0067d5, #000000);
+  border-image-slice: 1;
+  border-collapse: separate; 
+  border-spacing: 0; 
+  
+  } */
+.sort-arrow {
+  display: inline-flex;
+  flex-direction: column; /* Stacks arrows */
+  align-items: center;
+  justify-content: center; /* Keeps arrows aligned */
+  margin-left: 3px; /* Space between text and arrows */
+  font-size: 10px; /* Adjust size if needed */
+  height: 14px; /* Controls overall arrow height */
+  line-height: 10px;
+  vertical-align: middle; /* Keeps arrows aligned with text */
+}
+
+.up-arrow,
+.down-arrow {
+  opacity: 0.3; /* Default faded */
+  transition: opacity 0.2s, visibility 0.2s;
+  margin-bottom: 3px;
+}
+
+.sort-arrow.ascending .up-arrow {
+  opacity: 1;
+}
+
+.sort-arrow.ascending .down-arrow {
+  opacity: 0.3;
+}
+
+.sort-arrow.descending .up-arrow {
+  opacity: 0.3;
+}
+
+.sort-arrow.descending .down-arrow {
+  opacity: 1;
+}
+.sticky-top {
+  position: sticky;
+  top: 4px;
+  z-index: 1000;
+  background: #333;
+  /* position: relative; Ensure positioning context for ::after */
+}
+
+.sticky-top::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%; /* Full width of the header row */
+  height: 100%; /* Full height of the header row */
+  box-shadow: 0 0 0px 5px #478fdf; /* Outer glow effect */
+  pointer-events: none; /* Prevent it from blocking interactions */
+  z-index: -1; /* Keep the shadow behind the header */
+}
+
+.headers {
+  font-size: 14pt;
+  white-space: nowrap;
+  max-width: fit-content;
+  height: 45px;
+  font-weight: 900;
+  text-align: center;
+  color: #478fdf;
+  background: #333;
+  box-shadow: inset 0px 0px 2px #444, inset -1px -1px 2px #222; /* Keep inset shadow */
+}
+
+
+  /* .box {
+    box-shadow: 0 0 5px 4px #478fdf;
+  } */
+
+  /* .gradient-border {
+     --border-width: 3px; 
+     justify-content: center;
+    align-items: center; 
+    text-transform: uppercase;
+     color: white; 
+     background: #222; 
+     border-radius: 0px; 
+  /* background: #222;  
+  z-index: 1;
+}
+     .gradient-border::after  {
+        content: "";
+  position: absolute;
+  top: -3px;
+  left: -3px;
+  right: -3px;
+  bottom: -3px;
+  z-index: -1;
+  background: conic-gradient(from 240deg at 50% 50%, #478fdf, #1d3453);
+    } */
+/*
+    .box {
+  place-content: center;
+  color: white;
+  text-shadow: 0 1px 0 #000;
+  
+  --main-bg: conic-gradient(
+      from var(--border-angle),
+      #213,
+      #112 5%,
+      #112 60%,
+      #213 95%
+    );
+  
+  border: solid 5px transparent;
+  border-radius: 2em;
+  --gradient-border: conic-gradient(from var(--border-angle), transparent 25%, #08f, #f03 99%, transparent);
+  
+  background: 
+    // padding-box clip this background in to the overall element except the border.
+    var(--main-bg) padding-box,
+    // border-box extends this background to the border space
+    var(--gradient-border) border-box, 
+    // Duplicate main background to fill in behind the gradient border. You can remove this if you want the border to extend "outside" the box background.
+    var(--main-bg) border-box;
+  
+  background-position: center center;
+
+  animation: bg-spin 3s linear infinite;
+  @keyframes bg-spin {
+    to {
+      --border-angle: 1turn;
+    }
+  }
+
+  &:hover {
+    animation-play-state: paused;
+  }
+}
+
+@property --border-angle {
+  syntax: "<angle>";
+  inherits: true;
+  initial-value: 0turn;
+} */
+
+
+  .hidden {
+    display: none;
+  }
+
+  .hidden-row {
+    display: none;
+  }
+
+  .table thead th {
+    vertical-align: middle;
+  }
+
+  thead th {
+    vertical-align: bottom;
+  }
+
+  .record {
+    text-align: center;
+    vertical-align: middle;
+    font-weight: bold;
+    font-size: 16pt;
+    padding-top: 0px;
+    padding-bottom: 2px;
+    padding-left: 2px;
+    padding-right: 2px;
+    min-width: 50px;
+
+  }
+
+  .name {
+    text-align: left;
+    font-weight: bold;
+    padding-left: 7px;
+  }
+
+  .fiveAnd0 {
+    font-weight: 900;
+    font-size: 17pt;
+    padding-top: 0px;
+    padding-bottom: 2px;
+    padding-left: 2px;
+    padding-right: 2px;
+    color: #32639C;
+    text-shadow: 1px 1px 1px black;
+    /* text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black; */
+  }
+
+  /* .week-headers {
+    text-align: center;
+    vertical-align: middle;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    padding-left: 1px;
+    white-space: nowrap;
+    padding-right: 1px;
+    font-size: 13pt;
+    color: white;
+    background-color: #0067d5;
+    text-black: 50;
+    table-cell-padding: 0px;
+    max-width: fit-content;
+    layout: "fitData";
+    margin-right: auto;
+    margin-left: auto;
+    border-bottom: 4px solid black;
+  } */
+
+  .week {
+    border-radius: 3px;
+    font-weight: bold;
+    font-size: 13pt;
+    width: auto;
+  }
+
+  .pick {
+    border-top: none;
+    border-right: none;
+    border-left: 2px solid black;
+    	box-shadow:		0 0 0.25em #0002,0 3em 1.5em 0.5em #0002;
+  }
+
+  .table {
+    max-width: fit-content;
+    border-collapse: collapse;
+    /* border: 3px solid black; */
+    color: black;
+    margin-bottom: 60px;
+    border-spacing: 0;
+    min-width: max-content;
+    margin-right: auto;
+    margin-left: auto; 
+    margin-top: 5px;
+    width: 100%;
+  }
+
+  .table td
+   {
+    /* padding: 2px; */
+    vertical-align: middle;
+    border-bottom: 2px solid black;
+  }
+
+
+  /* .title {
+    font-weight: 900;
+    color: #232323;
+    margin: 0;
+    -webkit-text-stroke: 5px #0067d5;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    position: relative;
+    height: 85px;
+  }
+
+  .title-p,
+  .title-5 {
+    font-size: 81pt;
+    line-height: 1;
+    display: inline-block;
+    vertical-align: top;
+    margin-top: -7px;
+    padding-right: 5px;
+    padding-left: 5px;
+  }
+
+  .title-ick {
+    font-size: 50pt;
+    line-height: 1;
+    display: inline-block;
+    vertical-align: top;
+    padding-right: 5px;
+    padding-left: 5px;
+  } */
+
+  /* .title-5 {
+  margin-left: 10px;
+} */
+
+  .title3 {
+    font-size: 25pt;
+    font-weight: bolder;
+    vertical-align: bottom;
+    color: white;
+    -webkit-text-stroke: 1px #32639C;
+    margin-top: 10px;
+    margin-bottom: 0px;
+    font-weight: 900;
+    letter-spacing: 3px;
+    height: 40px;
+  }
+
+  .title4 {
+    /* font-size: 13pt; */
+    font-weight: 700;
+    vertical-align: bottom;
+    margin: 0;
+    color: white;
+    /* text-shadow: 4px 4px 6px #0067d5; */
+    -webkit-text-stroke: 1px #32639C;
+    margin-bottom: 5px;
+    font-size: 18px;
+  }
+
+  .search-container {
+    position: relative;
+    width: 458px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+    margin-top: 0px;
+    padding-left: 0px;
+  }
+
+  #searchInput {
+    flex: 1;
+    font-size: 16px;
+    height: 42px;
+    /* Match height with button */
+    border: 1px solid #ddd;
+    border-radius: 5px 0 0 5px;
+    margin: 0;
+    padding: 0 3px;
+    /* Consistent padding */
+    box-sizing: border-box;
+    /* Include border in height */
+  }
+
+  #clearBtn {
+    position: absolute;
+    right: 50px;
+    /* Space before the search button */
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    font-size: 25px;
+    color: #888;
+    display: none;
+    /* Hidden by default */
+    z-index: 10;
+  }
+
+  #clearBtn:hover {
+    color: #333;
+  }
+
+  #myBtn {
+    height: 42px;
+    /* Match height with input */
+    width: 47px;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-left: none;
+    border-radius: 0 5px 5px 0;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0;
+    box-sizing: border-box;
+    /* Include border in height */
+  }
+
+  #myBtn:hover {
+    background-color: #32639C;
+  }
+
+  .fa {
+    font-size: 20px;
+    color: #666;
+  }
+
+  .fa:hover {
+    font-size: 20px;
+    color: white;
+  }
+
+  #searchInput:focus {
+    outline: none;
+    /* Remove default outline */
+    box-shadow: -3px 0 0 0 #32639C,
+                0 -3px 0 0 #32639C,
+                0 3px 0 0 #32639C;
+    z-index: 2;
+    /* Ensure it appears above adjacent elements */
+  }
+
+  /* Outline on #myBtn (right, top, bottom) */
+  #searchInput:focus~#myBtn {
+    outline: none;
+    box-shadow: 3px 0 0 0 #32639C,
+                0 -3px 0 0 #32639C,
+                0 3px 0 0 #32639C;
+    z-index: 2;
+    /* Ensure it appears above adjacent elements */
+  }
+
+  .team-spread {
+    font-size: 13px;
+    font-weight: 900;
+    padding: 0px;
+    background-color: rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    margin-bottom: 1px;
+    display: flex;
+    /* Added */
+    justify-content: center;
+    /* Added */
+    align-items: center;
+    /* Added */
+    width: 45px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: -1px;
+    border: 1px solid rgba(0, 0, 0, 0.25);
+  }
+
+  .week-carousel-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 5px;
+  }
+
+  .week-carousel {
+    display: flex;
+    overflow: hidden;
+    white-space: nowrap;
+    gap: 5px;
+    width: auto;
+    align-items: center;
+    height: 55px;
+  }
+
+  .sub-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    /* Space between the H5 and checkbox */
+    margin-top: 5px;
+  }
+
+  .week-info {
+    text-align: center;
+    font-size: 10px;
+    margin: 5px 0;
+  }
+
+  .week-item {
+    position: relative;
+    padding: 4px 11px;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: white;
+    color: #333;
+    width: 80px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 38px;
+    padding: 0px;
+    font-weight: 600;
+    font-size: 16px;
+    margin: 2px;
+    border: 2px solid #ddd;
+  }
+
+
+  /* .week-item.selected {
+  position: relative;
+
+  background: linear-gradient(0deg, #000, #272727);
+} */
+  .week-item.selected {
+    position: relative;
+    width: 80px;
+    height: 43px;
+    --border-width: 3px;
+    justify-content: center;
+    align-items: center;
+    /* text-transform: uppercase; */
+    color: white;
+    background: #333;
+    border-radius: 5px;
+    border: none;
+
+    &::after {
+      position: absolute;
+      content: "";
+      top: calc(-1* var(--border-width));
+      left: calc(-1* var(--border-width));
+      z-index: -1;
+      width: calc(100% + var(--border-width)* 2);
+      height: calc(100% + var(--border-width)* 2);
+      background: #32639C;
+      border-radius: 5px;
+    }
+  }
+
+  .week-item:hover {
+    background-color: #32639C;
+    color: white;
+  }
+
+  .previous {
+    border-bottom-left-radius: 80px;
+    border-top-left-radius: 80px;
+    margin-right: 5px;
+    font-size: 26px;
+    color: #32639C;
+    font-weight: 700;
+    height: 39px;
+    width: 38px;
+    border: 2px solid #ddd;
+    background-color: white;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    /* font-family: 'Trebuchet MS', sans-serif; */
+  }
+
+  .next {
+    border-bottom-right-radius: 80px;
+    border-top-right-radius: 80px;
+    margin-left: 5px;
+    font-size: 26px;
+    color: #32639C;
+    font-weight: 700;
+    height: 39px;
+    width: 38px;
+    border: 2px solid #ddd;
+    background-color: white;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    /* font-family: 'Trebuchet MS', sans-serif; */
+  }
+
+  button:hover {
+    color: white;
+    background-color: #32639C;
+  }
+
+   .filter-container {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      margin-top: 0;
+      /* Keep it on the same line as week-info */
+    }
+
+    .filter-checkbox {
+      display: flex;
+      justify-content: flex-end;
+      margin-left: auto;
+      margin-right: 0;
+      /* Align to the right */
+    }
+
+.wrapper {
+      display: -webkit-box;
+      display: -ms-flexbox;
+      display: flex;
+      width: 400px;
+      margin: 50vh auto 0;
+      -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+      -webkit-transform: translateY(-50%);
+      transform: translateY(-50%);
+    }
+
+    .switch_box {
+      /* display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 15px;
+      margin-top: -20px;
+      position: relative; */
+margin-top: -25px;
+    position: relative;
+    padding: 1px;
+    border-radius: 30px;
+    display: flex;
+    align-items: center;
+    box-shadow: -2px -2px 2px 0px #444, 2px 2px 2px 0px #222;
+    color: white;
+    transition: easeall 200ms;
+    margin-bottom: 3px;
+    }
+
+    input[type="checkbox"].switch_1 {
+      /* font-size: 30px;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+      width: 66px;
+      height: 33px;
+      background: black;
+      border-radius: 3em;
+      position: relative;
+      cursor: pointer;
+      outline: none;
+      transition: all 0.2s ease-in-out;
+      border: 3px solid #32639C; */
+    font-size: 30px;
+    appearance: none;
+    width: 71px;
+    height: 33px;
+    outline: none;
+    position: relative;
+    display: flex;
+    align-items: center;
+    border-radius: 20px;
+    box-shadow: inset -2px -2px 2px 0px #444, inset 2px 2px 2px 0px #222;
+    cursor: pointer;
+        opacity: inherit;
+    }
+
+    input[type="checkbox"].switch_1:checked {
+      background: #32639C;
+    box-shadow: inset -2px -2px 2px 0px #4974a7, inset 2px 2px 2px 0px #224368;
+    }
+
+    input[type="checkbox"].switch_1:after {
+      /* position: absolute;
+      content: '';
+      width: 24px;
+      height: 25px;
+      line-height: 22px;
+      font-size: 12px;
+      font-weight: bold;
+      color: white;
+      border-radius: 50%;
+      background: white;
+      box-shadow: 0 0 0.25em rgba(0, 0, 0, 0.3);
+      left: 2px;
+      top: 2px;
+      transition: all 0.2s ease-in-out;
+      display: flex;
+      justify-content: center;
+      align-items: center; */
+    content: '';
+    width: 24px;
+    height: 25px;
+    line-height: 22px;
+    font-size: 12px;
+    font-weight: bold;
+    border-radius: 20px;
+    position: absolute;
+    left: 0px;
+    background: #e6e6e6;
+    transform: translate(2px, 0);
+    transition: easeall 500ms;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 2px 2px 5px 0px rgba(0, 0, 0, 0.27);
+    }
+
+    input[type="checkbox"].switch_1:checked:after {
+      left: calc(100% - 23px);
+      /* Moves the ball to the right side */
+      color: white;
+    }
+
+    input[type="checkbox"].switch_1:checked+.switch-text .line1,
+    input[type="checkbox"].switch_1:checked+.switch-text .line2 {
+      display: none;
+      /* Hide "Show" and "All" when checked */
+    }
+
+    input[type="checkbox"].switch_1:checked+.switch-text .line3,
+    input[type="checkbox"].switch_1:checked+.switch-text .line4 {
+      display: block;
+      /* Show "No" and "Losses" when checked */
+    }
+
+    .switch-text {
+      position: absolute;
+      /* Position text inside the switch_box */
+      top: 50%;
+      /* Vertically center the text */
+      left: 50%;
+      /* Horizontally center the text */
+      transform: translate(-50%, -50%);
+      /* Ensure proper centering */
+      text-align: center;
+      font-size: 8px;
+      font-weight: bold;
+      width: 100%;
+      white-space: nowrap;
+    }
+
+    .switch-text .line1,
+    .switch-text .line2,
+    .switch-text .line3,
+    .switch-text .line4 {
+      display: none;
+      /* Default all lines to hidden */
+    }
+
+    .switch-text .line1,
+    .switch-text .line2 {
+      color: white;
+      /* Color for unchecked state */
+      display: block;
+      /* Display "Show" and "All" when unchecked */
+      position: relative;
+      left: 8px;
+      font-size: 10px;
+    }
+
+    .switch-text .line3,
+    .switch-text .line4 {
+      color: white;
+      /* Color for checked state */
+      position: relative;
+      left: -9px;
+      font-size: 10px;
+    }
+
+  :root {
+    --hue: 223;
+    --bg: hsl(var(--hue), 10%, 90%);
+    --fg: hsl(var(--hue), 10%, 10%);
+  }
+
+  main {
+    padding: 1.5em 0;
+  }
+
+  .spinner-container {
+    margin-top: 30px;
+    /* width: 60px; */
+    /* height: 60px; */
+  }
+
+  .pl,
+  .pl__worm {
+    animation-duration: 3s;
+    animation-iteration-count: infinite;
+    stroke: #32639C;
+  }
+
+  .pl {
+    animation-name: bump;
+    animation-timing-function: linear;
+    width: 71px;
+    height: 71px;
+  }
+
+  .pl__ring {
+    stroke: hsla(var(--hue), 10%, 90%);
+    transition: stroke 0.3s;
+    /* stroke: #ffed29; */
+  }
+
+  .pl__worm {
+    animation-name: worm;
+    animation-timing-function: cubic-bezier(0.42, 0.17, 0.75, 0.83);
+  }
+
+  /* Dark theme */
+  /* @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: hsl(var(--hue), 10%, 10%);
+      --fg: hsl(var(--hue), 10%, 90%);
+    }
+
+    .pl__ring {
+      stroke: white;
+    }
+  } */
+
+  @keyframes bump {
+
+    from,
+    42%,
+    46%,
+    51%,
+    55%,
+    59%,
+    63%,
+    67%,
+    71%,
+    74%,
+    78%,
+    81%,
+    85%,
+    88%,
+    92%,
+    to {
+      transform: translate(0, 0);
+    }
+
+    44% {
+      transform: translate(1.33%, 6.75%);
+    }
+
+    53% {
+      transform: translate(-16.67%, -0.54%);
+    }
+
+    61% {
+      transform: translate(3.66%, -2.46%);
+    }
+
+    69% {
+      transform: translate(-0.59%, 15.27%);
+    }
+
+    76% {
+      transform: translate(-1.92%, -4.68%);
+    }
+
+    83% {
+      transform: translate(9.38%, 0.96%);
+    }
+
+    90% {
+      transform: translate(-4.55%, 1.98%);
+    }
+  }
+
+  @keyframes worm {
+    from {
+      stroke-dashoffset: 10;
+    }
+
+    25% {
+      stroke-dashoffset: 295;
+    }
+
+    to {
+      stroke-dashoffset: 1165;
+    }
+  }
+
+
+
+  @media (max-width: 768px) {
+    body {
+      background-size: 100%;
+    }
+      .table {
+        width: 100%;
+        border: 0px solid !important;
+        outline: #32639C !important;
+        margin-top: 245px;
+        display: inline-block;
+        margin-bottom: 85px;
+        position: relative;
+        z-index: 1200;
+      }
+
+    .team-row {
+      flex-direction: column;
+      width: 100%;
+      table-cell-padding: 0px;
+      justify-content: center;
+      white-space: wrap;
+      padding: 10px;
+      font-size: 12px;
+    }
+
+    .team-logo {
+      width: auto;
+      height: 30px;
+    }
+
+    .team-pick {
+      justify-content: center;
+      font-size: 12px;
+      min-width: 75px;
+      width: auto;
+      padding-right: 5px;
+      padding-left: 5px;
+    }
+
+    /* .table {
+      table-cell-padding: 0;
+      width: 100%;
+      border: 0px solid !important;
+      outline: #0067d5 !important;
+    } */
+
+    /* body {
+      background: black;
+    } */
+
+    .title3 {
+        font-size: 22pt;
+        padding: 0px;
+        height: 25px;
+        position: fixed;
+        left: 50%;
+        transform: translateX(-50%);
+        white-space: nowrap;
+        align-content: center;
+        margin: 0;
+        margin-top: 63px;
+        font-size: 22pt;
+    }
+
+    .title4 {
+        font-weight: 700;
+        vertical-align: bottom;
+        margin: 0;
+        color: white;
+        /* text-shadow: 4px 4px 6px #0067d5; */
+        position: fixed;
+        margin-top: 97px;
+        left: 50%;
+        transform: translateX(-50%);
+        white-space: nowrap;
+        display: flex;
+        align-items: center;
+        align-content: center;
+        justify-content: center;
+        font-size: 18px;
+    }
+
+    .name {
+      width: 120px;
+      font-size: 13px;
+      font-weight: bold;
+      /* width: auto; */
+      position: sticky;
+      left: -2px;
+      background-color: white;
+      white-space: wrap;
+      border: none;
+      /* min-width: 150px; */
+    }
+
+    .week-info {
+        text-align: center;
+        font-size: 10px;
+        margin: 5px 0;
+        position: fixed;
+        margin-top: 195px;
+        left: 50%;
+        transform: translateX(-50%);
+        white-space: nowrap;
+    }
+
+    .record {
+      text-align: center;
+      vertical-align: middle;
+      font-weight: bold;
+      font-size: 15pt;
+      padding-top: 0px;
+      padding-bottom: 2px;
+      padding-left: 2px;
+      padding-right: 2px;
+      min-width: 60px;
+      position: sticky;
+      left: 118px;
+      background-color: white;
+      border: none;
+    }
+
+    .fiveAnd0 {
+      font-size: 16pt;
+      min-width: 60px;
+      padding-top: 0px;
+      padding-bottom: 2px;
+      padding-left: 2px;
+      padding-right: 2px;
+      min-width: 60px;
+      position: sticky;
+      left: 118px;
+      background-color: white;
+      border: none;
+    }
+
+    .week-headers {
+      font-size: 10pt;
+    }
+
+    .table td,
+    .table th {
+      vertical-align: middle;
+      border-top: none;
+    }
+
+    .week {
+      border-radius: 3px;
+      font-weight: bold;
+      font-size: 10pt;
+    }
+
+    .btn {
+      display: inline-block;
+      font-weight: 400;
+      text-align: center;
+      font-weight: bold;
+      vertical-align: middle;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+      border: 1px solid transparent;
+      padding: 0;
+      font-size: 1rem;
+      line-height: 1.5;
+      border-radius: .25rem;
+      transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+    }
+
+    .team-spread {
+      font-size: 13px;
+      width: 39px;
+      height: 16px;
+      margin-top: 0px;
+      font-weight: 700;
+    }
+
+    .name {
+      width: 75px;
+      font-size: 13px;
+      font-weight: bold;
+      width: auto;
+    }
+
+    .search-container {
+        width: 270px;
+        position: fixed;
+        margin-top: 120px;
+        left: 50%;
+        transform: translateX(-50%);
+        white-space: nowrap;
+        height: 30px
+    }
+
+    #searchInput {
+      height: 30px;
+    }
+
+    #myBtn {
+      height: 30px;
+    }
+
+    .week-carousel-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 5px;
+        position: fixed;
+        margin-top: 155px;
+        left: 50%;
+        transform: translateX(-50%);
+        white-space: nowrap;
+    }
+    .week-carousel {
+    height: 40px;
+}
+
+    .week-item.selected {
+      height: 35px;
+      width: 75px;
+    }
+
+    .week-item {
+      height: 30px;
+      width: 75px;
+    }
+
+    .previous {
+      height: 33px;
+      width: 26px;
+    }
+
+    .next {
+      height: 33px;
+      width: 26px;
+    }
+
+    .filter-container {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        margin-top: 0;
+        position: fixed;
+        margin-top: 223px;
+        left: 90%;
+        transform: translateX(-50%);
+        white-space: nowrap;
+    }
+
+    .container {
+      padding-left: 0px;
+      padding-right: 5px;
+    }
+
+    .week-item:hover {
+      background-color: white;
+      color: #333;
+    }
+
+    .switch_box {
+      margin-top: -22px;
+      margin-right: 5px;
+      padding: 0px;
+    }
+
+    input[type="checkbox"].switch_1 {
+      width: 62px;
+      height: 29px;
+      border-radius: 15px;
+    }
+
+    input[type="checkbox"].switch_1:after {
+      height: 20px;
+      width: 20px;
+    }
+
+    .sticky-top {
+
+}
+
+.sticky-top::after {
+height: 40px;
+}
+
+    .headers {
+      text-align: center;
+      font-size: 13pt;
+      font-weight: 900;
+      height: 40px;
+      position: sticky;
+      z-index: 1200;
+      padding: 0;
+    }
+
+    .header-name {
+      left: 0;
+      width: 120px;
+      z-index: 1300;
+      /* border: 1px solid black;  */
+    }
+
+    .header-record {
+      left: 120px;
+      width: 65px;
+      white-space: nowrap;
+      z-index: 1300;
+      /* border: 1px solid black;  */
+    }
+
+    .popover {
+      z-index: 1500;
+    }
+
+      .spinner-container {
+        margin-top: 300px;
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 1200;
+      }
+
+    .pl {
+      width: 50px;
+      height: 50px;
+    }
+    /* .gradient-border::after{
+      top: -5px;
+      height: 49px;
+      border-radius:  
+    } */
+  }
+</style>
+
+</head>
+
+<body>
+
+  <div class="container">
+    <h3 class="title3" id="selectedWeek"></h3>
+    <h4 class="title4" id="weekTitle"></h4>
+
+
+    <div class="search-container">
+      <input type="text" id="searchInput" placeholder="Search..." oninput="toggleClearButton()">
+      <button type="button" id="myBtn" onclick="searchTable()">
+    <i class="fa fa-search"></i>
+  </button>
+      <span id="clearBtn" onclick="clearSearchInput()">×</span>
+    </div>
+
+    <div class="week-carousel-container">
+      <button id="prevWeek" onclick="scrollWeeks(-1)" class="previous">&#10096;</button>
+      <div id="weekCarousel" class="week-carousel"></div>
+      <button id="nextWeek" onclick="scrollWeeks(1)" class="next">&#10097;</button>
+    </div>
+    <h5 class="week-info">To display all weeks, toggle selected week</h5>
+
+    <div class="filter-container">
+      <label class="filter-checkbox">
+    <div class="switch_box box_1">
+      <input 
+        type="checkbox" 
+        id="filterNoLosses" 
+        class="switch_1" 
+        onclick="searchHiddenTable()"
+      > 
+      <span class="switch-text">
+        <span class="line1">Show</span>
+        <span class="line2">All</span>
+        <span class="line3">No</span>
+        <span class="line4">Losses</span>
+      </span>
+    </div>
+  </label>
+
+    <!-- <div id="content">Loading...</div> -->
+  </div>
+    <div id="spinner" class="spinner-container">
+      <svg class="pl" viewBox="0 0 128 128" width="128px" height="128px" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="pl-grad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="hsl(193,90%,55%)" />
+            <stop offset="100%" stop-color="hsl(223,90%,55%)" />
+          </linearGradient>
+        </defs>
+        <circle class="pl__ring" r="56" cx="64" cy="64" fill="none" stroke="hsla(0,10%,10%,0.1)" stroke-width="16"
+          stroke-linecap="round" />
+        <path class="pl__worm"
+          d="M92,15.492S78.194,4.967,66.743,16.887c-17.231,17.938-28.26,96.974-28.26,96.974L119.85,59.892l-99-31.588,57.528,89.832L97.8,19.349,13.636,88.51l89.012,16.015S81.908,38.332,66.1,22.337C50.114,6.156,36,15.492,36,15.492a56,56,0,1,0,56,0Z"
+          fill="none" stroke="url(#pl-grad)" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"
+          stroke-dasharray="44 1111" stroke-dashoffset="10" />
+      </svg>
+    </div>
+    <!-- Table for displaying picks -->
+<table class="table"
+  id="pickTable">
+  <thead>
+    <tr class="sticky-top">
+      <th class="week-headers headers hidden" onclick="sortTable(0)">Wk<span class="sort-arrow" data-index="0"><span class="up-arrow">▲</span><span class="down-arrow">▼</span></span></th>
+      <th class="headers header-name" onclick="sortTable(1)">Name<span class="sort-arrow" data-index="1"><span class="up-arrow">▲</span><span class="down-arrow">▼</span></span></th>
+      <th class="headers header-record" onclick="sortTable(2)">W-L<span class="sort-arrow" data-index="2"><span class="up-arrow">▲</span><span class="down-arrow">▼</span></span></th>
+      <th class="hidden">group</th>
+      <th class="headers" style="min-width:65px">Pick 1</th>
+      <th class="headers" style="min-width:65px">Pick 2</th>
+      <th class="headers" style="min-width:65px">Pick 3</th>
+      <th class="headers" style="min-width:65px">Pick 4</th>
+      <th class="headers" style="min-width:65px">Pick 5</th>
+    </tr>
+    <tr style="height: 7px; border: none; background: #333;">
+      <th colspan="9"></th>
+    </tr>
+  </thead>
+  <tbody style="position:relative;z-index:1">
+  </tbody>
+</table>
+</div>
+
+<div id="popover" class="popover"></div>
+ </div>
+
+
+
+  <script>
+    let weeksArray = Array.from({ length: 18 }, (_, i) => i + 1);
+  let currentWeekIndex = weeksArray.length - 1; // Default to the last week
+
+  // let lastScrollTop = 0;
+  // const navbar = document.querySelector('.navbar');
+
+  // window.addEventListener('scroll', function () {
+  //   const currentScrollTop = window.scrollY || document.documentElement.scrollTop;
+
+  //   if (currentScrollTop > lastScrollTop && currentScrollTop > 100) {attac
+  //     navbar.style.top = '-100px';
+  //   } else if (currentScrollTop < lastScrollTop || currentScrollTop === 0) {
+  //     navbar.style.top = '0';
+  //   }
+
+  //   lastScrollTop = currentScrollTop;
+  // });
+
+function loadMatchups() {
+  renderWeekCarousel();
+  google.script.run.withSuccessHandler(setupDateFilter).getAllWeekPicks2();
+}
+
+function setupDateFilter(result) {
+  // renderWeekCarousel();
+  displayTableForCurrentWeek(result.data);
+  google.script.run.withSuccessHandler(function(weekCounts) {
+    const weekData = weekCounts.find(week => week.week === currentWeekIndex);
+   })
+}
+function refreshData() {
+    if (isWeekToggled) {
+        return; // Exit the function without refreshing
+    }
+    
+    google.script.run.withSuccessHandler(function(result) {
+        const table = document.getElementById('pickTable');
+        const searchInput = document.getElementById('searchInput').value;
+
+        displayTableForCurrentWeek(result.data);
+
+        // Retain search results if any
+        if (searchInput.trim() !== '') {
+            searchTable();
+        }
+
+        // Reapply the previous sort
+        const sortedColumn = table.dataset.sortedColumn;
+        const sortOrder = table.dataset.sortOrder;
+
+        if (sortedColumn !== undefined && sortOrder !== undefined) {
+            const ascending = sortOrder === 'asc';
+            sortTable(parseInt(sortedColumn, 10), ascending);
+        }
+
+        searchHiddenTable();
+    }).getAllWeekPicks2();
+}
+
+
+// setInterval(refreshData, 40000);
+
+// function autoRefresh(intervalInSeconds) {
+//   setInterval(() => {
+//     const selectedWeek = currentWeekIndex >= 0 ? weeksArray[currentWeekIndex] : weeksArray[0];
+//     updateTitleDisplay(selectedWeek);
+//   }, intervalInSeconds * 1000); // Convert seconds to milliseconds
+// }
+// // Call autoRefresh with a desired interval (e.g., every 30 seconds)
+// autoRefresh(30);
+
+
+function attachPopoverHandlers() {
+  const popover = document.getElementById('popover');
+  let activePopoverElem = null;
+
+  // Attach handler for .pick
+  document.querySelectorAll('.pick').forEach((pickElem, index, allPickElems) => {
+    pickElem.addEventListener('click', (event) => {
+      const score = pickElem.getAttribute('data-score');
+      if (score) {
+        const scores = score.split(';').map((s) => s.trim());
+
+        // Construct popover content
+        let scoreText = `
+          <div class="popover-header">${scores[0]}</div>
+          <div class="popover-body">
+        `;
+
+        // Process each team entry
+        for (let i = 1; i < scores.length; i++) {
+          const [teamName, scoreValue, logoURL] = scores[i].split('|').map((part) => part.trim());
+          const hasArrow = scoreValue.includes('▸');
+          const fontWeight = hasArrow ? '900' : 'normal'; // Bold for rows with "▸", normal otherwise
+
+          scoreText += `
+            <div class="popover-team-row">
+              <img class="popover-team-logo" src="${logoURL}" alt="${teamName}">
+              <div style="font-weight: ${fontWeight};" class="popover-team-name">${teamName}</div>
+              <div style="font-weight: ${fontWeight};" class="popover-team-score">${scoreValue}</div>
+            </div>
+          `;
+        }
+        
+
+        popover.innerHTML = scoreText;
+        popover.classList.add('visible');
+        popover.style.display = 'block';
+
+const rect = pickElem.getBoundingClientRect();
+const popoverHeight = popover.offsetHeight;
+const popoverWidth = popover.offsetWidth;
+const bufferSpace = 3; // Extra space
+
+// Reset arrow class
+popover.classList.remove('arrow-right', 'arrow-bottom');
+
+// const hasSpaceBelow = rect.bottom + popoverHeight + bufferSpace < window.innerHeight;
+// const isLastVisibleRow = index === allPickElems.length - 1 || !hasSpaceBelow;
+
+// if (isLastVisibleRow) {
+//   // Position popover to the left
+//   popover.style.top = window.scrollY + rect.top + (rect.height / 2) - (popoverHeight / 2) + 'px';
+//   popover.style.left = window.scrollX + rect.left - popoverWidth - 2 + 'px'; 
+//   popover.classList.add('arrow-right');  // Only left arrow
+// } else {
+//   // Position popover below
+//   popover.style.top = window.scrollY + rect.bottom + bufferSpace + 'px';
+//   popover.style.left = window.scrollX + rect.left + (rect.width / 2) - (popoverWidth / 2) + 'px';
+//   popover.classList.add('arrow-bottom');  // Only bottom arrow
+// }
+
+  // Position popover to the left
+  popover.style.top = window.scrollY + rect.top + (rect.height / 2) - (popoverHeight / 2) + 'px';
+  popover.style.left = window.scrollX + rect.left - popoverWidth - 1 + 'px'; 
+  popover.classList.add('arrow-right');  // Only left arrow
+
+        activePopoverElem = pickElem;
+      }
+    });
+
+    pickElem.addEventListener('mouseout', () => {
+      hidePopover();
+    });
+  });
+
+
+
+  // Attach handler for .name (additional selector)
+  document.querySelectorAll('.name').forEach((nameElem) => {
+    nameElem.addEventListener('click', (event) => {
+      const score = nameElem.getAttribute('data-score');
+      if (score) {
+        const scores = score.split(';').map((s) => s.trim());
+
+        // Start with the first line (e.g., "Final")
+        let scoreText = `
+          <div class="popover-header">${scores[0]}</div>
+          <div class="popover-body">
+        `;
+
+        // Build rows for team names and scores
+        for (let i = 1; i < scores.length; i++) {
+          const [team, scoreValue] = scores[i].split(':').map((part) => part.trim());
+          scoreText += `
+            <div class="popover-team-row">
+              <div style="text-align: right; padding-right: 2px; font-weight: bold;">${team}:</div>
+              <div style="text-align: left; padding-left: 2px;font-weight: 600">${scoreValue}</div>
+            </div>
+          `;
+        }
+
+        scoreText += `</table>`; // Close the table
+
+        popover.innerHTML = scoreText;
+        popover.classList.add('visible');
+        popover.style.display = 'block';
+
+        const rect = nameElem.getBoundingClientRect();
+        popover.style.top = window.scrollY + rect.bottom - 25 + 'px';
+        popover.style.left = window.scrollX + rect.left + (rect.width / 2) - (popover.offsetWidth / 2) + 'px';
+
+        popover.dataset.activeElem = nameElem;
+        activePopoverElem = nameElem;
+      }
+    });
+
+    nameElem.addEventListener('mouseout', () => {
+      hidePopover();
+    });
+  });
+
+  // Hide popover on scroll for mobile
+  window.addEventListener('scroll', () => {
+    if (popover.classList.contains('visible')) {
+      hidePopover();
+    }
+  });
+
+  function hidePopover() {
+    popover.style.display = 'none';
+    popover.classList.remove('visible');
+    activePopoverElem = null;
+  }
+}
+
+
+
+
+
+function displayTableForCurrentWeek(data) {
+  const tbody = document.querySelector("#pickTable tbody");
+  tbody.innerHTML = ''; 
+
+  data.forEach((row) => {
+    const tr = document.createElement('tr');
+    tr.classList.add('team-row');
+    tr.dataset.week = parseInt(row.week, 10); 
+
+    const recordClass = row.record === '5-0' ? 'fiveAnd0' : 'record';
+    tr.innerHTML = `
+    <td class="week hidden">${parseInt(row.week, 10)}</td>
+    <td class="name" data-toggle="popover" data-score="${row.namePopover}">${row.name}</td>
+    <td class="${recordClass}">${row.record}</td>
+    <td class="hidden">${row.group}</td>
+    ${row.picks.map(pick => {
+    return `
+    <td style="background-color: ${pick.color[0]}; color: ${pick.color[1]}; font-weight: bold; font-size: 9pt; padding: 0;">
+      <div class="pick" data-toggle="popover" data-score="${pick.score}">
+        <img src="${pick.logoUrl}" class="team-logo">
+        <div class="team-spread" style="background-color: ${pick.spreadcolor[0]}; color: ${pick.spreadcolor[1]};">
+          ${pick.spread}</div>
+        <div class="team-pick">${pick.teamName}</div>
+        </div>
+    </td>
+        `;
+      }).join('')}
+    `;
+
+    tbody.appendChild(tr);
+  });
+
+  // Run filter & popover handlers AFTER table updates
+  filterByWeek();
+  attachPopoverHandlers();
+}
+
+// loading="lazy"
+
+  function getVisibleWeeks() {
+    return window.innerWidth <= 768 ? 3 : 5; 
+  }
+
+  let isWeekToggled = false; 
+
+function renderWeekCarousel() {
+    const weekCarousel = document.getElementById('weekCarousel');
+    weekCarousel.innerHTML = '';
+    const visibleWeeks = getVisibleWeeks();
+    
+    let start = currentWeekIndex - Math.floor(visibleWeeks / 2);
+    let end = currentWeekIndex + Math.ceil(visibleWeeks / 2);
+    
+    // Adjust if we're at the beginning of the array
+    if (start < 0) {
+        end += Math.abs(start); // Add the deficit to end
+        start = 0;
+    }
+
+    // Adjust if we're at the end of the array
+    if (end > weeksArray.length) {
+        start -= (end - weeksArray.length); // Shift start left by overflow
+        end = weeksArray.length;
+    }
+
+    // Ensure start is not negative after adjustments
+    start = Math.max(start, 0);
+
+    for (let index = start; index < end; index++) {
+        const week = weeksArray[index];
+        const weekItem = document.createElement('div');
+        weekItem.classList.add('week-item');
+
+        if (index === currentWeekIndex && !isWeekToggled) {
+            weekItem.classList.add('selected');
+        }
+            
+        weekItem.textContent = 'Week ' + week;
+        weekItem.addEventListener('click', () => selectWeek(index));
+        weekCarousel.appendChild(weekItem);
+    }
+
+    centerSelectedWeek();
+    updateSelectedWeek();
+    updateTitleDisplay(weeksArray[currentWeekIndex]);
+}
+
+    function scrollWeeks(direction) {
+        currentWeekIndex = (currentWeekIndex + direction + weeksArray.length) % weeksArray.length;
+        renderWeekCarousel();
+        filterByWeek();
+    }
+
+function selectWeek(index) {
+    const weekItems = document.querySelectorAll('#weekCarousel .week-item');
+    const selectedWeekElement = weekItems[currentWeekIndex];
+
+    if (currentWeekIndex === index) {
+        if (isWeekToggled) {
+            if (selectedWeekElement) {
+                selectedWeekElement.classList.remove('selected');
+            }
+            isWeekToggled = false;
+        } else {
+            if (selectedWeekElement) {
+                selectedWeekElement.classList.add('selected');
+            }
+            isWeekToggled = true;
+        }
+        renderWeekCarousel();
+        filterByWeek();
+        updateSelectedWeek();
+    } else {
+        if (selectedWeekElement) {
+            selectedWeekElement.classList.remove('selected');
+        }
+
+        currentWeekIndex = index;
+        isWeekToggled = false;
+        renderWeekCarousel();
+        filterByWeek();
+        updateSelectedWeek();
+        updateTitleDisplay(weeksArray[currentWeekIndex]);
+    }
+}
+
+function updateSelectedWeek() {
+    const selectedWeek = weeksArray[currentWeekIndex];
+    const selectedWeekElement = document.getElementById('selectedWeek');
+    const searchInput = document.getElementById("searchInput").value.trim();
+
+    if (searchInput !== "" && isWeekToggled) {
+        selectedWeekElement.textContent = "All Picks";  
+    } 
+    else if (isWeekToggled) {
+        selectedWeekElement.textContent = "All Picks";  
+    } 
+    else {
+        selectedWeekElement.textContent = 'Week ' + selectedWeek;  
+    }
+}
+
+let filterNoLossesEnabled = false; 
+
+function filterByWeek() {
+  const selectedWeek = weeksArray[currentWeekIndex];
+  const matchups = document.querySelectorAll('.team-row');
+  const weekHeaders = document.querySelectorAll('.week-headers');
+
+  matchups.forEach((matchup) => {
+    const weekCell = matchup.querySelector('.week');
+
+    let isDisplayed = matchup.dataset.week == selectedWeek || isWeekToggled;
+
+    matchup.style.display = isDisplayed ? "" : "none";
+    if (weekCell) {
+      if (isWeekToggled) {
+        weekCell.classList.remove('hidden');
+      } else {
+        weekCell.classList.add('hidden');
+      }
+    }
+  });
+
+  weekHeaders.forEach((header) => {
+    if (isWeekToggled) {
+      header.classList.remove("hidden");
+    } else {
+      header.classList.add("hidden");
+    }
+  });
+}
+
+    function centerSelectedWeek() {
+        const weekCarousel = document.getElementById('weekCarousel');
+        const selectedWeek = weekCarousel.querySelector('.week-item.selected');
+        if (selectedWeek) {
+            const scrollPosition = selectedWeek.offsetLeft - (weekCarousel.offsetWidth / 2) + (selectedWeek.offsetWidth / 2);
+            weekCarousel.scrollTo({ left: scrollPosition, behavior: 'smooth' });
+        }
+    }
+
+
+function showSpinner() {
+  const spinner = document.getElementById('spinner');
+  const pickTable = document.getElementById('pickTable');
+
+  spinner.classList.remove('hidden');
+  pickTable.classList.add('hidden');
+
+  setTimeout(() => {
+    spinner.classList.add('hidden');
+    pickTable.classList.remove('hidden');
+
+    if (typeof loadMatchups === "function") {
+      loadMatchups(); // Call data-loading function after spinner ends
+    } else {
+    }
+  }, 6000); // 6 seconds
+}
+
+// Call the spinner function when the page loads or data reloads
+// document.addEventListener('DOMContentLoaded', showSpinner);
+
+function updateTitleDisplay(selectedWeek) {
+    google.script.run.withSuccessHandler(function(result) {
+        const matchingWeek = result.weekHeaders?.find(item => String(item.week) === String(selectedWeek));
+        const weekTitleElement = document.getElementById('weekTitle');
+        const selectedWeekElement = document.getElementById('selectedWeek');
+
+        if (isWeekToggled) {
+          weekTitleElement.textContent = ``;
+        }
+
+        if (matchingWeek) {
+            weekTitleElement.textContent = `${matchingWeek.title}`;
+        } else {
+            weekTitleElement.textContent = `Loading...`;
+        }
+    }).getAllWeekPicksCounts();
+}
+
+let sortDirections = {};
+
+function sortTable(columnIndex, ascending = null) {
+  const table = document.getElementById('pickTable');
+  const tbody = table.querySelector('tbody');
+  const rowsArray = Array.from(tbody.rows);
+
+  // Determine sort order
+  if (ascending === null) {
+    ascending = table.dataset.sortOrder !== 'asc';
+  }
+
+  // Save the current column and sort order
+  table.dataset.sortedColumn = columnIndex;
+  table.dataset.sortOrder = ascending ? 'asc' : 'desc';
+
+  rowsArray.sort((a, b) => {
+    let cellA = a.cells[columnIndex].innerText.trim().toLowerCase();
+    let cellB = b.cells[columnIndex].innerText.trim().toLowerCase();
+
+    // Sort numeric columns differently
+    if (columnIndex === 0) {
+      const weekA = parseInt(cellA, 10);
+      const weekB = parseInt(cellB, 10);
+      return ascending ? weekA - weekB : weekB - weekA;
+    }
+
+    // Handle sorting of W-L columns
+    if (columnIndex === 2) {
+      const [winsA, lossesA] = cellA.split('-').map(Number);
+      const [winsB, lossesB] = cellB.split('-').map(Number);
+
+      if (lossesA !== lossesB) {
+        return ascending ? lossesA - lossesB : lossesB - lossesA;
+      }
+      return ascending ? winsB - winsA : winsA - winsB;
+    }
+
+    // General string comparison
+    if (cellA < cellB) return ascending ? -1 : 1;
+    if (cellA > cellB) return ascending ? 1 : -1;
+    return 0;
+  });
+  if (columnIndex === 1) {
+    rowsArray.sort((a, b) => {
+      let cellA = a.cells[columnIndex].innerText.trim().toLowerCase();
+      let cellB = b.cells[columnIndex].innerText.trim().toLowerCase();
+
+      if (cellA === cellB) {
+        const weekA = parseInt(a.cells[0].innerText.trim(), 10);
+        const weekB = parseInt(b.cells[0].innerText.trim(), 10);
+        return ascending ? weekA - weekB : weekA - weekB;
+      }
+
+      return 0;
+    });
+  }
+  rowsArray.forEach(row => tbody.appendChild(row));
+
+      sortDirections[columnIndex] = !sortDirections[columnIndex];
+
+  document.querySelectorAll(".sort-arrow").forEach(arrow => {
+        arrow.classList.remove("ascending", "descending");
+    });
+
+    // Add the correct arrow style
+    const arrow = document.querySelector(`.sort-arrow[data-index="${columnIndex}"]`);
+    if (arrow) {
+        arrow.classList.add(sortDirections[columnIndex] ? "ascending" : "descending");
+    }
+
+}
+    var input = document.getElementById("searchInput");
+    input.addEventListener("keypress", function(event) {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            document.getElementById("myBtn").click();
+        }
+    });
+
+function searchTable() {
+  var input = document.getElementById("searchInput").value.toLowerCase();
+  var table = document.getElementById("pickTable");
+  var rows = table.getElementsByTagName("tr");
+
+  if (isWeekToggled) {
+    isWeekToggled = false;
+  }
+
+  if (input === "") {
+    for (var i = 1; i < rows.length; i++) {
+      rows[i].classList.remove("hidden");
+      rows[i].style.display = "";
+      
+      var weekCell = rows[i].getElementsByClassName("week")[0];
+      if (weekCell) {
+        weekCell.classList.add("hidden");
+      }
+      
+      var weekHeader = rows[0].getElementsByClassName("week-headers")[0];
+      weekHeader.classList.add("hidden");
+    }
+    isWeekToggled = false;
+    renderWeekCarousel();
+    filterByWeek();
+    updateSelectedWeek();
+    return;
+  }
+  var weekHeader = rows[0].getElementsByClassName("week-headers")[0];
+  weekHeader.classList.remove("hidden");
+  
+  for (var i = 1; i < rows.length; i++) {
+    rows[i].classList.remove("hidden");
+    var weekCell = rows[i].getElementsByClassName("week")[0];
+    if (weekCell) {
+      weekCell.classList.remove("hidden");
+    }
+  }
+
+  var matchFound = false;  
+  var weekHeader = rows[0].getElementsByClassName("week-headers")[0];
+  if (weekHeader) {
+    weekHeader.classList.remove("hidden");
+  }
+  for (var i = 1; i < rows.length; i++) {
+    var cells = rows[i].getElementsByTagName("td");
+    var match = false;
+
+    for (var j = 0; j < cells.length; j++) {
+      if (cells[j]) {
+        var text = cells[j].innerText.toLowerCase();
+        if (text.indexOf(input) > -1) {
+          match = true;
+          matchFound = true;
+          break;
+        }
+      }
+    }
+    if (!match) {
+      rows[i].classList.add("hidden");
+    }
+  }
+  filterByWeek();
+  updateSelectedWeek();
+}
+
+function toggleClearButton() {
+  const searchInput = document.getElementById('searchInput');
+  const clearBtn = document.getElementById('clearBtn');
+
+  if (searchInput.value.trim() !== '') {
+    clearBtn.style.display = 'block';
+  } else {
+    clearBtn.style.display = 'none';
+  }
+}
+
+function clearSearchInput() {
+  const searchInput = document.getElementById('searchInput');
+  const clearBtn = document.getElementById('clearBtn');
+
+  searchInput.value = '';
+  clearBtn.style.display = 'none';
+  searchTable(); // Call your search function after clearing
+}
+
+function searchHiddenTable() {
+  // Get the checkbox element
+  const checkbox = document.getElementById("filterNoLosses");
+  
+  // Get all rows with the class 'team-row'
+  const rows = document.querySelectorAll("#pickTable .team-row");
+  
+  // Determine if the checkbox is checked
+  const filterNoLosses = checkbox.checked;
+
+  // Loop through rows and toggle the 'hidden-row' class
+  rows.forEach(row => {
+    const recordCell = row.querySelector(".record"); // Locate the record cell
+    if (recordCell) {
+      const recordValue = recordCell.textContent.trim(); // Get the record value
+      
+      // Check if the row should be hidden
+      if (filterNoLosses && !recordValue.endsWith("-0")) {
+        row.classList.add("hidden-row"); // Hide row
+      } else {
+        row.classList.remove("hidden-row"); // Show row
+      }
+    }
+  });
+    filterByWeek();
+  updateSelectedWeek();
+}
+
+
+function onPicksLoad() {
+  console.log("✅ Picks page loaded. Fetching matchups...");
+  document.getElementById('pickTable').classList.add('hidden');
+  loadMatchups();
+  document.getElementById('spinner').classList.remove('hidden');
+
+  setTimeout(() => {
+    document.getElementById('spinner').classList.add('hidden');
+    document.getElementById('pickTable').classList.remove('hidden');
+  }, 6000);
+}
+
+
+  </script>
+
+</body>
