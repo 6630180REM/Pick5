@@ -860,8 +860,10 @@ function loadPage(page) {
         mobileLink.classList.add("active");
     }
 
-    // Fetch page content from Apps Script
-    fetch(`https://script.google.com/macros/s/12GmuAbKtct2hAjZisPNkBUbd4FhDvGxtp5rPA6PXXaSsXVFjoNbVVl90/exec?action=getPageContent&page=${page}`)
+    const scriptURL = "https://script.google.com/macros/s/12GmuAbKtct2hAjZisPNkBUbd4FhDvGxtp5rPA6PXXaSsXVFjoNbVVl90/exec";
+    const proxyURL = "https://corsproxy.io/?"; // Public CORS proxy
+
+    fetch(proxyURL + encodeURIComponent(`${scriptURL}?action=getPageContent&page=${page}`))
         .then(response => response.text())
         .then(html => {
             console.log("✅ HTML received:", html);
