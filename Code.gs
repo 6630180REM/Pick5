@@ -1,34 +1,39 @@
 function doGet(e) {
-  let action = e.parameter.action;
-  let page = e.parameter.page;
+    let action = e.parameter.action;
+    let page = e.parameter.page;
+    
+    // CORS Preflight Handling for OPTIONS request
+    if (e.parameter.cors) {
+        return ContentService.createTextOutput("")
+            .setMimeType(ContentService.MimeType.TEXT);
+    }
 
-  // Handle CORS preflight (OPTIONS request)
-  if (e.parameter.cors) {
-    return ContentService.createTextOutput("")
-      .setMimeType(ContentService.MimeType.TEXT);
-  }
+    let output;
 
-  let output;
+    // Handle the page content requests
+    if (action === "getPageContent" && page) {
+        // Return HTML content for pages stored as HTML files
+        return HtmlService.createHtmlOutputFromFile(page)
+            .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+    } 
+    else if (action === "getAllWeekPicks2") { 
+        output = JSON.stringify(getAllWeekPicks2());
+    } 
+    else if (action === "getYearlyStandings") {
+        output = JSON.stringify(getYearlyStandings());
+    } 
+    else {
+        output = JSON.stringify({ error: "Invalid action" });
+    }
 
-  if (action === "getAllWeekPicks2") { 
-    output = JSON.stringify(getAllWeekPicks2());
-  } 
-  else if (action === "getYearlyStandings") {
-    output = JSON.stringify(getYearlyStandings());
-  } 
-  else if (page) {
-    return HtmlService.createHtmlOutputFromFile(page);
-  } 
-  else {
-    output = JSON.stringify({ error: "Invalid action" });
-  }
-
-  // ✅ Create response with CORS headers
-  let response = ContentService.createTextOutput(output)
-    .setMimeType(ContentService.MimeType.JSON);
-
-  return addCorsHeaders(response);
+    // ✅ Create JSON response
+    let response = ContentService.createTextOutput(output)
+        .setMimeType(ContentService.MimeType.JSON);
+    
+    // No need for setContentType, only setMimeType to JSON
+    return response;
 }
+
 
 // ✅ Function to properly add CORS headers
 function addCorsHeaders(response) {
