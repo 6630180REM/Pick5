@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <style>
+    /* body {
+      font-family: Arial, sans-serif;
+      background: black;
+      color: white;
+      padding: 0px;
+      background-attachment: fixed;
+      background-repeat: round;
+      background-size: cover;
+      margin: 0; // 1
+      line-height: revert;
+      text-align: center;
+      margin-bottom: 50px;
+
+    } */
+    .container {
+      text-align: center;
+      text-black: 50;
+      table-cell-padding: 0px;
+      max-width: fit-content;
+      layout: "fitData";
+      padding-right: 1px;
+      padding-left: 1px;
+      margin-right: auto;
+      margin-left: auto;
+      padding-top: 0px;
+    }
+
+    .sticky-top {
+      position: sticky;
+      top: 4px;
+      z-index: 1000;
+      background: #333;
+      /* position: relative; Ensure positioning context for ::after */
+    }
+
+    .sticky-top::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      /* Full width of the header row */
+      height: 100%;
+      /* Full height of the header row */
+      box-shadow: 0 0 0px 5px #478fdf;
+      /* Outer glow effect */
+      pointer-events: none;
+      /* Prevent it from blocking interactions */
+      z-index: -1;
+      /* Keep the shadow behind the header */
+    }
+
+    .headers {
+      font-size: 14pt;
+      white-space: nowrap;
+      max-width: fit-content;
+      height: 45px;
+      font-weight: 900;
+      text-align: center;
+      color: #478fdf;
+      background: #333;
+      padding: 0 3px;
+      box-shadow: inset 0px 0px 2px #444, inset -1px -1px 2px #222;
+    }
+
+    .dropdown {
+      text-align: end;
+      padding-right: 5px;
+      margin-top: 18px;
+      position: relative;
+    }
+
+    .table {
+      max-width: fit-content;
+      border-collapse: collapse;
+      color: black;
+      margin-bottom: 60px;
+      border-spacing: 0;
+      min-width: max-content;
+      margin-right: auto;
+      margin-left: auto;
+      margin-top: 15px;
+      width: 100%;
+      background: white;
+    }
+
+    .table td {
+      /* padding: 2px; */
+      vertical-align: middle;
+      border-bottom: 2px solid black;
+      height: 32px;
+      padding: 0 4px;
+    }
+
+    .sortable {
+      text-align: center;
+      /* padding: 5px 1px; */
+      font-size: 14pt;
+      color: white;
+      background-color: #0067d5;
+      white-space: nowrap;
+      max-width: fit-content;
+      /* font-family: 'Trebuchet MS', sans-serif; */
+      height: 45px;
+      /* vertical-align: middle; */
+      font-weight: 900;
+      padding: 2px;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .team-name {
+      display: flex;
+      align-items: center;
+      text-align: left;
+      /* width: 205px; */
+      layout: "fitData";
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      vertical-align: middle;
+      table-layout: fixed;
+      padding-right: 3px;
+      height: 50px;
+      min-width: 270px;
+    }
+
+    .team-name-freq {
+      display: flex;
+      align-items: center;
+      text-align: left;
+      /* width: 205px; */
+      layout: "fitData";
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      vertical-align: middle;
+      table-layout: fixed;
+      padding-right: 3px;
+      height: 50px;
+      min-width: 270px;
+      /* font-size: 19px; */
+    }
+
+    .team-name-50 {
+      align-items: center;
+      text-align: left;
+      overflow: hidden;
+      padding: 0;
+      padding-right: 3px;
+      padding-left: 5px;
+      height: 50px;
+      margin: 0;
+      min-width: 200px;
+    }
+
+    .team-logo {
+      width: 45px;
+      height: 45px;
+      mx-auto: d-block;
+      align-items: baseline;
+      object-fit: contain;
+      background-size: cover;
+      white-space: nowrap;
+      padding-top: 0px;
+      padding-bottom: 0px;
+      padding-left: 0px;
+      padding-right: 8px;
+    }
+
+    .title3 {
+      font-size: 25pt;
+      font-weight: bolder;
+      vertical-align: bottom;
+      color: white;
+      -webkit-text-stroke: 1px #0067d5;
+      margin-top: 13px;
+      margin-bottom: 0px;
+      font-weight: 900;
+      letter-spacing: 3px;
+      height: 40px;
+    }
+
+    .button {
+      padding: 4px 11px;
+      border-radius: 5px;
+      cursor: pointer;
+      background-color: white;
+      color: #333;
+      width: 100px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      height: 35px;
+      border: 2px solid #ddd;
+      padding: 0px;
+      margin-bottom: 10px;
+    }
+
+    .button.active {
+      background-color: #0067d5;
+      color: white;
+      font-weight: bold;
+      /* font-size: 20px; */
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 110px;
+      height: 40px;
+    }
+
+    .button:hover {
+      background-color: #0067d5;
+      color: white;
+    }
+
+    .button-group {
+      display: flex;
+      align-content: center;
+      justify-content: center;
+      align-items: center;
+      column-gap: 10px;
+    }
+
+    .team-numbers {
+      font-size: 19px;
+      border: 1px solid black;
+    }
+
+    @media (max-width: 768px) {
+      body {
+        background-size: 100%;
+      }
+
+      .sortable {
+        padding: 2px;
+        font-size: 11pt;
+      }
+
+      .team-name {
+        /* width: auto; */
+        padding-right: 3px;
+      }
+
+      .headers {
+        text-align: center;
+        font-size: 11pt;
+        font-weight: 900;
+        height: 40px;
+        position: sticky;
+        z-index: 1200;
+        padding: 0 3px;
+        line-height: 1;
+      }
+
+
+      .table {
+        width: 100%;
+        border: 0px solid !important;
+        outline: #32639C !important;
+        margin-bottom: 85px;
+        z-index: 1500;
+        position: relative;
+        margin-top: 25px;
+      }
+
+
+      .title3 {
+        height: 25px;
+        /* margin-top: 61px; */
+        font-size: 22pt;
+      }
+
+      #welcomeMessage figcaption {
+        width: auto;
+        z-index: 1200;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 0px;
+        position: relative;
+        white-space: nowrap;
+      }
+
+      .sticky-top::after {
+        height: 40px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h3 class="title3">Pick Frequency</h3>
+
+    <div class="dropdown" id="pickFrequencyDropdown">
+      <label for="weekFilter">Week: </label>
+      <select id="weekFilter" onchange="filterPickFrequency()" style="font-size: 17px;border-radius: 5px;height: 25px;">
+    <!-- Options will be dynamically populated -->
+  </select>
+    </div>
+
+    <table id="pickFrequencyTable" class="table">
+      <thead>
+        <tr class="sticky-top">
+          <th class="hidden">Week</th>
+          <th class="headers" style="font-size: 14pt" onclick="sortTable(1)">Team</th>
+          <th class="headers" onclick="sortTable(2)" style="font-size: 14px;">Pick<br>Count</th>
+        </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    let tableData = []; // Stores the full dataset
+    let allWeeks = []; // Stores all unique weeks
+    // let sortDirection = {}; 
+
+function loadPickFrequency(data) {
+  console.log("Populating Pick Frequency table with data:", data); // Debugging
+
+  if (!data || !Array.isArray(data) || data.length === 0) {
+    console.error("❌ No pick frequency data received.");
+    return;
+  }
+
+  tableData = data; // Store the full dataset
+
+  // ✅ Always refresh the dropdown when data is received
+  populateWeekDropdown();
+
+  // Default to the most recent week
+  const latestWeek = allWeeks.length > 0 ? allWeeks[0] : null;
+  if (latestWeek) {
+    document.getElementById("weekFilter").value = latestWeek;
+    filterPickFrequency();
+  }
+}
+
+    function populateWeekDropdown() {
+      const weekDropdown = document.getElementById("weekFilter");
+
+      // Extract unique weeks and sort in descending order
+      allWeeks = [...new Set(tableData.map(row => row.week))].sort((a, b) => b - a);
+
+      weekDropdown.innerHTML = ""; // Clear existing options
+      allWeeks.forEach(week => {
+        const option = document.createElement("option");
+        option.value = week;
+        option.textContent = `Week ${week}`;
+        weekDropdown.appendChild(option);
+      });
+    }
+
+    function filterPickFrequency() {
+      const selectedWeek = document.getElementById("weekFilter").value;
+
+      // Always filter from the full dataset
+      const filteredData = tableData.filter(row => row.week == selectedWeek);
+
+      // Render filtered data without overwriting tableData
+      updatePickFrequencyTable(filteredData);
+    }
+
+    function updatePickFrequencyTable(data) {
+      const tableBody = document.querySelector("#pickFrequencyTable tbody");
+      tableBody.innerHTML = "";
+
+      data.forEach(row => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+      <td class="hidden">${row.week}</td>
+      <td style="background-color: ${row.teamColor[0]};color:${row.teamColor[1]};padding: 0;">
+      <div class="team-name-freq">
+        <img src="${row.teamLogo}" class="team-logo" /> ${row.teamName}
+        </div>
+      </td>
+      <td class="team-numbers">${row.pickCount}</td>
+        `;
+        tableBody.appendChild(tr);
+      });
+    }
+    
+
+function onPickFreqLoad() {
+  console.log("✅ Pick Frequency page loaded. Fetching data...");
+
+  // ✅ Reset stored data to prevent duplication issues
+  tableData = [];
+  allWeeks = [];
+
+  google.script.run.withSuccessHandler(function (data) {
+    console.log("✅ Pick Frequency data received:", data);
+
+    if (!data || data.length === 0) {
+      console.error("❌ No pick frequency data received.");
+      return;
+    }
+
+    loadPickFrequency(data);
+  }).getPickFreq();
+}
+
+function sortTable(columnIndex) {
+  const table = document.getElementById("pickFrequencyTable");
+  const tbody = table.querySelector("tbody");
+  const rowsArray = Array.from(tbody.rows);
+
+  // Determine sorting order (toggle between ascending and descending)
+  if (sortDirection[columnIndex] === undefined || sortDirection[columnIndex] === "desc") {
+    sortDirection[columnIndex] = "asc";
+  } else {
+    sortDirection[columnIndex] = "desc";
+  }
+
+  const ascending = sortDirection[columnIndex] === "asc";
+
+  rowsArray.sort((a, b) => {
+    let cellA = a.cells[columnIndex].textContent.trim();
+    let cellB = b.cells[columnIndex].textContent.trim();
+
+    // Convert Pick Count to a number for proper sorting
+    if (columnIndex === 2) {
+      cellA = parseInt(cellA, 10) || 0;
+      cellB = parseInt(cellB, 10) || 0;
+    } else {
+      // Sort text alphabetically (case insensitive)
+      cellA = cellA.toLowerCase();
+      cellB = cellB.toLowerCase();
+    }
+
+    return ascending ? (cellA > cellB ? 1 : -1) : (cellA < cellB ? 1 : -1);
+  });
+
+  // Apply sorted rows back into the table
+  tbody.innerHTML = "";
+  rowsArray.forEach(row => tbody.appendChild(row));
+
+  console.log(`✅ Sorted column ${columnIndex} in ${ascending ? "ascending" : "descending"} order`);
+}
+
+
+  </script>
+</body>
+
+</html>
