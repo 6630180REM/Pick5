@@ -1520,24 +1520,17 @@ height: 40px;
     let weeksArray = Array.from({ length: 18 }, (_, i) => i + 1);
   let currentWeekIndex = weeksArray.length - 1; // Default to the last week
 
-  // let lastScrollTop = 0;
-  // const navbar = document.querySelector('.navbar');
-
-  // window.addEventListener('scroll', function () {
-  //   const currentScrollTop = window.scrollY || document.documentElement.scrollTop;
-
-  //   if (currentScrollTop > lastScrollTop && currentScrollTop > 100) {attac
-  //     navbar.style.top = '-100px';
-  //   } else if (currentScrollTop < lastScrollTop || currentScrollTop === 0) {
-  //     navbar.style.top = '0';
-  //   }
-
-  //   lastScrollTop = currentScrollTop;
-  // });
 
 function loadMatchups() {
-  renderWeekCarousel();
-  google.script.run.withSuccessHandler(setupDateFilter).getAllWeekPicks2();
+    console.log("Fetching week picks...");
+
+    fetch("https://script.google.com/macros/s/12GmuAbKtct2hAjZisPNkBUbd4FhDvGxtp5rPA6PXXaSsXVFjoNbVVl90/exec?action=getAllWeekPicks2")
+        .then(response => response.json())
+        .then(data => {
+            console.log("✅ Week picks received:", data);
+            displayTableForCurrentWeek(data);
+        })
+        .catch(error => console.error("❌ Error fetching week picks:", error));
 }
 
 function setupDateFilter(result) {
