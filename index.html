@@ -820,10 +820,26 @@
 </div>
 
 <!-- <div class="container"> -->
-
 <div id="content"></div>
 <!-- </div> -->
 
+	<script src="https://cdn.jsdelivr.net/gh/tanaikech/syncGoogleScriptRun@master/syncGoogleScriptRun.min.js"></script>
+
+<script>
+async function run() {
+  for (let i = 0; i < 5; i++) {
+
+    const resource = {
+      gasFunction: "myFunction", // Function name of Google Apps Script side
+      arguments: i // Arguments for the function
+    };
+    const res = await syncGoogleScriptRun(resource).catch(e => {throw new Error(e)});
+
+    console.log(res);
+  }
+}
+</script>
+	
 <script>
   function loadPage(page) {
   console.log("Loading page:", page);
