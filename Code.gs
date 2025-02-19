@@ -1,70 +1,32 @@
 function doGet(e) {
-    let page = e.parameter.mode || "index"; // Default to index.html
-    let html = HtmlService.createTemplateFromFile(page).evaluate();
-    let htmlOutput = HtmlService.createHtmlOutput(html);
-    htmlOutput.setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
-    htmlOutput.addMetaTag('viewport', 'width=device-width,initial-scale=1');
-    
-    return htmlOutput;
+    let action = e.parameter.action;
+
+    if (action === "getPageContent") {
+        let page = e.parameter.page;
+        return ContentService.createTextOutput(getPageContent(page))
+            .setMimeType(ContentService.MimeType.HTML);
+    }
+
+    return ContentService.createTextOutput(
+        JSON.stringify({ error: "Invalid action" })
+    ).setMimeType(ContentService.MimeType.JSON);
 }
 
 function getPageContent(page) {
-  return HtmlService.createHtmlOutputFromFile(page).getContent();
+    switch (page) {
+        case "Picks":
+            return HtmlService.createHtmlOutputFromFile("Picks.html").getContent();
+        case "Standings":
+            return HtmlService.createHtmlOutputFromFile("Standings.html").getContent();
+        case "pickFreq":
+            return HtmlService.createHtmlOutputFromFile("ickFreq.html").getContent();
+        case "5and0":
+            return HtmlService.createHtmlOutputFromFile("5and0.html").getContent();
+        default:
+            return "<h2>Page not found</h2>";
+    }
 }
 
-function myFunction(e) {
-  Utilities.sleep(1000);
-  return e;
-}
-
-function openDialog() {
-  var html = HtmlService.createHtmlOutputFromFile("index");
-  SpreadsheetApp.getUi().showModalDialog(html, "sample");
-}
-
-// function getCurrentWeek() {
-//   var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('CurrentWeekPicks');
-//   var dataRange = sheet.getRange('A2');
-//   var data = dataRange.getValue();
-//   const currentWeek = "Week " + data + " Picks";
-//   Logger.log(currentWeek);
-//   return (currentWeek);
-//   ;
-// }
-function getAllWeekPicks(range) {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const sheet = ss.getSheetByName('AllWeeksPicks');
-  // const sheetRange = ss.getSheetByName('Team Data');
-
-  const lastRow = sheet.getRange('AM2').getValue();
-  const data = sheet.getRange(`A2:AJ${lastRow}`).getValues();
-
-  // Predefine weeks array
-  // const weeks = [...new Set(Array.from({ length: 18 }, (_, i) => i + 1))].sort((a, b) => a - b);
-  // const weeks = [...new Set(sheet.getRange(`A2:A${lastRow}`).getValues().flat().filter(Boolean))].sort((a, b) => a - b);
-  // const weeks = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18].sort((a, b) => a - b);
-
-  const result = data.map(row => ({
-    week: row[0],    // Column A
-    name: row[1],    // Column B
-    record: row[2],  // Column C
-    group: row[33],
-    namePopover: row[34],
-    titleRecord: row[35],
-    picks: [
-      { logoUrl: row[3], teamName: row[4], spread: row[5], color: row[6].split(','), score: row[7], spreadcolor: row[28].split(';') },
-      { logoUrl: row[8], teamName: row[9], spread: row[10], color: row[11].split(','), score: row[12], spreadcolor: row[29].split(';') },
-      { logoUrl: row[13], teamName: row[14], spread: row[15], color: row[16].split(','), score: row[17], spreadcolor: row[30].split(';') },
-      { logoUrl: row[18], teamName: row[19], spread: row[20], color: row[21].split(','), score: row[22], spreadcolor: row[31].split(';') },
-      { logoUrl: row[23], teamName: row[24], spread: row[25], color: row[26].split(','), score: row[27], spreadcolor: row[32].split(';') }
-    ]
-  }));
-  // Avoid unnecessary logging in production
-  // if (range === 'debug') {
-  //   Logger.log(result);
-  // }
-  return {data: result};
-}
 
 function getAllWeekPicks2(range) {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
