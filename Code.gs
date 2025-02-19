@@ -1,30 +1,40 @@
 function doGet(e) {
-    let action = e.parameter.action;
+  let action = e.parameter.action;
+  let page = e.parameter.page;
 
-    if (action === "getPageContent") {
-        let page = e.parameter.page;
-        return ContentService.createTextOutput(getPageContent(page))
-            .setMimeType(ContentService.MimeType.HTML);
-    }
+  // Handle CORS preflight (OPTIONS request)
+  if (e.parameter.cors) {
+    return ContentService.createTextOutput("")
+      .setMimeType(ContentService.MimeType.TEXT);
+  }
 
-    return ContentService.createTextOutput(
-        JSON.stringify({ error: "Invalid action" })
-    ).setMimeType(ContentService.MimeType.JSON);
+  let output;
+
+  if (action === "getAllWeekPicks2") { 
+    output = JSON.stringify(getAllWeekPicks2());
+  } 
+  else if (action === "getYearlyStandings") {
+    output = JSON.stringify(getYearlyStandings());
+  } 
+  else if (page) {
+    return HtmlService.createHtmlOutputFromFile(page);
+  } 
+  else {
+    output = JSON.stringify({ error: "Invalid action" });
+  }
+
+  // ✅ Create response with CORS headers
+  let response = ContentService.createTextOutput(output)
+    .setMimeType(ContentService.MimeType.JSON);
+
+  return addCorsHeaders(response);
 }
 
-function getPageContent(page) {
-    switch (page) {
-        case "Picks":
-            return HtmlService.createHtmlOutputFromFile("Picks.html").getContent();
-        case "Standings":
-            return HtmlService.createHtmlOutputFromFile("Standings.html").getContent();
-        case "pickFreq":
-            return HtmlService.createHtmlOutputFromFile("ickFreq.html").getContent();
-        case "5and0":
-            return HtmlService.createHtmlOutputFromFile("5and0.html").getContent();
-        default:
-            return "<h2>Page not found</h2>";
-    }
+// ✅ Function to properly add CORS headers
+function addCorsHeaders(response) {
+  return response.setHeader("Access-Control-Allow-Origin", "*")
+                 .setHeader("Access-Control-Allow-Methods", "GET, OPTIONS")
+                 .setHeader("Access-Control-Allow-Headers", "Content-Type");
 }
 
 
