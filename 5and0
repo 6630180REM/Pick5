@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+  <style>
+    /* body {
+      font-family: Arial, sans-serif;
+      background: black;
+      color: white;
+      padding: 0px;
+      background-attachment: fixed;
+      background-repeat: round;
+      background-size: cover;
+      margin: 0; // 1
+      line-height: revert;
+      text-align: center;
+      margin-bottom: 50px;
+
+    } */
+    .container {
+      text-align: center;
+      text-black: 50;
+      table-cell-padding: 0px;
+      max-width: fit-content;
+      layout: "fitData";
+      padding-right: 1px;
+      padding-left: 1px;
+      margin-right: auto;
+      margin-left: auto;
+      padding-top: 0px;
+    }
+
+    .sticky-top {
+      position: sticky;
+      top: 4px;
+      z-index: 1000;
+      background: #333;
+      /* position: relative; Ensure positioning context for ::after */
+    }
+
+    .sticky-top::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      /* Full width of the header row */
+      height: 100%;
+      /* Full height of the header row */
+      box-shadow: 0 0 0px 5px #478fdf;
+      /* Outer glow effect */
+      pointer-events: none;
+      /* Prevent it from blocking interactions */
+      z-index: -1;
+      /* Keep the shadow behind the header */
+    }
+
+    .headers {
+      font-size: 14pt;
+      white-space: nowrap;
+      max-width: fit-content;
+      height: 45px;
+      font-weight: 900;
+      text-align: center;
+      color: #478fdf;
+      background: #333;
+      padding: 0 3px;
+      box-shadow: inset 0px 0px 2px #444, inset -1px -1px 2px #222;
+    }
+
+    .dropdown {
+      text-align: end;
+      padding-right: 5px;
+      margin-top: 18px;
+      position: relative;
+    }
+
+    .table {
+      max-width: fit-content;
+      border-collapse: collapse;
+      color: black;
+      margin-bottom: 60px;
+      border-spacing: 0;
+      min-width: max-content;
+      margin-right: auto;
+      margin-left: auto;
+      margin-top: 15px;
+      width: 100%;
+      background: white;
+    }
+
+    .table td {
+      /* padding: 2px; */
+      vertical-align: middle;
+      border-bottom: 2px solid black;
+      height: 32px;
+    }
+
+    .sortable {
+      text-align: center;
+      /* padding: 5px 1px; */
+      font-size: 14pt;
+      color: white;
+      background-color: #0067d5;
+      white-space: nowrap;
+      max-width: fit-content;
+      /* font-family: 'Trebuchet MS', sans-serif; */
+      height: 45px;
+      /* vertical-align: middle; */
+      font-weight: 900;
+      padding: 2px;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .team-name {
+      display: flex;
+      align-items: center;
+      text-align: left;
+      layout: "fitData";
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      vertical-align: middle;
+      table-layout: fixed;
+      height: 50px;
+      min-width: 200px;
+      text-align: left;
+      font-weight: bold;
+      padding-left: 7px;
+      font-size: 17px;
+    }
+
+    .team-logo {
+      width: 45px;
+      height: 45px;
+      mx-auto: d-block;
+      align-items: baseline;
+      object-fit: contain;
+      background-size: cover;
+      white-space: nowrap;
+      padding-top: 0px;
+      padding-bottom: 0px;
+      padding-left: 0px;
+      padding-right: 8px;
+    }
+
+    .title3 {
+      font-size: 25pt;
+      font-weight: bolder;
+      vertical-align: bottom;
+      color: white;
+      -webkit-text-stroke: 1px #0067d5;
+      margin-top: 13px;
+      margin-bottom: 0px;
+      font-weight: 900;
+      letter-spacing: 3px;
+      height: 40px;
+      margin-bottom: 15px;
+    }
+
+    .button {
+      padding: 4px 11px;
+      border-radius: 5px;
+      cursor: pointer;
+      background-color: white;
+      color: #333;
+      width: 100px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      height: 35px;
+      border: 2px solid #ddd;
+      padding: 0px;
+      margin-bottom: 10px;
+    }
+
+    .button.active {
+      background-color: #0067d5;
+      color: white;
+      font-weight: bold;
+      /* font-size: 20px; */
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 110px;
+      height: 40px;
+    }
+
+    .button:hover {
+      background-color: #0067d5;
+      color: white;
+    }
+
+    .button-group {
+      display: flex;
+      align-content: center;
+      justify-content: center;
+      align-items: center;
+      column-gap: 10px;
+    }
+
+    .team-numbers {
+      font-size: 19px;
+      border-left: 1px solid black;
+      padding:0 5px;
+    }
+
+    @media (max-width: 768px) {
+      body {
+        background-size: 100%;
+      }
+
+      .sortable {
+        padding: 2px;
+        font-size: 11pt;
+      }
+
+      .team-name {
+        /* width: auto; */
+        padding:0 3px;
+
+      }
+
+      .headers {
+        text-align: center;
+        font-size: 11pt;
+        font-weight: 900;
+        height: 40px;
+        position: sticky;
+        z-index: 1200;
+        padding: 0 3px;
+        line-height: 1;
+      }
+
+
+      .table {
+        width: 100%;
+        border: 0px solid !important;
+        outline: #32639C !important;
+        margin-bottom: 85px;
+        z-index: 1500;
+        position: relative;
+        margin-top: 25px;
+      }
+
+
+      .title3 {
+        height: 25px;
+        /* margin-top: 61px; */
+        font-size: 22pt;
+      }
+
+      #welcomeMessage figcaption {
+        width: auto;
+        z-index: 1200;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 0px;
+        position: relative;
+        white-space: nowrap;
+      }
+
+      .sticky-top::after {
+        height: 40px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h3 class="title3">5-0 Records</h3>
+
+    <table id="fiveAnd0Table" class="table">
+      <thead>
+        <tr class="sticky-top">
+          <th class="headers">Name</th>
+          <th class="headers">Count</th>
+          <th class="headers">Week(s)</th>
+        </tr>
+        <tr style="height: 7px; border: none; background: #333;">
+          <th colspan="9"></th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <script>
+    function loadFiveAnd0(data) {
+      const tableBody = document.querySelector("#fiveAnd0Table tbody");
+      tableBody.innerHTML = "";
+
+      data.forEach(row => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td class="team-name">${row.name}</td>
+          <td class="team-numbers" style="font-size: 14px; font-weight: 700;">${row.count}</td>
+          <td class="team-numbers"  style="text-align: left; font-weight: 700;">${row.week}</td>
+        `;
+        tableBody.appendChild(tr);
+      });
+    }
+
+    // Fetch data
+    google.script.run.withSuccessHandler(loadFiveAnd0).getFiveAnd0();
+  </script>
+</body>
+
+</html>
