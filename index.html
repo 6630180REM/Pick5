@@ -841,55 +841,53 @@ async function run() {
 </script>
 	
 <script>
-  function loadPage(page) {
-  console.log("Loading page:", page);
+function loadPage(page) {
+    console.log("Loading page:", page);
 
-document.querySelectorAll(".nav b a, .mobile-navbar a").forEach(link => {
-    link.classList.remove("active");
-});
+    // Remove 'active' class from all navbar links
+    document.querySelectorAll(".nav a, .mobile-navbar a").forEach(link => {
+        link.classList.remove("active");
+    });
 
-// Add 'active' class to the selected link in both desktop and mobile navbar
-let selectedLink = document.querySelector(`.nav b a[onclick*="loadPage('${page}'"]`);
-if (selectedLink) {
-    selectedLink.classList.add("active");
+    // Add 'active' class to the selected link
+    let selectedLink = document.querySelector(`.nav a[onclick*="loadPage('${page}'"]`);
+    if (selectedLink) {
+        selectedLink.classList.add("active");
+    }
 
-    // Find the corresponding link in .mobile-navbar and add 'active' to it
     let mobileLink = document.querySelector(`.mobile-navbar a[onclick*="loadPage('${page}'"]`);
     if (mobileLink) {
         mobileLink.classList.add("active");
     }
-}
 
+    // Fetch page content from Apps Script
+    fetch(`https://script.google.com/macros/s/12GmuAbKtct2hAjZisPNkBUbd4FhDvGxtp5rPA6PXXaSsXVFjoNbVVl90/exec?action=getPageContent&page=${page}`)
+        .then(response => response.text())
+        .then(html => {
+            console.log("✅ HTML received:", html);
+            document.getElementById("content").innerHTML = html;
+            history.replaceState(null, "", "?page=" + page);
 
-  google.script.run
-    .withSuccessHandler(function (html) {
-      console.log("HTML received:", html);
-      document.getElementById("content").innerHTML = html;
-      history.replaceState(null, "", "?page=" + page);
+            // Load scripts from fetched content
+            setTimeout(() => {
+                let scripts = document.getElementById("content").getElementsByTagName("script");
+                for (let i = 0; i < scripts.length; i++) {
+                    let newScript = document.createElement("script");
+                    newScript.text = scripts[i].text;
+                    document.body.appendChild(newScript);
+                }
 
-      setTimeout(() => {
-        let scripts = document.getElementById("content").getElementsByTagName("script");
-        for (let i = 0; i < scripts.length; i++) {
-          let newScript = document.createElement("script");
-          newScript.text = scripts[i].text;
-          document.body.appendChild(newScript);
-        }
-
-        // Run correct page function
-        if (page === "Picks" && typeof onPicksLoad === "function") {
-          onPicksLoad();
-        } else if (page === "Standings" && typeof onStandingsLoad === "function") {
-          onStandingsLoad();
-        } else if (page === "pickFreq" && typeof onPickFreqLoad === "function") {
-          onPickFreqLoad();
-        }
-// updateTitleFromPage("Default Title");
-      }, 100);
-    })
-    .withFailureHandler(function (error) {
-      console.error("Error fetching page:", error);
-    })
-    .getPageContent(page);
+                // Run correct page function
+                if (page === "Picks" && typeof onPicksLoad === "function") {
+                    onPicksLoad();
+                } else if (page === "Standings" && typeof onStandingsLoad === "function") {
+                    onStandingsLoad();
+                } else if (page === "pickFreq" && typeof onPickFreqLoad === "function") {
+                    onPickFreqLoad();
+                }
+            }, 100);
+        })
+        .catch(error => console.error("❌ Error fetching page:", error));
 }
 
 // function updateTitleFromPage(defaultTitle) {
