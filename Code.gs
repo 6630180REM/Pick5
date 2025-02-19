@@ -12,6 +12,16 @@ function getPageContent(page) {
   return HtmlService.createHtmlOutputFromFile(page).getContent();
 }
 
+function myFunction(e) {
+  Utilities.sleep(1000);
+  return e;
+}
+
+function openDialog() {
+  var html = HtmlService.createHtmlOutputFromFile("index");
+  SpreadsheetApp.getUi().showModalDialog(html, "sample");
+}
+
 // function getCurrentWeek() {
 //   var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('CurrentWeekPicks');
 //   var dataRange = sheet.getRange('A2');
