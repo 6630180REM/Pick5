@@ -10,8 +10,12 @@
         body {
             margin: 0;
             padding: 0;
-            overflow-y: scroll; /* Allow scrolling */
-            height: 200vh; /* Enables scrolling */
+            overflow: hidden;
+            height: 100vh; /* Ensure full height */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #000; /* Optional: Helps with visibility */
         }
         iframe {
             width: 100%;
@@ -31,17 +35,22 @@
             var iframe = document.querySelector("iframe");
             iframe.style.height = window.innerHeight + "px";
         }
-        window.onload = function() {
-            setTimeout(function() { 
-                window.scrollTo(0, 1); // Hide address bar (parent page)
-            }, 100);
+        function enterFullscreen() {
+            let elem = document.documentElement;
 
-            // Scroll inside iframe
-            var iframe = document.querySelector("iframe");
-            iframe.onload = function() {
-                iframe.contentWindow.scrollTo(0, 1);
-            };
-        };
+            if (elem.requestFullscreen) {
+                elem.requestFullscreen();
+            } else if (elem.mozRequestFullScreen) {
+                elem.mozRequestFullScreen();
+            } else if (elem.webkitRequestFullscreen) {
+                elem.webkitRequestFullscreen();
+            } else if (elem.msRequestFullscreen) {
+                elem.msRequestFullscreen();
+            }
+        }
+
+        // Activate fullscreen on user tap
+        document.addEventListener("click", enterFullscreen);
     </script>
 </body>
 </html>
