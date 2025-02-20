@@ -2,8 +2,10 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Joe's Pick 5</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>Embed Web App</title>
+    <link rel="manifest" href="manifest.json"> <!-- For PWA (Add to Home Screen) -->
+    
     <style>
         body {
             margin: 0;
@@ -23,13 +25,33 @@
     </iframe>
 
     <script>
+        // Resize iframe to fit the viewport dynamically
         function resizeIframe() {
             var iframe = document.querySelector("iframe");
             iframe.style.height = window.innerHeight + "px";
         }
-
         window.addEventListener("resize", resizeIframe);
         window.addEventListener("load", resizeIframe);
+
+        // Auto-hide browser UI by scrolling on load
+        window.onload = function() {
+            setTimeout(function() { window.scrollTo(0, 1); }, 100);
+        };
+
+        // Request fullscreen mode when user interacts
+        function enterFullscreen() {
+            let elem = document.documentElement;
+            if (elem.requestFullscreen) {
+                elem.requestFullscreen();
+            } else if (elem.mozRequestFullScreen) { // Firefox
+                elem.mozRequestFullScreen();
+            } else if (elem.webkitRequestFullscreen) { // Chrome, Safari & Opera
+                elem.webkitRequestFullscreen();
+            } else if (elem.msRequestFullscreen) { // IE/Edge
+                elem.msRequestFullscreen();
+            }
+        }
+        document.addEventListener("click", enterFullscreen); // Trigger fullscreen on first click
     </script>
 </body>
 </html>
