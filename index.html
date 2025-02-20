@@ -31,10 +31,14 @@
     </iframe>
 
     <script>
-                function resizeIframe() {
-            var iframe = document.querySelector("iframe");
-            iframe.style.height = window.innerHeight + "px";
-        }
+function resizeIframe() {
+    var iframe = document.querySelector("iframe");
+    iframe.style.height = window.innerHeight + "px";
+}
+
+window.addEventListener("resize", resizeIframe);
+window.addEventListener("load", resizeIframe);
+        
         function enterFullscreen() {
             let elem = document.documentElement;
 
