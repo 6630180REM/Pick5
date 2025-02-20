@@ -4,19 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <title>Embed Web App</title>
-    <link rel="manifest" href="manifest.json">
+    <link rel="manifest" href="manifest.json"> <!-- PWA Support -->
 
     <style>
         body {
             margin: 0;
             padding: 0;
-            overflow: hidden;
-            height: 200vh; /* Enables scrolling */
+            overflow-y: scroll; /* Allow scrolling */
+            height: 150vh; /* Extra height for scrolling */
         }
         iframe {
             width: 100%;
             height: 100vh;
             border: none;
+            display: block;
         }
     </style>
 </head>
@@ -26,19 +27,17 @@
     </iframe>
 
     <script>
-        // Resize iframe dynamically
-        function resizeIframe() {
-            var iframe = document.querySelector("iframe");
-            iframe.style.height = window.innerHeight + "px";
-        }
-        window.addEventListener("resize", resizeIframe);
-        window.addEventListener("load", resizeIframe);
-
-        // Auto-scroll to hide browser UI
         window.onload = function() {
-            setTimeout(function() { window.scrollTo(0, 1); }, 100);
-        };
+            setTimeout(function() { 
+                window.scrollTo(0, 1); // Hide address bar (parent page)
+            }, 100);
 
+            // Scroll inside iframe
+            var iframe = document.querySelector("iframe");
+            iframe.onload = function() {
+                iframe.contentWindow.scrollTo(0, 1);
+            };
+        };
     </script>
 </body>
 </html>
