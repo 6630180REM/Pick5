@@ -18,8 +18,14 @@
     </style>
 </head>
 <body>
-    <iframe frameborder="0" scrolling="yes" allowfullscreen="yes" src="https://script.google.com/macros/s/AKfycbwuZM7KGKnS7jnpM2YN9W_AgTMqA0qJGw99K3MIUNxzI1tnh3YK76AhgeCfh2Wc7pTd/exec"></iframe>
+<!--     <iframe frameborder="0" scrolling="yes" allowfullscreen="yes" src="https://script.google.com/macros/s/AKfycbwuZM7KGKnS7jnpM2YN9W_AgTMqA0qJGw99K3MIUNxzI1tnh3YK76AhgeCfh2Wc7pTd/exec"></iframe> -->
+<div class="scroll-container scroll-ios" style="height:500px;width: 100%; position:relative">
+    <div class="mainContainer-scroll" style="position:absolute;height:100%;width:100%;min-width:50%;min-height:50%;max-height:500%;top:0;left:0;-webkit-overflow-scrolling: touch !important;overflow-y:scroll !important">
+            <iframe id="iframe_test" src="https://script.google.com/macros/s/AKfycbwuZM7KGKnS7jnpM2YN9W_AgTMqA0qJGw99K3MIUNxzI1tnh3YK76AhgeCfh2Wc7pTd/exec" style="height: 100%; width:100%;min-width:100%;" name="myiFrameFix" allowfullscreen="yes" scrolling="yes">   </iframe>
+    </div>
+</div>
 
+    
     <script>
         function resizeIframe() {
             var iframe = document.querySelector("iframe");
