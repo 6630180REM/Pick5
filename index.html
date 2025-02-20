@@ -1,29 +1,26 @@
 <!DOCTYPE html>
-<html lang="en" class="h-full">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Joe's Pick 5</title>
-    <link rel="manifest" href="manifest.json"> <!-- PWA Support -->
-
+    <title>Embed Web App</title>
     <style>
-/*         body {
+        body {
             margin: 0;
             padding: 0;
             overflow: hidden;
-        } */
-/*         iframe {
+        }
+        iframe {
             width: 100%;
-            height: 100dvh;
+            height: 100vh;
             border: none;
-        } */
+        }
     </style>
 </head>
-<body> 
-    <div id="scroller" style="height: 400px; width: 100%; overflow: auto;">
-    <iframe height="100%" id="iframe" scrolling="no" width="100%" id="iframe" src="https://script.google.com/macros/s/AKfycbwuZM7KGKnS7jnpM2YN9W_AgTMqA0qJGw99K3MIUNxzI1tnh3YK76AhgeCfh2Wc7pTd/exec"
-    />
-</div>
+<body>
+    <iframe src="https://script.google.com/macros/s/AKfycbwuZM7KGKnS7jnpM2YN9W_AgTMqA0qJGw99K3MIUNxzI1tnh3YK76AhgeCfh2Wc7pTd/exec"
+        allowfullscreen>
+    </iframe>
 
     <script>
         function resizeIframe() {
@@ -33,31 +30,6 @@
 
         window.addEventListener("resize", resizeIframe);
         window.addEventListener("load", resizeIframe);
-
-        setTimeout(function () {
-var startY = 0;
-var startX = 0;
-var b = document.body;
-b.addEventListener('touchstart', function (event) {
-    parent.window.scrollTo(0, 1);
-    startY = event.targetTouches[0].pageY;
-    startX = event.targetTouches[0].pageX;
-});
-b.addEventListener('touchmove', function (event) {
-    event.preventDefault();
-    var posy = event.targetTouches[0].pageY;
-    var h = parent.document.getElementById("scroller");
-    var sty = h.scrollTop;
-
-    var posx = event.targetTouches[0].pageX;
-    var stx = h.scrollLeft;
-    h.scrollTop = sty - (posy - startY);
-    h.scrollLeft = stx - (posx - startX);
-    startY = posy;
-    startX = posx;
-});
-}, 1000);
-        
     </script>
 </body>
 </html>
