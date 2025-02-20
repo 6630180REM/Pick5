@@ -27,6 +27,10 @@
     </iframe>
 
     <script>
+                function resizeIframe() {
+            var iframe = document.querySelector("iframe");
+            iframe.style.height = window.innerHeight + "px";
+        }
         window.onload = function() {
             setTimeout(function() { 
                 window.scrollTo(0, 1); // Hide address bar (parent page)
