@@ -4,13 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <title>Embed Web App</title>
-    <link rel="manifest" href="manifest.json"> <!-- For PWA (Add to Home Screen) -->
-    
+    <link rel="manifest" href="manifest.json">
+
     <style>
         body {
             margin: 0;
             padding: 0;
             overflow: hidden;
+            height: 200vh; /* Enables scrolling */
         }
         iframe {
             width: 100%;
@@ -25,7 +26,7 @@
     </iframe>
 
     <script>
-        // Resize iframe to fit the viewport dynamically
+        // Resize iframe dynamically
         function resizeIframe() {
             var iframe = document.querySelector("iframe");
             iframe.style.height = window.innerHeight + "px";
@@ -33,25 +34,25 @@
         window.addEventListener("resize", resizeIframe);
         window.addEventListener("load", resizeIframe);
 
-        // Auto-hide browser UI by scrolling on load
+        // Auto-scroll to hide browser UI
         window.onload = function() {
             setTimeout(function() { window.scrollTo(0, 1); }, 100);
         };
 
-        // Request fullscreen mode when user interacts
+        // Fullscreen mode when user taps
         function enterFullscreen() {
             let elem = document.documentElement;
             if (elem.requestFullscreen) {
                 elem.requestFullscreen();
-            } else if (elem.mozRequestFullScreen) { // Firefox
+            } else if (elem.mozRequestFullScreen) {
                 elem.mozRequestFullScreen();
-            } else if (elem.webkitRequestFullscreen) { // Chrome, Safari & Opera
+            } else if (elem.webkitRequestFullscreen) {
                 elem.webkitRequestFullscreen();
-            } else if (elem.msRequestFullscreen) { // IE/Edge
+            } else if (elem.msRequestFullscreen) {
                 elem.msRequestFullscreen();
             }
         }
-        document.addEventListener("click", enterFullscreen); // Trigger fullscreen on first click
+        document.addEventListener("click", enterFullscreen);
     </script>
 </body>
 </html>
