@@ -28,21 +28,24 @@
 
     
     <script>
-        function resizeIframe() {
-            var iframe = document.querySelector("iframe");
-            iframe.style.height = window.innerHeight + "px";
-        }
+    function resizeIframe() {
+        var iframe = document.querySelector("iframe");
+        iframe.style.height = window.innerHeight + "px";
+        iframe.style.width = window.innerWidth + "px"; // Adjust width
+    }
 
-        window.addEventListener("resize", resizeIframe);
-        window.addEventListener("load", resizeIframe);
+    window.addEventListener("resize", resizeIframe);
+    window.addEventListener("load", resizeIframe);
 
-        // Covering all browsers that support this
-var docEl = document.documentElement;
-var requestFullScreen = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullScreen || docEl.msRequestFullscreen;
-var cancelFullScreen = doc.exitFullscreen || doc.mozCancelFullScreen || doc.webkitExitFullscreen || doc.msExitFullscreen;
+    // Covering all browsers that support this
+    var docEl = document.documentElement;
+    var requestFullScreen = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullScreen || docEl.msRequestFullscreen;
+    var cancelFullScreen = document.exitFullscreen || document.mozCancelFullScreen || document.webkitExitFullscreen || document.msExitFullscreen;
 
-// Execute the variable on initalization
-requestFullScreen.call(docEl);
+    // Execute the variable on initialization
+    if (requestFullScreen) {
+        requestFullScreen.call(docEl);
+    }
     </script>
 </body>
 </html>
