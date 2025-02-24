@@ -1,60 +1,64 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
-    <title>Joe's Pick 5</title>
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-        }
-        iframe {
-            width: 100%;
-            height: 100vh;
-            border: none;
-            display: block;
-        }
-    </style>
+    <title>Joe's Pick 5</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+          /*-webkit-overflow-scrolling: touch;
+             overflow-y: scroll; */
+        }
+
+        iframe {
+            width: 100%;
+            height: 100vh;
+            border: none;
+            display: block;
+        }
+
+    </style>
 </head>
+
 <body>
-    <iframe frameborder="0" scrolling="yes" allowfullscreen="yes" src="https://script.google.com/macros/s/AKfycbwuZM7KGKnS7jnpM2YN9W_AgTMqA0qJGw99K3MIUNxzI1tnh3YK76AhgeCfh2Wc7pTd/exec"></iframe>
+    <iframe frameborder="0" scrolling="yes" allowfullscreen="yes" src="https://script.google.com/macros/s/AKfycbwuZM7KGKnS7jnpM2YN9W_AgTMqA0qJGw99K3MIUNxzI1tnh3YK76AhgeCfh2Wc7pTd/exec"></iframe>
 
     <script>
-        function resizeIframe() {
-            var iframe = document.querySelector("iframe");
-            iframe.style.height = window.innerHeight + "px";
+
+        function resizeIframe() {
+
+            var iframe = document.querySelector("iframe");
+            iframe.style.height = window.innerHeight + "px";
+                    }
+        window.addEventListener("resize", resizeIframe);
+        window.addEventListener("load", resizeIframe);
+        // Covering all browsers that support this
+var docEl = document.documentElement;
+var requestFullScreen = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullScreen || docEl.msRequestFullscreen;
+var cancelFullScreen = doc.exitFullscreen || doc.mozCancelFullScreen || doc.webkitExitFullscreen || doc.msExitFullscreen;
+
+// Execute the variable on initalization
+
+requestFullScreen.call(docEl);
+
+        window.addEventListener('message', function(event) {
+      if (event.data === 'scrollDown') {
+        // Trigger browser toolbar collapse (if possible)
+        if (document.documentElement.scrollTop === 0) {
+          window.scrollTo(0, 1);
         }
-
-        window.addEventListener("resize", resizeIframe);
-        window.addEventListener("load", resizeIframe);
-
-        // Covering all browsers that support this
-        var docEl = document.documentElement;
-        var requestFullScreen = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullScreen || docEl.msRequestFullscreen;
-        var cancelFullScreen = doc.exitFullscreen || doc.mozCancelFullScreen || doc.webkitExitFullscreen || doc.msExitFullscreen;
-
-        // Execute the variable on initialization
-        requestFullScreen.call(docEl);
-
-        // Scroll manipulation to collapse mobile browser toolbar
-        let lastScrollY = 0;
-        const iframe = document.querySelector("iframe");
-
-        iframe.addEventListener("load", () => {
-            iframe.contentWindow.addEventListener("scroll", () => {
-                const currentScrollY = iframe.contentWindow.scrollY;
-
-                if (Math.abs(currentScrollY - lastScrollY) > 10) { // Threshold to prevent excessive triggering
-                    window.scrollTo(0, window.scrollY + (currentScrollY - lastScrollY));
-                }
-
-                lastScrollY = currentScrollY;
-            });
-        });
-    </script>
+      } else if (event.data === 'scrollUp') {
+        // Trigger browser toolbar show (if possible)
+        if (document.documentElement.scrollTop === 1) {
+          window.scrollTo(0, 0);
+        }
+      }
+    });
+    </script>
 </body>
 </html>
