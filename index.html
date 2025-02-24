@@ -4,15 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
     <title>Joe's Pick 5</title>
     <style>
         body {
             margin: 0;
             padding: 0;
             overflow: hidden;
-/*             -webkit-overflow-scrolling: touch;
-  overflow-y: scroll; */
         }
         iframe {
             width: 100%;
@@ -25,24 +23,38 @@
 <body>
     <iframe frameborder="0" scrolling="yes" allowfullscreen="yes" src="https://script.google.com/macros/s/AKfycbwuZM7KGKnS7jnpM2YN9W_AgTMqA0qJGw99K3MIUNxzI1tnh3YK76AhgeCfh2Wc7pTd/exec"></iframe>
 
-
-    
     <script>
         function resizeIframe() {
             var iframe = document.querySelector("iframe");
             iframe.style.height = window.innerHeight + "px";
-                    }
+        }
 
         window.addEventListener("resize", resizeIframe);
         window.addEventListener("load", resizeIframe);
 
         // Covering all browsers that support this
-var docEl = document.documentElement;
-var requestFullScreen = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullScreen || docEl.msRequestFullscreen;
-var cancelFullScreen = doc.exitFullscreen || doc.mozCancelFullScreen || doc.webkitExitFullscreen || doc.msExitFullscreen;
+        var docEl = document.documentElement;
+        var requestFullScreen = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullScreen || docEl.msRequestFullscreen;
+        var cancelFullScreen = doc.exitFullscreen || doc.mozCancelFullScreen || doc.webkitExitFullscreen || doc.msExitFullscreen;
 
-// Execute the variable on initalization
-requestFullScreen.call(docEl);
+        // Execute the variable on initialization
+        requestFullScreen.call(docEl);
+
+        // Scroll manipulation to collapse mobile browser toolbar
+        let lastScrollY = 0;
+        const iframe = document.querySelector("iframe");
+
+        iframe.addEventListener("load", () => {
+            iframe.contentWindow.addEventListener("scroll", () => {
+                const currentScrollY = iframe.contentWindow.scrollY;
+
+                if (Math.abs(currentScrollY - lastScrollY) > 10) { // Threshold to prevent excessive triggering
+                    window.scrollTo(0, window.scrollY + (currentScrollY - lastScrollY));
+                }
+
+                lastScrollY = currentScrollY;
+            });
+        });
     </script>
 </body>
 </html>
