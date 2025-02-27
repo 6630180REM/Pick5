@@ -9,7 +9,7 @@
     <meta name="theme-color" content="#333">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
-    <!-- Dynamically updated icons -->
+    <!-- Force update by appending a version query -->
     <link rel="icon" id="favicon" type="image/png">
     <link rel="apple-touch-icon" id="apple-touch-icon">
 
@@ -17,7 +17,7 @@
     <link rel="manifest" href="/manifest.json?v=2">
 
     <title>Joe's Pick 5</title>
-    
+
     <style>
         body {
             margin: 0;
@@ -60,9 +60,8 @@
 
         // Dynamically set the icon with a version query to force update
         document.addEventListener("DOMContentLoaded", function() {
-            const iconBaseUrl = "https://forum.thefanpub.com/uploads/db6257/original/2X/0/0f40017efb8e6f7fdaf666fbce8469e7a2bde2bd.png";
             const version = new Date().getTime(); // Change on every reload
-            const newIconUrl = iconBaseUrl + "?v=" + version;
+            const newIconUrl = `/HomeScreen.png?v=${version}`;
 
             document.getElementById("favicon").href = newIconUrl;
             document.getElementById("apple-touch-icon").href = newIconUrl;
