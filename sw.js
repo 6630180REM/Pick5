@@ -1,12 +1,12 @@
-const CACHE_NAME = 'app-shell-v2'; // Change version to force cache update
+const CACHE_NAME = 'app-shell-v3'; // Change version to force update
 
 self.addEventListener('install', (event) => {
     event.waitUntil(
         caches.open(CACHE_NAME).then((cache) => {
             return cache.addAll([
                 '/index.html',
-                '/favicon.ico',
-                'https://forum.thefanpub.com/uploads/db6257/original/2X/0/0f40017efb8e6f7fdaf666fbce8469e7a2bde2bd.png?v=' + new Date().getTime()
+                '/manifest.json?v=2',
+                '/icon.png?v=' + new Date().getTime()
             ]);
         })
     );
@@ -24,9 +24,9 @@ self.addEventListener('activate', (event) => {
     );
 });
 
-// Intercept fetch requests and cache-bust apple-touch-icon
+// Intercept fetch requests to ensure latest icons
 self.addEventListener('fetch', (event) => {
-    if (event.request.url.includes('apple-touch-icon') || event.request.url.includes('favicon')) {
+    if (event.request.url.includes('icon.png') || event.request.url.includes('apple-touch-icon')) {
         event.respondWith(
             fetch(event.request.url + '?v=' + new Date().getTime(), { cache: 'reload' })
         );
