@@ -8,14 +8,14 @@
     <meta name="apple-mobile-web-app-title" content="Joe's Pick 5">
     <meta name="theme-color" content="#333">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<!--     <link rel="icon" href="https://forum.thefanpub.com/uploads/db6257/original/2X/0/0f40017efb8e6f7fdaf666fbce8469e7a2bde2bd.png?v=2" type="image/png"> -->
-<!--     <link rel="apple-touch-icon" href="https://forum.thefanpub.com/uploads/db6257/original/2X/0/0f40017efb8e6f7fdaf666fbce8469e7a2bde2bd.png?v=2"> -->
-    <script>
-    const timestamp = new Date().getTime();
-    document.querySelector("link[rel='icon']").href = "https://forum.thefanpub.com/uploads/db6257/original/2X/0/0f40017efb8e6f7fdaf666fbce8469e7a2bde2bd.png?v=" + timestamp;
-    document.querySelector("link[rel='apple-touch-icon']").href = "https://forum.thefanpub.com/uploads/db6257/original/2X/0/0f40017efb8e6f7fdaf666fbce8469e7a2bde2bd.png?v=" + timestamp;
-</script>
     
+    <!-- Updated icons with versioning -->
+    <link rel="icon" href="https://example.com/icons/icon-2024.png" type="image/png">
+    <link rel="apple-touch-icon" href="https://example.com/icons/icon-2024.png">
+    
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="/manifest.json">
+
     <title>Joe's Pick 5</title>
     <style>
         body {
@@ -50,7 +50,7 @@
         var requestFullScreen = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullScreen || docEl.msRequestFullscreen;
         var cancelFullScreen = doc.exitFullscreen || doc.mozCancelFullScreen || doc.webkitExitFullscreen || doc.msExitFullscreen;
 
-        // Execute the variable on initialization
+        // Execute fullscreen on initialization
         requestFullScreen.call(docEl);
 
         // Scroll manipulation to collapse mobile browser toolbar
@@ -68,6 +68,15 @@
                 lastScrollY = currentScrollY;
             });
         });
+
+        // Force update Apple Touch Icon
+        function updateIcons() {
+            const timestamp = new Date().getTime();
+            document.querySelector("link[rel='icon']").href = "https://forum.thefanpub.com/uploads/db6257/original/2X/0/0f40017efb8e6f7fdaf666fbce8469e7a2bde2bd.png?v=" + timestamp;
+            document.querySelector("link[rel='apple-touch-icon']").href = "https://forum.thefanpub.com/uploads/db6257/original/2X/0/0f40017efb8e6f7fdaf666fbce8469e7a2bde2bd.png?v=" + timestamp;
+        }
+
+        updateIcons();
     </script>
 </body>
 </html>
