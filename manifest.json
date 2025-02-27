@@ -7,12 +7,12 @@
     "theme_color": "#333",
     "icons": [
         {
-            "src": "/icon.png?v=2",
+            "src": "https://forum.thefanpub.com/uploads/db6257/original/2X/0/0f40017efb8e6f7fdaf666fbce8469e7a2bde2bd.png?v=2",
             "sizes": "192x192",
             "type": "image/png"
         },
         {
-            "src": "/icon.png?v=2",
+            "src": "https://forum.thefanpub.com/uploads/db6257/original/2X/0/0f40017efb8e6f7fdaf666fbce8469e7a2bde2bd.png?v=2",
             "sizes": "512x512",
             "type": "image/png"
         }
