@@ -6,7 +6,7 @@ self.addEventListener('install', (event) => {
             return cache.addAll([
                 '/index.html',
                 '/manifest.json?v=2',
-                '/HomeScreen.png?v=' + new Date().getTime()
+                '/phone-icon.png?v=' + new Date().getTime()
             ]);
         })
     );
@@ -26,7 +26,7 @@ self.addEventListener('activate', (event) => {
 
 // Intercept fetch requests to ensure latest icons
 self.addEventListener('fetch', (event) => {
-    if (event.request.url.includes('HomeScreen.png') || event.request.url.includes('apple-touch-icon')) {
+    if (event.request.url.includes('phone-icon.png') || event.request.url.includes('apple-touch-icon')) {
         event.respondWith(
             fetch(event.request.url + '?v=' + new Date().getTime(), { cache: 'reload' })
         );
