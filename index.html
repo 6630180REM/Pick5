@@ -8,8 +8,14 @@
     <meta name="apple-mobile-web-app-title" content="Joe's Pick 5">
     <meta name="theme-color" content="#333">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="icon" href="https://forum.thefanpub.com/uploads/db6257/original/2X/0/0f40017efb8e6f7fdaf666fbce8469e7a2bde2bd.png?v=2" type="image/png">
-    <link rel="apple-touch-icon" href="https://forum.thefanpub.com/uploads/db6257/original/2X/0/0f40017efb8e6f7fdaf666fbce8469e7a2bde2bd.png?v=2">
+<!--     <link rel="icon" href="https://forum.thefanpub.com/uploads/db6257/original/2X/0/0f40017efb8e6f7fdaf666fbce8469e7a2bde2bd.png?v=2" type="image/png"> -->
+<!--     <link rel="apple-touch-icon" href="https://forum.thefanpub.com/uploads/db6257/original/2X/0/0f40017efb8e6f7fdaf666fbce8469e7a2bde2bd.png?v=2"> -->
+    <script>
+    const timestamp = new Date().getTime();
+    document.querySelector("link[rel='icon']").href = "https://forum.thefanpub.com/uploads/db6257/original/2X/0/0f40017efb8e6f7fdaf666fbce8469e7a2bde2bd.png?v=" + timestamp;
+    document.querySelector("link[rel='apple-touch-icon']").href = "https://forum.thefanpub.com/uploads/db6257/original/2X/0/0f40017efb8e6f7fdaf666fbce8469e7a2bde2bd.png?v=" + timestamp;
+</script>
+    
     <title>Joe's Pick 5</title>
     <style>
         body {
