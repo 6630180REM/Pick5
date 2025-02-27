@@ -7,12 +7,12 @@
     "theme_color": "#333",
     "icons": [
         {
-            "src": "/phone-icon.png?v=2",
+            "src": "/Pick5Logo.png?v=2",
             "sizes": "192x192",
             "type": "image/png"
         },
         {
-            "src": "/phone-icon.png?v=2",
+            "src": "/Pick5Logo.png?v=2",
             "sizes": "512x512",
             "type": "image/png"
         }
