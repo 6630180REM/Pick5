@@ -8,16 +8,9 @@
     <meta name="apple-mobile-web-app-title" content="Joe's Pick 5">
     <meta name="theme-color" content="#333">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-
-    <!-- Force update by appending a version query -->
-    <link rel="icon" id="favicon" type="image/png">
-    <link rel="apple-touch-icon" id="apple-touch-icon">
-
-    <!-- Web App Manifest -->
-    <link rel="manifest" href="/manifest.json?v=2">
-
+    <link rel="icon" href="https://forum.thefanpub.com/uploads/db6257/original/2X/0/0f40017efb8e6f7fdaf666fbce8469e7a2bde2bd.png" type="image/png">
+    <link rel="apple-touch-icon" href="https://forum.thefanpub.com/uploads/db6257/original/2X/0/0f40017efb8e6f7fdaf666fbce8469e7a2bde2bd.png">
     <title>Joe's Pick 5</title>
-
     <style>
         body {
             margin: 0;
@@ -35,9 +28,7 @@
     </style>
 </head>
 <body>
-    <iframe frameborder="0" scrolling="yes" allowfullscreen="yes" 
-        src="https://script.google.com/macros/s/AKfycbwuZM7KGKnS7jnpM2YN9W_AgTMqA0qJGw99K3MIUNxzI1tnh3YK76AhgeCfh2Wc7pTd/exec">
-    </iframe>
+    <iframe frameborder="0" scrolling="yes" allowfullscreen="yes" src="https://script.google.com/macros/s/AKfycbwuZM7KGKnS7jnpM2YN9W_AgTMqA0qJGw99K3MIUNxzI1tnh3YK76AhgeCfh2Wc7pTd/exec"></iframe>
 
     <script>
         function resizeIframe() {
@@ -48,23 +39,28 @@
         window.addEventListener("resize", resizeIframe);
         window.addEventListener("load", resizeIframe);
 
-        // Register service worker
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/sw.js')
-                .then((reg) => {
-                    console.log('Service Worker Registered!', reg);
-                    reg.update(); // Force update
-                })
-                .catch((error) => console.error('Service Worker Registration Failed:', error));
-        }
+        // Covering all browsers that support this
+        var docEl = document.documentElement;
+        var requestFullScreen = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullScreen || docEl.msRequestFullscreen;
+        var cancelFullScreen = doc.exitFullscreen || doc.mozCancelFullScreen || doc.webkitExitFullscreen || doc.msExitFullscreen;
 
-        // Dynamically set the icon with a version query to force update
-        document.addEventListener("DOMContentLoaded", function() {
-            const version = new Date().getTime(); // Change on every reload
-            const newIconUrl = `/HomeScreen.png?v=${version}`;
+        // Execute the variable on initialization
+        requestFullScreen.call(docEl);
 
-            document.getElementById("favicon").href = newIconUrl;
-            document.getElementById("apple-touch-icon").href = newIconUrl;
+        // Scroll manipulation to collapse mobile browser toolbar
+        let lastScrollY = 0;
+        const iframe = document.querySelector("iframe");
+
+        iframe.addEventListener("load", () => {
+            iframe.contentWindow.addEventListener("scroll", () => {
+                const currentScrollY = iframe.contentWindow.scrollY;
+
+                if (Math.abs(currentScrollY - lastScrollY) > 10) { // Threshold to prevent excessive triggering
+                    window.scrollTo(0, window.scrollY + (currentScrollY - lastScrollY));
+                }
+
+                lastScrollY = currentScrollY;
+            });
         });
     </script>
 </body>
