@@ -1,0 +1,20 @@
+{
+    "name": "Joe's Pick 5",
+    "short_name": "Pick 5",
+    "start_url": "/index.html",
+    "display": "standalone",
+    "background_color": "#333",
+    "theme_color": "#333",
+    "icons": [
+        {
+            "src": "/icon.png?v=2",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "/icon.png?v=2",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+}
