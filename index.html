@@ -9,9 +9,9 @@
     <meta name="theme-color" content="#333">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     
-    <!-- Updated icons with versioning -->
-    <link rel="icon" href="https://forum.thefanpub.com/uploads/db6257/original/2X/0/0f40017efb8e6f7fdaf666fbce8469e7a2bde2bd.png" type="image/png">
-    <link rel="apple-touch-icon" href="https://forum.thefanpub.com/uploads/db6257/original/2X/0/0f40017efb8e6f7fdaf666fbce8469e7a2bde2bd.png">
+    <!-- Updated icons with new filename -->
+    <link rel="icon" href="https://forum.thefanpub.com/uploads/db6257/original/2X/0/icon-2024.png" type="image/png">
+    <link rel="apple-touch-icon" href="https://forum.thefanpub.com/uploads/db6257/original/2X/0/icon-2024.png">
     
     <!-- Web App Manifest -->
     <link rel="manifest" href="/manifest.json">
@@ -68,15 +68,6 @@
                 lastScrollY = currentScrollY;
             });
         });
-
-        // Force update Apple Touch Icon
-        function updateIcons() {
-            const timestamp = new Date().getTime();
-            document.querySelector("link[rel='icon']").href = "https://forum.thefanpub.com/uploads/db6257/original/2X/0/0f40017efb8e6f7fdaf666fbce8469e7a2bde2bd.png?v=" + timestamp;
-            document.querySelector("link[rel='apple-touch-icon']").href = "https://forum.thefanpub.com/uploads/db6257/original/2X/0/0f40017efb8e6f7fdaf666fbce8469e7a2bde2bd.png?v=" + timestamp;
-        }
-
-        updateIcons();
     </script>
 </body>
 </html>
