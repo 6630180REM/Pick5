@@ -23,7 +23,7 @@
     <!-- Android icons -->
     <link rel="shortcut icon" href="Pick5Logo.png">
     
-    <!-- Web app manifest -->
+    <!-- Web app manifest - ensure this path is correct -->
     <link rel="manifest" href="manifest.json">
     
     <title>Joe's Pick 5</title>
@@ -40,6 +40,8 @@
             bottom: 0;
             width: 100%;
             height: 100%;
+            color: white;
+            font-family: Arial, sans-serif;
         }
         iframe {
             width: 100%;
@@ -79,16 +81,58 @@
             cursor: pointer;
             border-radius: 4px;
         }
+        #loading {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #333;
+            z-index: 100;
+        }
+        .spinner {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #4CAF50;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        #standalone-indicator {
+            display: none;
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background-color: #4CAF50;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            z-index: 1000;
+        }
     </style>
 </head>
 <body>
+    <div id="loading">
+        <div class="spinner"></div>
+    </div>
+    
+    <div id="standalone-indicator">Standalone App</div>
+    
     <div id="install-banner">
         <p>Add to Home Screen for the best experience</p>
         <button id="install-button">Install</button>
         <button id="dismiss-button">Dismiss</button>
     </div>
     
-    <iframe frameborder="0" scrolling="yes" allowfullscreen="yes" src="https://script.google.com/macros/s/AKfycbwuZM7KGKnS7jnpM2YN9W_AgTMqA0qJGw99K3MIUNxzI1tnh3YK76AhgeCfh2Wc7pTd/exec"></iframe>
+    <iframe id="content-frame" frameborder="0" scrolling="yes" allowfullscreen="yes" src="about:blank"></iframe>
     
     <script>
         // Service Worker Registration
@@ -109,14 +153,43 @@
         const installBanner = document.getElementById('install-banner');
         const installButton = document.getElementById('install-button');
         const dismissButton = document.getElementById('dismiss-button');
+        const standaloneIndicator = document.getElementById('standalone-indicator');
+        const loadingDiv = document.getElementById('loading');
+        const contentFrame = document.getElementById('content-frame');
 
-        window.addEventListener('beforeinstallprompt', (e) => {
-            // Prevent Chrome 67+ from automatically showing the prompt
-            e.preventDefault();
-            // Stash the event so it can be triggered later
-            deferredPrompt = e;
-            // Show the install banner
-            installBanner.style.display = 'block';
+        // Check if running in standalone mode
+        function checkStandaloneMode() {
+            if (window.matchMedia('(display-mode: standalone)').matches || 
+                window.navigator.standalone === true) {
+                console.log('Running in standalone mode');
+                standaloneIndicator.style.display = 'block';
+                // Already running as PWA, no need to show install banner
+                installBanner.style.display = 'none';
+                return true;
+            }
+            return false;
+        }
+        
+        // Initial check
+        if (!checkStandaloneMode()) {
+            // Only show install banner if not in standalone mode
+            window.addEventListener('beforeinstallprompt', (e) => {
+                // Prevent Chrome 67+ from automatically showing the prompt
+                e.preventDefault();
+                // Stash the event so it can be triggered later
+                deferredPrompt = e;
+                // Show the install banner
+                installBanner.style.display = 'block';
+            });
+        }
+        
+        // Listen for display mode changes
+        window.matchMedia('(display-mode: standalone)').addEventListener('change', (e) => {
+            if (e.matches) {
+                console.log('Display mode changed to standalone');
+                standaloneIndicator.style.display = 'block';
+                installBanner.style.display = 'none';
+            }
         });
 
         installButton.addEventListener('click', () => {
@@ -139,38 +212,47 @@
             installBanner.style.display = 'none';
         });
 
+        // Load iframe content with proper handling
+        window.addEventListener('load', () => {
+            // Set iframe src after a short delay to ensure proper standalone mode detection
+            setTimeout(() => {
+                contentFrame.src = "https://script.google.com/macros/s/AKfycbwuZM7KGKnS7jnpM2YN9W_AgTMqA0qJGw99K3MIUNxzI1tnh3YK76AhgeCfh2Wc7pTd/exec";
+                
+                // Hide loading indicator when iframe is fully loaded
+                contentFrame.addEventListener('load', () => {
+                    loadingDiv.style.display = 'none';
+                    
+                    // Try to fix scrolling issues
+                    try {
+                        contentFrame.contentWindow.addEventListener("scroll", handleIframeScroll);
+                    } catch (e) {
+                        console.log("Could not add scroll listener to iframe content:", e);
+                    }
+                });
+            }, 500);
+        });
+        
         // Handle iframe sizing
         function resizeIframe() {
-            var iframe = document.querySelector("iframe");
-            iframe.style.height = window.innerHeight + "px";
-            iframe.style.width = window.innerWidth + "px";
+            contentFrame.style.height = window.innerHeight + "px";
+            contentFrame.style.width = window.innerWidth + "px";
         }
+        
         window.addEventListener("resize", resizeIframe);
         window.addEventListener("load", resizeIframe);
         
-        // Scroll manipulation to collapse mobile browser toolbar
+        // Improved scroll handling
         let lastScrollY = 0;
-        const iframe = document.querySelector("iframe");
-        iframe.addEventListener("load", () => {
+        function handleIframeScroll() {
             try {
-                iframe.contentWindow.addEventListener("scroll", () => {
-                    const currentScrollY = iframe.contentWindow.scrollY;
-                    if (Math.abs(currentScrollY - lastScrollY) > 10) {
-                        window.scrollTo(0, window.scrollY + (currentScrollY - lastScrollY));
-                    }
-                    lastScrollY = currentScrollY;
-                });
+                const currentScrollY = contentFrame.contentWindow.scrollY;
+                if (Math.abs(currentScrollY - lastScrollY) > 10) {
+                    window.scrollTo(0, 0); // Keep main window at top
+                }
+                lastScrollY = currentScrollY;
             } catch (e) {
-                console.log("Could not add scroll listener to iframe content:", e);
+                console.log("Error in scroll handler:", e);
             }
-        });
-
-        // Check if running in standalone mode
-        if (window.matchMedia('(display-mode: standalone)').matches || 
-            window.navigator.standalone === true) {
-            console.log('Display mode is standalone');
-            // Already running as PWA, no need to show install banner
-            installBanner.style.display = 'none';
         }
     </script>
 </body>
