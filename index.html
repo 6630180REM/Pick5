@@ -1,259 +1,113 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-title" content="Joe's Pick 5">
-    <meta name="application-name" content="Joe's Pick 5">
-    <meta name="theme-color" content="#333">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    
-    <!-- Standard favicon -->
-    <link rel="icon" type="image/png" sizes="32x32" href="Pick5Logo.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="Pick5Logo.png">
-    
-    <!-- iOS icons -->
-    <link rel="apple-touch-icon" href="Pick5Logo.png">
-    <link rel="apple-touch-icon" sizes="152x152" href="Pick5Logo.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="Pick5Logo.png">
-    <link rel="apple-touch-icon" sizes="167x167" href="Pick5Logo.png">
-    
-    <!-- Android icons -->
-    <link rel="shortcut icon" href="Pick5Logo.png">
-    
-    <!-- Web app manifest - ensure this path is correct -->
+    <!-- Keep your existing meta tags -->
     <link rel="manifest" href="manifest.json">
-    
     <title>Joe's Pick 5</title>
     <style>
         body {
             margin: 0;
             padding: 0;
-            overflow: hidden;
             background-color: #333;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            width: 100%;
-            height: 100%;
             color: white;
             font-family: Arial, sans-serif;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+        }
+        #splash {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            width: 100%;
+        }
+        #appContent {
+            display: none;
+            height: 100%;
+            width: 100%;
         }
         iframe {
             width: 100%;
             height: 100%;
             border: none;
-            display: block;
-            overflow: auto;
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
         }
-        #install-banner {
-            display: none;
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background-color: #333;
-            color: white;
-            text-align: center;
-            padding: 10px;
-            box-shadow: 0 -2px 5px rgba(0,0,0,0.2);
-            z-index: 1000;
+        .app-logo {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 20px;
         }
-        #install-banner button {
+        .start-btn {
             background-color: #4CAF50;
             border: none;
             color: white;
-            padding: 8px 16px;
-            text-align: center;
-            text-decoration: none;
-            display: inline-block;
-            font-size: 16px;
-            margin: 4px 2px;
-            cursor: pointer;
+            padding: 12px 24px;
             border-radius: 4px;
-        }
-        #loading {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background-color: #333;
-            z-index: 100;
-        }
-        .spinner {
-            border: 5px solid #f3f3f3;
-            border-top: 5px solid #4CAF50;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        #standalone-indicator {
-            display: none;
-            position: fixed;
-            top: 10px;
-            right: 10px;
-            background-color: #4CAF50;
-            color: white;
-            padding: 5px 10px;
-            border-radius: 15px;
-            font-size: 12px;
-            z-index: 1000;
+            font-size: 16px;
+            margin-top: 20px;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
-    <div id="loading">
-        <div class="spinner"></div>
+    <!-- Splash Screen -->
+    <div id="splash">
+        <img src="Pick5Logo.png" alt="App Logo" class="app-logo">
+        <h1>Joe's Pick 5</h1>
+        <button id="startApp" class="start-btn">Start App</button>
     </div>
     
-    <div id="standalone-indicator">Standalone App</div>
-    
-    <div id="install-banner">
-        <p>Add to Home Screen for the best experience</p>
-        <button id="install-button">Install</button>
-        <button id="dismiss-button">Dismiss</button>
+    <!-- App Content (Hidden Initially) -->
+    <div id="appContent">
+        <iframe id="contentFrame" src="about:blank"></iframe>
     </div>
-    
-    <iframe id="content-frame" frameborder="0" scrolling="yes" allowfullscreen="yes" src="about:blank"></iframe>
     
     <script>
-        // Service Worker Registration
+        // Register service worker
         if ('serviceWorker' in navigator) {
-            window.addEventListener('load', function() {
-                navigator.serviceWorker.register('sw.js')
-                    .then(function(registration) {
-                        console.log('Service Worker registered with scope:', registration.scope);
-                    })
-                    .catch(function(error) {
-                        console.log('Service Worker registration failed:', error);
-                    });
-            });
+            navigator.serviceWorker.register('sw.js')
+                .then(reg => console.log('SW registered:', reg.scope))
+                .catch(err => console.log('SW registration failed:', err));
         }
-
-        // Handle PWA install prompt
+        
+        // Check if we're in standalone mode
+        const isStandalone = window.matchMedia('(display-mode: standalone)').matches || 
+                           window.navigator.standalone === true;
+        
+        // Handle app start button
+        document.getElementById('startApp').addEventListener('click', () => {
+            document.getElementById('splash').style.display = 'none';
+            document.getElementById('appContent').style.display = 'block';
+            document.getElementById('contentFrame').src = 
+                "https://script.google.com/macros/s/AKfycbwuZM7KGKnS7jnpM2YN9W_AgTMqA0qJGw99K3MIUNxzI1tnh3YK76AhgeCfh2Wc7pTd/exec";
+        });
+        
+        // If we detect install capability, show a prompt
         let deferredPrompt;
-        const installBanner = document.getElementById('install-banner');
-        const installButton = document.getElementById('install-button');
-        const dismissButton = document.getElementById('dismiss-button');
-        const standaloneIndicator = document.getElementById('standalone-indicator');
-        const loadingDiv = document.getElementById('loading');
-        const contentFrame = document.getElementById('content-frame');
-
-        // Check if running in standalone mode
-        function checkStandaloneMode() {
-            if (window.matchMedia('(display-mode: standalone)').matches || 
-                window.navigator.standalone === true) {
-                console.log('Running in standalone mode');
-                standaloneIndicator.style.display = 'block';
-                // Already running as PWA, no need to show install banner
-                installBanner.style.display = 'none';
-                return true;
-            }
-            return false;
-        }
-        
-        // Initial check
-        if (!checkStandaloneMode()) {
-            // Only show install banner if not in standalone mode
-            window.addEventListener('beforeinstallprompt', (e) => {
-                // Prevent Chrome 67+ from automatically showing the prompt
-                e.preventDefault();
-                // Stash the event so it can be triggered later
-                deferredPrompt = e;
-                // Show the install banner
-                installBanner.style.display = 'block';
-            });
-        }
-        
-        // Listen for display mode changes
-        window.matchMedia('(display-mode: standalone)').addEventListener('change', (e) => {
-            if (e.matches) {
-                console.log('Display mode changed to standalone');
-                standaloneIndicator.style.display = 'block';
-                installBanner.style.display = 'none';
-            }
-        });
-
-        installButton.addEventListener('click', () => {
-            // Hide the app provided install promotion
-            installBanner.style.display = 'none';
-            // Show the install prompt
-            deferredPrompt.prompt();
-            // Wait for the user to respond to the prompt
-            deferredPrompt.userChoice.then((choiceResult) => {
-                if (choiceResult.outcome === 'accepted') {
-                    console.log('User accepted the install prompt');
-                } else {
-                    console.log('User dismissed the install prompt');
-                }
-                deferredPrompt = null;
-            });
-        });
-
-        dismissButton.addEventListener('click', () => {
-            installBanner.style.display = 'none';
-        });
-
-        // Load iframe content with proper handling
-        window.addEventListener('load', () => {
-            // Set iframe src after a short delay to ensure proper standalone mode detection
-            setTimeout(() => {
-                contentFrame.src = "https://script.google.com/macros/s/AKfycbwuZM7KGKnS7jnpM2YN9W_AgTMqA0qJGw99K3MIUNxzI1tnh3YK76AhgeCfh2Wc7pTd/exec";
-                
-                // Hide loading indicator when iframe is fully loaded
-                contentFrame.addEventListener('load', () => {
-                    loadingDiv.style.display = 'none';
-                    
-                    // Try to fix scrolling issues
-                    try {
-                        contentFrame.contentWindow.addEventListener("scroll", handleIframeScroll);
-                    } catch (e) {
-                        console.log("Could not add scroll listener to iframe content:", e);
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            
+            // Add a custom install button if needed
+            const installBtn = document.createElement('button');
+            installBtn.innerText = 'Install App';
+            installBtn.classList.add('start-btn');
+            installBtn.style.backgroundColor = '#2196F3';
+            document.getElementById('splash').appendChild(installBtn);
+            
+            installBtn.addEventListener('click', async () => {
+                if (deferredPrompt) {
+                    deferredPrompt.prompt();
+                    const { outcome } = await deferredPrompt.userChoice;
+                    console.log(`User response: ${outcome}`);
+                    deferredPrompt = null;
+                    if (outcome === 'accepted') {
+                        installBtn.style.display = 'none';
                     }
-                });
-            }, 500);
-        });
-        
-        // Handle iframe sizing
-        function resizeIframe() {
-            contentFrame.style.height = window.innerHeight + "px";
-            contentFrame.style.width = window.innerWidth + "px";
-        }
-        
-        window.addEventListener("resize", resizeIframe);
-        window.addEventListener("load", resizeIframe);
-        
-        // Improved scroll handling
-        let lastScrollY = 0;
-        function handleIframeScroll() {
-            try {
-                const currentScrollY = contentFrame.contentWindow.scrollY;
-                if (Math.abs(currentScrollY - lastScrollY) > 10) {
-                    window.scrollTo(0, 0); // Keep main window at top
                 }
-                lastScrollY = currentScrollY;
-            } catch (e) {
-                console.log("Error in scroll handler:", e);
-            }
-        }
+            });
+        });
     </script>
 </body>
 </html>
