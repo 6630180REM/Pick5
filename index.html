@@ -2,15 +2,28 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-title" content="Joe's Pick 5">
     <meta name="application-name" content="Joe's Pick 5">
     <meta name="theme-color" content="#333">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="icon" href="Pick5Logo.png" type="image/png">
+    
+    <!-- Standard favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="Pick5Logo.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="Pick5Logo.png">
+    
+    <!-- iOS icons -->
     <link rel="apple-touch-icon" href="Pick5Logo.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="Pick5Logo.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="Pick5Logo.png">
+    <link rel="apple-touch-icon" sizes="167x167" href="Pick5Logo.png">
+    
+    <!-- Android icons -->
+    <link rel="shortcut icon" href="Pick5Logo.png">
+    
+    <!-- Web app manifest -->
     <link rel="manifest" href="manifest.json">
     
     <title>Joe's Pick 5</title>
@@ -20,61 +33,145 @@
             padding: 0;
             overflow: hidden;
             background-color: #333;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            width: 100%;
+            height: 100%;
         }
         iframe {
             width: 100%;
-            height: 100vh;
+            height: 100%;
             border: none;
             display: block;
             overflow: auto;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+        }
+        #install-banner {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            box-shadow: 0 -2px 5px rgba(0,0,0,0.2);
+            z-index: 1000;
+        }
+        #install-banner button {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 4px;
         }
     </style>
 </head>
 <body>
+    <div id="install-banner">
+        <p>Add to Home Screen for the best experience</p>
+        <button id="install-button">Install</button>
+        <button id="dismiss-button">Dismiss</button>
+    </div>
+    
     <iframe frameborder="0" scrolling="yes" allowfullscreen="yes" src="https://script.google.com/macros/s/AKfycbwuZM7KGKnS7jnpM2YN9W_AgTMqA0qJGw99K3MIUNxzI1tnh3YK76AhgeCfh2Wc7pTd/exec"></iframe>
+    
     <script>
+        // Service Worker Registration
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js')
-                .then(function(registration) {
-                    console.log('Service Worker registered with scope:', registration.scope);
-                })
-                .catch(function(error) {
-                    console.log('Service Worker registration failed:', error);
-                });
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('sw.js')
+                    .then(function(registration) {
+                        console.log('Service Worker registered with scope:', registration.scope);
+                    })
+                    .catch(function(error) {
+                        console.log('Service Worker registration failed:', error);
+                    });
+            });
         }
 
+        // Handle PWA install prompt
+        let deferredPrompt;
+        const installBanner = document.getElementById('install-banner');
+        const installButton = document.getElementById('install-button');
+        const dismissButton = document.getElementById('dismiss-button');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            // Prevent Chrome 67+ from automatically showing the prompt
+            e.preventDefault();
+            // Stash the event so it can be triggered later
+            deferredPrompt = e;
+            // Show the install banner
+            installBanner.style.display = 'block';
+        });
+
+        installButton.addEventListener('click', () => {
+            // Hide the app provided install promotion
+            installBanner.style.display = 'none';
+            // Show the install prompt
+            deferredPrompt.prompt();
+            // Wait for the user to respond to the prompt
+            deferredPrompt.userChoice.then((choiceResult) => {
+                if (choiceResult.outcome === 'accepted') {
+                    console.log('User accepted the install prompt');
+                } else {
+                    console.log('User dismissed the install prompt');
+                }
+                deferredPrompt = null;
+            });
+        });
+
+        dismissButton.addEventListener('click', () => {
+            installBanner.style.display = 'none';
+        });
+
+        // Handle iframe sizing
         function resizeIframe() {
             var iframe = document.querySelector("iframe");
             iframe.style.height = window.innerHeight + "px";
+            iframe.style.width = window.innerWidth + "px";
         }
         window.addEventListener("resize", resizeIframe);
         window.addEventListener("load", resizeIframe);
-        
-        // Covering all browsers that support this
-        var docEl = document.documentElement;
-        var requestFullScreen = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullScreen || docEl.msRequestFullscreen;
-        var doc = document;
-        var cancelFullScreen = doc.exitFullscreen || doc.mozCancelFullScreen || doc.webkitExitFullscreen || doc.msExitFullscreen;
-        
-        // Execute the variable on initialization (if user interacts)
-        document.addEventListener('click', function() {
-            if (requestFullScreen) {
-                requestFullScreen.call(docEl);
-            }
-        }, { once: true });
         
         // Scroll manipulation to collapse mobile browser toolbar
         let lastScrollY = 0;
         const iframe = document.querySelector("iframe");
         iframe.addEventListener("load", () => {
-            iframe.contentWindow.addEventListener("scroll", () => {
-                const currentScrollY = iframe.contentWindow.scrollY;
-                if (Math.abs(currentScrollY - lastScrollY) > 10) { // Threshold to prevent excessive triggering
-                    window.scrollTo(0, window.scrollY + (currentScrollY - lastScrollY));
-                }
-                lastScrollY = currentScrollY;
-            });
+            try {
+                iframe.contentWindow.addEventListener("scroll", () => {
+                    const currentScrollY = iframe.contentWindow.scrollY;
+                    if (Math.abs(currentScrollY - lastScrollY) > 10) {
+                        window.scrollTo(0, window.scrollY + (currentScrollY - lastScrollY));
+                    }
+                    lastScrollY = currentScrollY;
+                });
+            } catch (e) {
+                console.log("Could not add scroll listener to iframe content:", e);
+            }
         });
+
+        // Check if running in standalone mode
+        if (window.matchMedia('(display-mode: standalone)').matches || 
+            window.navigator.standalone === true) {
+            console.log('Display mode is standalone');
+            // Already running as PWA, no need to show install banner
+            installBanner.style.display = 'none';
+        }
     </script>
 </body>
 </html>
