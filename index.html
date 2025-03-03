@@ -23,7 +23,7 @@
     <!-- Android icons -->
     <link rel="shortcut icon" href="Pick5Logo.png">
     
-    <!-- Web app manifest - directly included for all mobile devices -->
+    <!-- Web app manifest -->
     <link rel="manifest" href="manifest.json">
     
     <title>Joe's Pick 5</title>
@@ -54,6 +54,7 @@
             bottom: 0;
         }
         #install-banner {
+            display: none;
             position: fixed;
             bottom: 0;
             left: 0;
@@ -78,103 +79,20 @@
             cursor: pointer;
             border-radius: 4px;
         }
-        #manual-instructions {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: #333;
-            color: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.5);
-            z-index: 2000;
-            max-width: 90%;
-            text-align: left;
-        }
-        #manual-instructions h3 {
-            margin-top: 0;
-        }
-        #manual-instructions ol {
-            padding-left: 20px;
-        }
-        #manual-instructions button {
-            background-color: #4CAF50;
-            border: none;
-            color: white;
-            padding: 8px 16px;
-            text-align: center;
-            text-decoration: none;
-            display: inline-block;
-            font-size: 16px;
-            margin-top: 15px;
-            cursor: pointer;
-            border-radius: 4px;
-            width: 100%;
-        }
     </style>
 </head>
 <body>
     <div id="install-banner">
         <p>Add to Home Screen for the best experience</p>
-        <button id="install-button">Install App</button>
+        <button id="install-button">Install</button>
         <button id="dismiss-button">Dismiss</button>
-    </div>
-    
-    <div id="manual-instructions">
-        <h3>Install on Kindle Fire</h3>
-        <ol>
-            <li>Tap the menu button (three dots) in the Silk browser</li>
-            <li>Select "Add to Home Screen" or "Add Page Shortcut"</li>
-            <li>Confirm by tapping "Add" when prompted</li>
-        </ol>
-        <p>Once added, you can launch the app directly from your home screen.</p>
-        <button id="close-instructions">Close</button>
     </div>
     
     <iframe frameborder="0" scrolling="yes" allowfullscreen="yes" src="https://script.google.com/macros/s/AKfycbwuZM7KGKnS7jnpM2YN9W_AgTMqA0qJGw99K3MIUNxzI1tnh3YK76AhgeCfh2Wc7pTd/exec"></iframe>
     
     <script>
-        // Check if device is mobile or tablet
-        function isMobileOrTablet() {
-            return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Silk|Kindle/i.test(navigator.userAgent) || 
-                   (window.innerWidth <= 1024); // Also consider devices with width <= 1024px as tablets
-        }
-        
-        // Check specifically for Kindle
-        function isKindle() {
-            return /Kindle|Silk/i.test(navigator.userAgent);
-        }
-        
-        // Get DOM elements
-        const installBanner = document.getElementById('install-banner');
-        const installButton = document.getElementById('install-button');
-        const dismissButton = document.getElementById('dismiss-button');
-        const manualInstructions = document.getElementById('manual-instructions');
-        const closeInstructionsButton = document.getElementById('close-instructions');
-        
-        // Show/hide elements based on device type
-        if (!isMobileOrTablet()) {
-            // Hide on desktop
-            installBanner.style.display = 'none';
-        } else {
-            // Show on mobile/tablet unless in standalone mode or previously dismissed
-            if (window.matchMedia('(display-mode: standalone)').matches || 
-                window.navigator.standalone === true) {
-                // Already running as PWA
-                installBanner.style.display = 'none';
-            } else if (localStorage.getItem('installBannerDismissed') === 'true') {
-                // Previously dismissed
-                installBanner.style.display = 'none';
-            } else {
-                // Show banner
-                installBanner.style.display = 'block';
-            }
-        }
-        
-        // Register service worker for mobile/tablet
-        if ('serviceWorker' in navigator && isMobileOrTablet()) {
+        // Service Worker Registration
+        if ('serviceWorker' in navigator) {
             window.addEventListener('load', function() {
                 navigator.serviceWorker.register('sw.js')
                     .then(function(registration) {
@@ -186,76 +104,38 @@
             });
         }
 
-        // PWA install prompt variable
+        // Handle PWA install prompt
         let deferredPrompt;
+        const installBanner = document.getElementById('install-banner');
+        const installButton = document.getElementById('install-button');
+        const dismissButton = document.getElementById('dismiss-button');
 
-        // Listen for install prompt event
         window.addEventListener('beforeinstallprompt', (e) => {
-            // Only for mobile/tablet
-            if (!isMobileOrTablet()) {
-                return;
-            }
-            
-            // Prevent automatic prompt
+            // Prevent Chrome 67+ from automatically showing the prompt
             e.preventDefault();
-            // Save for later
+            // Stash the event so it can be triggered later
             deferredPrompt = e;
-            // Ensure banner is visible
+            // Show the install banner
             installBanner.style.display = 'block';
         });
 
-        // Install button click handler
         installButton.addEventListener('click', () => {
-            if (isKindle()) {
-                // For Kindle, show manual instructions
-                manualInstructions.style.display = 'block';
-                return;
-            }
-            
-            // For other devices, try automatic install
-            if (deferredPrompt) {
-                // Hide banner
-                installBanner.style.display = 'none';
-                // Show prompt
-                deferredPrompt.prompt();
-                // Handle response
-                deferredPrompt.userChoice.then((choiceResult) => {
-                    if (choiceResult.outcome === 'accepted') {
-                        console.log('User accepted the install prompt');
-                    } else {
-                        console.log('User dismissed the install prompt');
-                    }
-                    deferredPrompt = null;
-                });
-            } else {
-                // If no prompt available, show device-specific instructions
-                if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-                    alert("To install on iOS: \n\n" + 
-                          "1. Tap the share icon (rectangle with arrow) at the bottom\n" +
-                          "2. Scroll down and select 'Add to Home Screen'\n" +
-                          "3. Tap 'Add' in the top right");
-                } else if (/Android/i.test(navigator.userAgent)) {
-                    alert("To install on Android: \n\n" + 
-                          "1. Tap the menu button (three dots) in the top right\n" +
-                          "2. Select 'Install app' or 'Add to Home Screen'\n" +
-                          "3. Follow the prompts to install");
+            // Hide the app provided install promotion
+            installBanner.style.display = 'none';
+            // Show the install prompt
+            deferredPrompt.prompt();
+            // Wait for the user to respond to the prompt
+            deferredPrompt.userChoice.then((choiceResult) => {
+                if (choiceResult.outcome === 'accepted') {
+                    console.log('User accepted the install prompt');
                 } else {
-                    // Generic instructions
-                    alert("To install this app, use your browser's 'Add to Home Screen' option in the menu.");
+                    console.log('User dismissed the install prompt');
                 }
-                installBanner.style.display = 'none';
-            }
+                deferredPrompt = null;
+            });
         });
 
-        // Dismiss button handler
         dismissButton.addEventListener('click', () => {
-            installBanner.style.display = 'none';
-            localStorage.setItem('installBannerDismissed', 'true');
-        });
-        
-        // Close instructions button handler
-        closeInstructionsButton.addEventListener('click', () => {
-            manualInstructions.style.display = 'none';
             installBanner.style.display = 'none';
         });
 
@@ -268,7 +148,7 @@
         window.addEventListener("resize", resizeIframe);
         window.addEventListener("load", resizeIframe);
         
-        // Scroll manipulation
+        // Scroll manipulation to collapse mobile browser toolbar
         let lastScrollY = 0;
         const iframe = document.querySelector("iframe");
         iframe.addEventListener("load", () => {
@@ -284,6 +164,14 @@
                 console.log("Could not add scroll listener to iframe content:", e);
             }
         });
+
+        // Check if running in standalone mode
+        if (window.matchMedia('(display-mode: standalone)').matches || 
+            window.navigator.standalone === true) {
+            console.log('Display mode is standalone');
+            // Already running as PWA, no need to show install banner
+            installBanner.style.display = 'none';
+        }
     </script>
 </body>
 </html>
