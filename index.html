@@ -62,7 +62,6 @@
             bottom: 0;
         }
         #install-banner {
-            display: none;
             position: fixed;
             bottom: 0;
             left: 0;
@@ -105,6 +104,31 @@
                    (window.innerWidth <= 1024); // Also consider devices with width <= 1024px as tablets
         }
         
+        // Handle the install banner visibility
+        const installBanner = document.getElementById('install-banner');
+        const installButton = document.getElementById('install-button');
+        const dismissButton = document.getElementById('dismiss-button');
+        
+        // Show the banner immediately on mobile/tablet, hide on desktop
+        if (!isMobileOrTablet()) {
+            installBanner.style.display = 'none';
+        } else {
+            // Show banner by default on mobile/tablet (unless in standalone mode)
+            if (window.matchMedia('(display-mode: standalone)').matches || 
+                window.navigator.standalone === true) {
+                // Already running as PWA, hide banner
+                installBanner.style.display = 'none';
+            } else {
+                // Show banner on mobile/tablet
+                installBanner.style.display = 'block';
+                
+                // Store preference in localStorage
+                if (localStorage.getItem('installBannerDismissed') === 'true') {
+                    installBanner.style.display = 'none';
+                }
+            }
+        }
+        
         // Only register service worker on mobile/tablet
         if ('serviceWorker' in navigator && isMobileOrTablet()) {
             window.addEventListener('load', function() {
@@ -118,16 +142,8 @@
             });
         }
 
-        // Handle PWA install prompt only for mobile/tablet
+        // Variables for the PWA install prompt
         let deferredPrompt;
-        const installBanner = document.getElementById('install-banner');
-        const installButton = document.getElementById('install-button');
-        const dismissButton = document.getElementById('dismiss-button');
-        
-        // Only show install banner on mobile/tablet
-        if (!isMobileOrTablet()) {
-            installBanner.style.display = 'none';
-        }
 
         window.addEventListener('beforeinstallprompt', (e) => {
             // Only process install prompt on mobile/tablet
@@ -135,19 +151,20 @@
                 return;
             }
             
-            // Prevent Chrome 67+ from automatically showing the prompt
+            // Prevent Chrome from automatically showing the prompt
             e.preventDefault();
             // Stash the event so it can be triggered later
             deferredPrompt = e;
-            // Show the install banner
+            // Show the install banner explicitly
             installBanner.style.display = 'block';
         });
 
         installButton.addEventListener('click', () => {
-            // Hide the app provided install promotion
-            installBanner.style.display = 'none';
-            // Show the install prompt
+            // If we have a deferred prompt, use it
             if (deferredPrompt) {
+                // Hide our custom banner
+                installBanner.style.display = 'none';
+                // Show the install prompt
                 deferredPrompt.prompt();
                 // Wait for the user to respond to the prompt
                 deferredPrompt.userChoice.then((choiceResult) => {
@@ -158,11 +175,19 @@
                     }
                     deferredPrompt = null;
                 });
+            } else {
+                // No deferred prompt available, show manual instructions
+                alert("To install this app: \n\n" + 
+                      "- On iOS: tap the share icon and select 'Add to Home Screen'\n" +
+                      "- On Android: tap the menu button and select 'Install App' or 'Add to Home Screen'");
+                installBanner.style.display = 'none';
             }
         });
 
         dismissButton.addEventListener('click', () => {
             installBanner.style.display = 'none';
+            // Remember the dismissal
+            localStorage.setItem('installBannerDismissed', 'true');
         });
 
         // Handle iframe sizing
@@ -190,14 +215,6 @@
                 console.log("Could not add scroll listener to iframe content:", e);
             }
         });
-
-        // Check if running in standalone mode
-        if (window.matchMedia('(display-mode: standalone)').matches || 
-            window.navigator.standalone === true) {
-            console.log('Display mode is standalone');
-            // Already running as PWA, no need to show install banner
-            installBanner.style.display = 'none';
-        }
     </script>
 </body>
 </html>
