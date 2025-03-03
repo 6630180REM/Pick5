@@ -6,7 +6,7 @@ const urlsToCache = [
   './Pick5Logo.png'
 ];
 
-// Install event - cache the app shell
+// Force the new service worker to become active right away
 self.addEventListener('install', event => {
   console.log('Service Worker installing');
   event.waitUntil(
@@ -22,7 +22,7 @@ self.addEventListener('install', event => {
   );
 });
 
-// Activate event - clean up old caches
+// Clear old caches and take control immediately
 self.addEventListener('activate', event => {
   console.log('Service Worker activating');
   const cacheWhitelist = [CACHE_NAME];
@@ -31,23 +31,22 @@ self.addEventListener('activate', event => {
       return Promise.all(
         cacheNames.map(cacheName => {
           if (cacheWhitelist.indexOf(cacheName) === -1) {
-            console.log('Service Worker: clearing old cache');
+            console.log('Service Worker: clearing old cache', cacheName);
             return caches.delete(cacheName);
           }
         })
       );
     }).then(() => {
       console.log('Service Worker activate complete');
-      return self.clients.claim();
+      return self.clients.claim(); // Take control of all clients
     })
   );
 });
 
-// Fetch event - serve from cache or network
+// Enhanced fetch event handling
 self.addEventListener('fetch', event => {
-  console.log('Service Worker fetching: ' + event.request.url);
-  
   // Skip cross-origin requests (like Google Scripts)
+  // We don't cache them but we still want to fetch them
   if (!event.request.url.startsWith(self.location.origin)) {
     return;
   }
@@ -57,7 +56,7 @@ self.addEventListener('fetch', event => {
       .then(response => {
         // Cache hit - return response
         if (response) {
-          console.log('Service Worker: serving from cache');
+          console.log('Service Worker: serving from cache', event.request.url);
           return response;
         }
         
@@ -75,11 +74,22 @@ self.addEventListener('fetch', event => {
           
           caches.open(CACHE_NAME)
             .then(cache => {
+              console.log('Service Worker: caching new resource', event.request.url);
               cache.put(event.request, responseToCache);
             });
             
           return response;
+        })
+        .catch(error => {
+          console.log('Service Worker: fetch failed', error);
+          // Optionally return a fallback response for offline experience
         });
       })
   );
+});
+
+// Handle push notifications if you add them later
+self.addEventListener('push', event => {
+  console.log('Push message received', event);
+  // You can implement notification handling here
 });
