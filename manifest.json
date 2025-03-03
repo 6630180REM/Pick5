@@ -1,20 +1,29 @@
 {
     "name": "Joe's Pick 5",
     "short_name": "Pick 5",
-    "start_url": "/Pick5/",
+    "start_url": "./",
     "display": "standalone",
     "background_color": "#333",
     "theme_color": "#333",
+    "orientation": "portrait",
     "icons": [
         {
-            "src": "/Pick5Logo.png?v=2",
+            "src": "Pick5Logo.png",
             "sizes": "192x192",
-            "type": "image/png"
+            "type": "image/png",
+            "purpose": "any"
         },
         {
-            "src": "/Pick5Logo.png?v=2",
+            "src": "Pick5Logo.png",
             "sizes": "512x512",
-            "type": "image/png"
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "Pick5Logo.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "maskable"
         }
     ]
 }
