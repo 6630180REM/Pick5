@@ -1,27 +1,24 @@
 {
-  "name": "Joe's Pick 5",
-  "short_name": "Pick 5",
-  "description": "Joe's Pick 5 Application",
-  "start_url": "./index.html",
-  "id": "/",
-  "scope": "/",
-  "display": "standalone",
-  "orientation": "portrait",
-  "background_color": "#333",
-  "theme_color": "#333",
-  "categories": ["utilities"],
-  "icons": [
-    {
-      "src": "Pick5Logo.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "Pick5Logo.png",
-      "sizes": "512x512",
-      "type": "image/png", 
-      "purpose": "any maskable"
-    }
-  ]
+    "name": "Joe's Pick 5",
+    "short_name": "Pick 5",
+    "start_url": "index.html",
+    "scope": "./",
+    "display": "standalone",
+    "background_color": "#333",
+    "theme_color": "#333",
+    "orientation": "portrait",
+    "icons": [
+        {
+            "src": "Pick5Logo.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "Pick5Logo.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ]
 }
