@@ -1,9 +1,12 @@
 {
     "name": "Joe's Pick 5",
     "short_name": "Pick 5",
-    "start_url": "index.html",
+    "description": "Joe's Pick 5 Application",
+    "start_url": "./index.html",
+    "id": "./index.html",
     "scope": "./",
     "display": "standalone",
+    "display_override": ["standalone", "fullscreen"],
     "background_color": "#333",
     "theme_color": "#333",
     "orientation": "portrait",
@@ -20,5 +23,15 @@
             "type": "image/png",
             "purpose": "any maskable"
         }
-    ]
+    ],
+    "shortcuts": [
+        {
+            "name": "Open Pick 5",
+            "short_name": "Open",
+            "description": "Open Joe's Pick 5",
+            "url": "./index.html",
+            "icons": [{ "src": "Pick5Logo.png", "sizes": "192x192" }]
+        }
+    ],
+    "prefer_related_applications": false
 }
