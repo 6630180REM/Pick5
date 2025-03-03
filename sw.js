@@ -1,95 +1,60 @@
-const CACHE_NAME = 'pick5-app-v1';
-const urlsToCache = [
+const CACHE_NAME = 'pick5-app-v2';
+const APP_ASSETS = [
   './',
   './index.html',
   './manifest.json',
-  './Pick5Logo.png'
+  './Pick5Logo.png',
+  './sw.js'
 ];
 
-// Force the new service worker to become active right away
+// Install and cache core assets
 self.addEventListener('install', event => {
-  console.log('Service Worker installing');
+  self.skipWaiting(); // Force activation
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => {
-        console.log('Service Worker caching app shell');
-        return cache.addAll(urlsToCache);
-      })
-      .then(() => {
-        console.log('Service Worker install complete');
-        return self.skipWaiting();
-      })
-  );
-});
-
-// Clear old caches and take control immediately
-self.addEventListener('activate', event => {
-  console.log('Service Worker activating');
-  const cacheWhitelist = [CACHE_NAME];
-  event.waitUntil(
-    caches.keys().then(cacheNames => {
-      return Promise.all(
-        cacheNames.map(cacheName => {
-          if (cacheWhitelist.indexOf(cacheName) === -1) {
-            console.log('Service Worker: clearing old cache', cacheName);
-            return caches.delete(cacheName);
-          }
-        })
-      );
-    }).then(() => {
-      console.log('Service Worker activate complete');
-      return self.clients.claim(); // Take control of all clients
+    caches.open(CACHE_NAME).then(cache => {
+      return cache.addAll(APP_ASSETS);
     })
   );
 });
 
-// Enhanced fetch event handling
-self.addEventListener('fetch', event => {
-  // Skip cross-origin requests (like Google Scripts)
-  // We don't cache them but we still want to fetch them
-  if (!event.request.url.startsWith(self.location.origin)) {
-    return;
-  }
-  
-  event.respondWith(
-    caches.match(event.request)
-      .then(response => {
-        // Cache hit - return response
-        if (response) {
-          console.log('Service Worker: serving from cache', event.request.url);
-          return response;
-        }
-        
-        // Clone the request because it's a one-time use stream
-        const fetchRequest = event.request.clone();
-        
-        return fetch(fetchRequest).then(response => {
-          // Check if we received a valid response
-          if (!response || response.status !== 200 || response.type !== 'basic') {
-            return response;
+// Clean up old caches and claim clients immediately
+self.addEventListener('activate', event => {
+  event.waitUntil(
+    caches.keys().then(keyList => {
+      return Promise.all(
+        keyList.map(key => {
+          if (key !== CACHE_NAME) {
+            return caches.delete(key);
           }
-          
-          // Clone the response because it's a one-time use stream
-          const responseToCache = response.clone();
-          
-          caches.open(CACHE_NAME)
-            .then(cache => {
-              console.log('Service Worker: caching new resource', event.request.url);
-              cache.put(event.request, responseToCache);
-            });
-            
-          return response;
         })
-        .catch(error => {
-          console.log('Service Worker: fetch failed', error);
-          // Optionally return a fallback response for offline experience
-        });
-      })
+      );
+    }).then(() => self.clients.claim())
   );
 });
 
-// Handle push notifications if you add them later
-self.addEventListener('push', event => {
-  console.log('Push message received', event);
-  // You can implement notification handling here
+// Control fetch requests - network first for iframe content
+self.addEventListener('fetch', event => {
+  // Special handling for local assets
+  if (event.request.url.startsWith(self.location.origin)) {
+    event.respondWith(
+      caches.match(event.request).then(cachedResponse => {
+        if (cachedResponse) {
+          return cachedResponse;
+        }
+        
+        return fetch(event.request.clone()).then(response => {
+          if (!response || response.status !== 200 || response.type !== 'basic') {
+            return response;
+          }
+
+          const responseToCache = response.clone();
+          caches.open(CACHE_NAME).then(cache => {
+            cache.put(event.request, responseToCache);
+          });
+
+          return response;
+        });
+      })
+    );
+  }
 });
