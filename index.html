@@ -79,6 +79,33 @@
             cursor: pointer;
             border-radius: 4px;
         }
+        
+        /* New CSS for portrait mode enforcement */
+        @media screen and (max-width: 768px) and (orientation: landscape) {
+            body {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                text-align: center;
+                background-color: #333;
+                color: white;
+                margin: 0;
+                padding: 20px;
+                height: 100vh;
+                overflow: hidden;
+            }
+            
+            iframe {
+                display: none;
+            }
+            
+            body::before {
+                content: "Please rotate your device to portrait mode";
+                font-size: 18px;
+                max-width: 300px;
+            }
+        }
     </style>
 </head>
 <body>
