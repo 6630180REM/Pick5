@@ -97,7 +97,7 @@
         }
 
         #preloader-text {
-            font-size: 5rem;
+            font-size: 7rem;
             font-weight: bold;
             color: white;
             position: relative;
@@ -106,14 +106,14 @@
         #preloader-text::before {
             content: 'PICK 5';
             position: absolute;
-            bottom: 0;
+            top: 0;
             left: 0;
             width: 100%;
             height: 0;
             overflow: hidden;
             color: #478fdf;
             border-bottom: 3px solid #478fdf;
-            animation: fill-text-bottom-up 5s linear forwards;
+            animation: fill-text-bottom-up 5slinear infinite;
         }
 
         @keyframes fill-text-bottom-up {
