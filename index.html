@@ -106,22 +106,22 @@
         #preloader-text::before {
             content: 'PICK 5';
             position: absolute;
-            top: 0;
+            bottom: 0;
             left: 0;
-            width: 0;
-            height: 100%;
+            width: 100%;
+            height: 0;
             overflow: hidden;
             color: #478fdf;
-            border-right: 3px solid #478fdf;
-            animation: fill-text 5s linear forwards;
+            border-bottom: 3px solid #478fdf;
+            animation: fill-text-bottom-up 5s linear forwards;
         }
 
-        @keyframes fill-text {
+        @keyframes fill-text-bottom-up {
             0% {
-                width: 0;
+                height: 0;
             }
             100% {
-                width: 100%;
+                height: 100%;
             }
         }
     </style>
