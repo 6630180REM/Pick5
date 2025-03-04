@@ -40,6 +40,7 @@
             bottom: 0;
             width: 100%;
             height: 100%;
+            font-family: Arial, sans-serif;
         }
         iframe {
             width: 100%;
@@ -79,9 +80,58 @@
             cursor: pointer;
             border-radius: 4px;
         }
+
+        /* Preloader Styles */
+        #preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            overflow: hidden;
+        }
+
+        #preloader-text {
+            font-size: 5rem;
+            font-weight: bold;
+            color: white;
+            position: relative;
+        }
+
+        #preloader-text::before {
+            content: 'PICK 5';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 100%;
+            overflow: hidden;
+            color: #4CAF50;
+            border-right: 3px solid #4CAF50;
+            animation: fill-text 5s linear forwards;
+        }
+
+        @keyframes fill-text {
+            0% {
+                width: 0;
+            }
+            100% {
+                width: 100%;
+            }
+        }
     </style>
 </head>
 <body>
+    <!-- Preloader -->
+    <div id="preloader">
+        <div id="preloader-text">PICK 5</div>
+    </div>
+
     <div id="install-banner">
         <p>Add to Home Screen for the best experience</p>
         <button id="install-button">Install</button>
@@ -91,7 +141,17 @@
     <iframe frameborder="0" scrolling="yes" allowfullscreen="yes" src="https://script.google.com/macros/s/AKfycbwuZM7KGKnS7jnpM2YN9W_AgTMqA0qJGw99K3MIUNxzI1tnh3YK76AhgeCfh2Wc7pTd/exec"></iframe>
     
     <script>
-        // Service Worker Registration
+        // Preloader Script
+        document.addEventListener('DOMContentLoaded', function() {
+            const preloader = document.getElementById('preloader');
+            
+            // Hide preloader after 5 seconds
+            setTimeout(() => {
+                preloader.style.display = 'none';
+            }, 5000);
+        });
+
+        // Existing Service Worker Registration
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function() {
                 navigator.serviceWorker.register('sw.js')
@@ -104,27 +164,21 @@
             });
         }
 
-        // Handle PWA install prompt
+        // Existing PWA Install Prompt Code (unchanged)
         let deferredPrompt;
         const installBanner = document.getElementById('install-banner');
         const installButton = document.getElementById('install-button');
         const dismissButton = document.getElementById('dismiss-button');
 
         window.addEventListener('beforeinstallprompt', (e) => {
-            // Prevent Chrome 67+ from automatically showing the prompt
             e.preventDefault();
-            // Stash the event so it can be triggered later
             deferredPrompt = e;
-            // Show the install banner
             installBanner.style.display = 'block';
         });
 
         installButton.addEventListener('click', () => {
-            // Hide the app provided install promotion
             installBanner.style.display = 'none';
-            // Show the install prompt
             deferredPrompt.prompt();
-            // Wait for the user to respond to the prompt
             deferredPrompt.userChoice.then((choiceResult) => {
                 if (choiceResult.outcome === 'accepted') {
                     console.log('User accepted the install prompt');
@@ -139,7 +193,7 @@
             installBanner.style.display = 'none';
         });
 
-        // Handle iframe sizing
+        // Existing Iframe Sizing Code
         function resizeIframe() {
             var iframe = document.querySelector("iframe");
             iframe.style.height = window.innerHeight + "px";
@@ -148,7 +202,7 @@
         window.addEventListener("resize", resizeIframe);
         window.addEventListener("load", resizeIframe);
         
-        // Scroll manipulation to collapse mobile browser toolbar
+        // Existing Scroll Manipulation Code
         let lastScrollY = 0;
         const iframe = document.querySelector("iframe");
         iframe.addEventListener("load", () => {
@@ -165,14 +219,14 @@
             }
         });
 
-        // Check if running in standalone mode
+        // Existing Standalone Mode Check
         if (window.matchMedia('(display-mode: standalone)').matches || 
             window.navigator.standalone === true) {
             console.log('Display mode is standalone');
-            // Already running as PWA, no need to show install banner
             installBanner.style.display = 'none';
         }
-                function lockOrientation() {
+
+        function lockOrientation() {
             if (screen.orientation && screen.orientation.lock) {
                 screen.orientation.lock('portrait')
                     .catch(function(error) {
