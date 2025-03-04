@@ -108,16 +108,22 @@
     align-items: center;
     z-index: 9999;
     overflow: hidden;
+    background: black url(https://img.freepik.com/premium-photo/3d-rendering-empty-american-football-field-with-stadium_493806-8391.jpg?semt=ais_hybrid);
+    color: white;
+    padding: 0px;
+    background-attachment: fixed;
+    background-repeat: round;
+    background-size: cover;
 }
 
 #preloader-text {
     font-size: 7rem;
     font-weight: bold;
-    color: #333;
+    color: transparent;
     position: relative;
     text-align: center;
-    -webkit-text-stroke: 3px #478fdf;
-    line-height: 1.2;
+    -webkit-text-stroke: 7px #478fdf;
+    line-height: .9;
 }
 
 #preloader-text::before {
@@ -130,8 +136,11 @@
     height: 0;
     overflow: hidden;
     color: #478fdf;
-    border-bottom: 3px solid #478fdf;
-    animation: fill-text-bottom-up 5s linear forwards;
+    border-bottom: 3px solid white;
+    animation: fill-text-bottom-up 3slinear forwards;
+    /* color: white; */
+    padding: 0px;
+    -webkit-text-stroke: 7px #478fdf;
 }
 
 @keyframes fill-text-bottom-up {
