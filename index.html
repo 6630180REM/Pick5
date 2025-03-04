@@ -79,33 +79,6 @@
             cursor: pointer;
             border-radius: 4px;
         }
-        
-        /* New CSS for portrait mode enforcement */
-        @media screen and (max-width: 768px) and (orientation: landscape) {
-            body {
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-                align-items: center;
-                text-align: center;
-                background-color: #333;
-                color: white;
-                margin: 0;
-                padding: 20px;
-                height: 100vh;
-                overflow: hidden;
-            }
-            
-            iframe {
-                display: none;
-            }
-            
-            body::before {
-                content: "Please rotate your device to portrait mode";
-                font-size: 18px;
-                max-width: 300px;
-            }
-        }
     </style>
 </head>
 <body>
@@ -198,6 +171,26 @@
             console.log('Display mode is standalone');
             // Already running as PWA, no need to show install banner
             installBanner.style.display = 'none';
+        }
+                function lockOrientation() {
+            if (screen.orientation && screen.orientation.lock) {
+                screen.orientation.lock('portrait')
+                    .catch(function(error) {
+                        console.log('Orientation lock failed:', error);
+                    });
+            }
+        }
+
+        // Try to lock orientation on load and when entering fullscreen
+        window.addEventListener('load', lockOrientation);
+        
+        // Additional checks for different browser support
+        if (window.screen.orientation) {
+            window.screen.orientation.addEventListener('change', function() {
+                if (window.screen.orientation.type.includes('landscape')) {
+                    lockOrientation();
+                }
+            });
         }
     </script>
 </body>
