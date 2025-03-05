@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=3, user-scalable=yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-title" content="Joe's Pick 5">
@@ -53,6 +53,8 @@
             -moz-user-select: none;
             -ms-user-select: none;
             user-select: none;
+            -webkit-text-size-adjust: none;
+            text-size-adjust: none;
         }
 
         iframe {
@@ -97,59 +99,55 @@
 
         /* Preloader Styles */
         #preloader {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: #333;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-    overflow: hidden;
-    background: black url(https://img.freepik.com/premium-photo/3d-rendering-empty-american-football-field-with-stadium_493806-8391.jpg?semt=ais_hybrid);
-    color: white;
-    padding: 0px;
-    background-attachment: fixed;
-    background-repeat: round;
-    background-size: cover;
-}
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            overflow: hidden;
+            background: black url(https://img.freepik.com/premium-photo/3d-rendering-empty-american-football-field-with-stadium_493806-8391.jpg?semt=ais_hybrid);
+            color: white;
+            padding: 0px;
+            background-attachment: fixed;
+            background-repeat: round;
+            background-size: cover;
+        }
 
-#preloader-text {
-    font-size: 7rem;
-    font-weight: bold;
-    color: transparent;
-    position: relative;
-    text-align: center;
-    -webkit-text-stroke: 7px #478fdf;
-    line-height: .9;
-}
+        #preloader-text {
+            font-size: 7rem;
+            font-weight: bold;
+            color: transparent;
+            position: relative;
+            text-align: center;
+            -webkit-text-stroke: 7px #478fdf;
+            line-height: .9;
+        }
 
-#preloader-text::before {
-    content: "JOE'S\A PICK 5";
-    white-space: pre;
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 0;
-    overflow: hidden;
-    color: #478fdf;
-    border-bottom: 3px solid white;
-    animation: fill-text-bottom-up 3s linear forwards;
-    padding: 0px;
-    -webkit-text-stroke: 7px #478fdf;
-}
+        #preloader-text::before {
+            content: "JOE'S\A PICK 5";
+            white-space: pre;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 0;
+            overflow: hidden;
+            color: #478fdf;
+            border-bottom: 3px solid white;
+            animation: fill-text-bottom-up 3s linear forwards;
+            padding: 0px;
+            -webkit-text-stroke: 7px #478fdf;
+        }
 
-@keyframes fill-text-bottom-up {
-    0% {
-        height: 0;
-    }
-    100% {
-        height: 100%;
-    }
-}
+        @keyframes fill-text-bottom-up {
+            0% {height: 0;}
+            100% {height: 100%;}
+            }
     </style>
 </head>
 <body>
