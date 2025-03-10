@@ -77,9 +77,21 @@ self.addEventListener('fetch', event => {
 self.addEventListener('push', function(event) {
   console.log('Push received:', event);
   
-  const title = 'Joe\'s Pick 5';
+  let notificationData = {
+    title: 'Joe\'s Pick 5',
+    body: 'New update available!'
+  };
+  
+  if (event.data) {
+    try {
+      notificationData = JSON.parse(event.data.text());
+    } catch (e) {
+      console.error('Error parsing push data:', e);
+    }
+  }
+  
   const options = {
-    body: event.data ? event.data.text() : 'New update available!',
+    body: notificationData.body,
     icon: './Pick5Logo.png',
     badge: './Pick5Logo.png',
     vibrate: [100, 50, 100],
@@ -92,29 +104,8 @@ self.addEventListener('push', function(event) {
       {action: 'close', title: 'Close'}
     ]
   };
-
-  event.waitUntil(
-    self.registration.showNotification(title, options)
-  );
-});
-
-// Handle notification clicks
-self.addEventListener('notificationclick', function(event) {
-  console.log('Notification click handled:', event.notification.data);
   
-  event.notification.close();
-  
-  // This looks to see if the current window is already open and focuses it
   event.waitUntil(
-    clients.matchAll({type: 'window'})
-      .then(function(clientList) {
-        for (var i = 0; i < clientList.length; i++) {
-          var client = clientList[i];
-          if (client.url === '/' && 'focus' in client)
-            return client.focus();
-        }
-        if (clients.openWindow)
-          return clients.openWindow('./');
-      })
+    self.registration.showNotification(notificationData.title, options)
   );
 });
