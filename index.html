@@ -299,6 +299,12 @@ function requestNotificationPermission() {
     return;
   }
   
+  // Hide the button immediately when clicked
+  const notificationButton = document.getElementById('notification-button');
+  if (notificationButton) {
+    notificationButton.style.display = 'none';
+  }
+  
   Notification.requestPermission().then(permission => {
     if (permission === 'granted') {
       console.log('Notification permission granted');
@@ -306,12 +312,8 @@ function requestNotificationPermission() {
     } else {
       console.log('Notification permission denied');
     }
-    
-    // Hide the button regardless of the permission result
-    const notificationButton = document.getElementById('notification-button');
-    if (notificationButton) {
-      notificationButton.style.display = 'none';
-    }
+  }).catch(error => {
+    console.log('Error requesting notification permission:', error);
   });
 }
 
