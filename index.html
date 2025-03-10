@@ -274,65 +274,113 @@
             });
         }
 
-        function urlBase64ToUint8Array(base64String) {
-    const padding = '='.repeat((4 - base64String.length % 4) % 4);
-    const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
-    const rawData = window.atob(base64);
-    const outputArray = new Uint8Array(rawData.length);
-    for (let i = 0; i < rawData.length; ++i) {
-      outputArray[i] = rawData.charCodeAt(i);
-    }
-    return outputArray;
+        function requestNotificationPermission() {
+  if (!('Notification' in window)) {
+    console.log('This browser does not support notifications');
+    return;
   }
-
-  // Request notification permission and subscribe to push
-  async function subscribeToPush() {
-    try {
-      const registration = await navigator.serviceWorker.ready;
-      const subscription = await registration.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(
-          'BLy94-OE_jowdq1VzI9Ni58qZPduEiHUGDcuKgNSPwEfVQ40v3xwbsIxrVFhb-H-hWnb74ZvDgpquqOanSy7v3s' // Replace with your public VAPID key
-        ),
-      });
-      console.log('Push subscription successful:', subscription);
-
-      // Send subscription to your server
-      await fetch('https://your-server.com/subscribe', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(subscription),
-      });
-    } catch (error) {
-      console.error('Push subscription failed:', error);
-    }
-  }
-
-  // Check and request notification permission
-  function askNotificationPermission() {
-    if (!('Notification' in window)) {
-      console.log('This browser does not support notifications');
-      return;
-    }
-
-    Notification.requestPermission().then((permission) => {
-      if (permission === 'granted') {
-        console.log('Notification permission granted');
-        subscribeToPush();
-      } else {
-        console.log('Notification permission denied');
-      }
-    });
-  }
-
-  // Trigger permission request after page load
-  window.addEventListener('load', () => {
-    if ('serviceWorker' in navigator && 'PushManager' in window) {
-      askNotificationPermission();
+  
+  Notification.requestPermission().then(permission => {
+    if (permission === 'granted') {
+      console.log('Notification permission granted');
+      subscribeToPushNotifications();
     } else {
-      console.log('Push notifications are not supported in this browser');
+      console.log('Notification permission denied');
     }
   });
+}
+
+// Function to subscribe to push notifications
+function subscribeToPushNotifications() {
+  if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+    console.log('Push notifications not supported');
+    return;
+  }
+  
+  // Replace with your own VAPID public key
+  const applicationServerPublicKey = 'BLy94-OE_jowdq1VzI9Ni58qZPduEiHUGDcuKgNSPwEfVQ40v3xwbsIxrVFhb-H-hWnb74ZvDgpquqOanSy7v3s';
+  
+  navigator.serviceWorker.ready.then(registration => {
+    // Convert VAPID key from base64 to Uint8Array
+    function urlB64ToUint8Array(base64String) {
+      const padding = '='.repeat((4 - base64String.length % 4) % 4);
+      const base64 = (base64String + padding)
+        .replace(/\-/g, '+')
+        .replace(/_/g, '/');
+      
+      const rawData = window.atob(base64);
+      const outputArray = new Uint8Array(rawData.length);
+      
+      for (let i = 0; i < rawData.length; ++i) {
+        outputArray[i] = rawData.charCodeAt(i);
+      }
+      return outputArray;
+    }
+    
+    const applicationServerKey = urlB64ToUint8Array(applicationServerPublicKey);
+    
+    registration.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: applicationServerKey
+    })
+    .then(subscription => {
+      console.log('User is subscribed:', JSON.stringify(subscription));
+      // Send subscription to your server
+      sendSubscriptionToServer(subscription);
+    })
+    .catch(err => {
+      console.log('Failed to subscribe user:', err);
+    });
+  });
+}
+
+// Function to send the subscription to your server
+function sendSubscriptionToServer(subscription) {
+  // Replace with your server endpoint that handles subscriptions
+  fetch('https://your-server.com/api/subscribe', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(subscription),
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Bad status code from server.');
+    }
+    return response.json();
+  })
+  .then(responseData => {
+    if (!(responseData && responseData.success)) {
+      throw new Error('Bad response from server.');
+    }
+    console.log('Successfully sent subscription to server');
+  })
+  .catch(err => {
+    console.log('Error sending subscription to server:', err);
+  });
+}
+
+// Add this to your existing code that runs when the page loads
+window.addEventListener('load', function() {
+  // Add a button or automatically request permission
+  const notificationButton = document.createElement('button');
+  notificationButton.textContent = 'Enable Notifications';
+  notificationButton.style.position = 'fixed';
+  notificationButton.style.bottom = '60px';
+  notificationButton.style.right = '10px';
+  notificationButton.style.zIndex = '1001';
+  notificationButton.style.padding = '8px 16px';
+  notificationButton.style.backgroundColor = '#4CAF50';
+  notificationButton.style.color = 'white';
+  notificationButton.style.border = 'none';
+  notificationButton.style.borderRadius = '4px';
+  notificationButton.style.cursor = 'pointer';
+  
+  notificationButton.addEventListener('click', requestNotificationPermission);
+  
+  document.body.appendChild(notificationButton);
+});
     </script>
 </body>
 </html>
