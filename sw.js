@@ -72,3 +72,50 @@ self.addEventListener('fetch', event => {
       })
   );
 });
+
+
+self.addEventListener('push', function (event) {
+  console.log('Push event received:', event);
+
+  let data = {};
+  if (event.data) {
+    data = event.data.json();
+  }
+
+  const title = data.title || "Joe's Pick 5 Update";
+  const options = {
+    body: data.body || 'New update available!',
+    icon: './Pick5Logo.png', // Use your app's icon
+    badge: './Pick5Logo.png', // Small icon for notification tray
+    vibrate: [200, 100, 200], // Vibration pattern (if supported)
+    data: {
+      url: data.url || '/', // URL to open when clicked
+    },
+  };
+
+  event.waitUntil(self.registration.showNotification(title, options));
+});
+
+// Handle notification click
+self.addEventListener('notificationclick', function (event) {
+  console.log('Notification clicked:', event.notification);
+
+  event.notification.close(); // Close the notification
+
+  const urlToOpen = event.notification.data.url || '/';
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
+      // If a window is already open, focus it
+      for (let i = 0; i < clientList.length; i++) {
+        const client = clientList[i];
+        if (client.url === urlToOpen && 'focus' in client) {
+          return client.focus();
+        }
+      }
+      // Otherwise, open a new window
+      if (clients.openWindow) {
+        return clients.openWindow(urlToOpen);
+      }
+    })
+  );
+});
