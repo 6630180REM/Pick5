@@ -9,8 +9,8 @@ app.use(bodyParser.json());
 
 // VAPID keys should be generated using web-push command line
 const vapidKeys = {
-  publicKey: 'YOUR_VAPID_PUBLIC_KEY',
-  privateKey: 'YOUR_VAPID_PRIVATE_KEY'
+  publicKey: 'BLy94-OE_jowdq1VzI9Ni58qZPduEiHUGDcuKgNSPwEfVQ40v3xwbsIxrVFhb-H-hWnb74ZvDgpquqOanSy7v3s',
+  privateKey: '1MxpQVW9wkp9O4U0m2JiQ2WasTHt8APLdgHqR0lHt-c'
 };
 
 webpush.setVapidDetails(
