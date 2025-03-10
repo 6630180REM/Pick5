@@ -74,48 +74,47 @@ self.addEventListener('fetch', event => {
 });
 
 
-self.addEventListener('push', function (event) {
-  console.log('Push event received:', event);
-
-  let data = {};
-  if (event.data) {
-    data = event.data.json();
-  }
-
-  const title = data.title || "Joe's Pick 5 Update";
+self.addEventListener('push', function(event) {
+  console.log('Push received:', event);
+  
+  const title = 'Joe\'s Pick 5';
   const options = {
-    body: data.body || 'New update available!',
-    icon: './Pick5Logo.png', // Use your app's icon
-    badge: './Pick5Logo.png', // Small icon for notification tray
-    vibrate: [200, 100, 200], // Vibration pattern (if supported)
+    body: event.data ? event.data.text() : 'New update available!',
+    icon: './Pick5Logo.png',
+    badge: './Pick5Logo.png',
+    vibrate: [100, 50, 100],
     data: {
-      url: data.url || '/', // URL to open when clicked
+      dateOfArrival: Date.now(),
+      primaryKey: 1
     },
+    actions: [
+      {action: 'explore', title: 'View Details'},
+      {action: 'close', title: 'Close'}
+    ]
   };
 
-  event.waitUntil(self.registration.showNotification(title, options));
+  event.waitUntil(
+    self.registration.showNotification(title, options)
+  );
 });
 
-// Handle notification click
-self.addEventListener('notificationclick', function (event) {
-  console.log('Notification clicked:', event.notification);
-
-  event.notification.close(); // Close the notification
-
-  const urlToOpen = event.notification.data.url || '/';
+// Handle notification clicks
+self.addEventListener('notificationclick', function(event) {
+  console.log('Notification click handled:', event.notification.data);
+  
+  event.notification.close();
+  
+  // This looks to see if the current window is already open and focuses it
   event.waitUntil(
-    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
-      // If a window is already open, focus it
-      for (let i = 0; i < clientList.length; i++) {
-        const client = clientList[i];
-        if (client.url === urlToOpen && 'focus' in client) {
-          return client.focus();
+    clients.matchAll({type: 'window'})
+      .then(function(clientList) {
+        for (var i = 0; i < clientList.length; i++) {
+          var client = clientList[i];
+          if (client.url === '/' && 'focus' in client)
+            return client.focus();
         }
-      }
-      // Otherwise, open a new window
-      if (clients.openWindow) {
-        return clients.openWindow(urlToOpen);
-      }
-    })
+        if (clients.openWindow)
+          return clients.openWindow('./');
+      })
   );
 });
