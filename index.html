@@ -273,6 +273,93 @@
                  }
              });
          }
+      // Add this to your existing script block in index.html
+document.addEventListener('DOMContentLoaded', function() {
+    // Your existing preloader code...
+    
+    // Firebase messaging setup
+    if ('serviceWorker' in navigator && 'PushManager' in window) {
+        // Use module/import method if you're using ES modules
+        import('https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js').then((firebaseApp) => {
+            import('https://www.gstatic.com/firebasejs/9.22.0/firebase-messaging.js').then((firebaseMessaging) => {
+                const { initializeApp } = firebaseApp;
+                const { getMessaging, getToken, onMessage } = firebaseMessaging;
+                
+                const firebaseConfig = {
+                    apiKey: "AIzaSyAlFST5pkmHLNcDJfx73-bPGieWVrm_nVs",
+                    authDomain: "pick5-push-notifications.firebaseapp.com",
+                    projectId: "pick5-push-notifications",
+                    storageBucket: "pick5-push-notifications.firebasestorage.app",
+                    messagingSenderId: "622059115299",
+                    appId: "1:622059115299:web:4ec6d0410ee275bcfd7296",
+                    measurementId: "G-C9TD0KP24Z"
+                };
+                
+                const app = initializeApp(firebaseConfig);
+                const messaging = getMessaging(app);
+                
+                // Request permission and get token
+                Notification.requestPermission().then((permission) => {
+                    if (permission === 'granted') {
+                        console.log('Notification permission granted.');
+                        
+                        // VAPID key from your Firebase Console (Cloud Messaging tab)
+                        // You need to add this from your Firebase Console
+                        const vapidKey = 'YOUR_VAPID_KEY_FROM_FIREBASE_CONSOLE';
+                        
+                        getToken(messaging, { vapidKey: vapidKey })
+                            .then((currentToken) => {
+                                if (currentToken) {
+                                    // Send the token to your server
+                                    console.log('Token received:', currentToken);
+                                    sendTokenToServer(currentToken);
+                                } else {
+                                    console.log('No registration token available.');
+                                }
+                            })
+                            .catch((err) => {
+                                console.log('An error occurred while retrieving token:', err);
+                            });
+                    } else {
+                        console.log('Permission denied for notifications.');
+                    }
+                });
+                
+                // Handle foreground messages
+                onMessage(messaging, (payload) => {
+                    console.log('Message received in foreground:', payload);
+                    // Create a notification for foreground messages
+                    const notificationTitle = payload.notification.title;
+                    const notificationOptions = {
+                        body: payload.notification.body,
+                        icon: 'Pick5Logo.png'
+                    };
+                    
+                    new Notification(notificationTitle, notificationOptions);
+                });
+            });
+        });
+        
+        // Function to send token to your server
+        function sendTokenToServer(token) {
+            // This would be replaced with your actual server endpoint
+            // For example, a call to your Google Apps Script
+            console.log('Sending token to server:', token);
+            
+            // Example: Using fetch to send the token to your server
+            // fetch('YOUR_SERVER_ENDPOINT', {
+            //     method: 'POST',
+            //     headers: {
+            //         'Content-Type': 'application/json',
+            //     },
+            //     body: JSON.stringify({ token: token }),
+            // })
+            // .then(response => response.json())
+            // .then(data => console.log('Token registered with server:', data))
+            // .catch(error => console.error('Error registering token:', error));
+        }
+    }
+});
      </script>
  </body>
  </html>
