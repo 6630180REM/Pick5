@@ -273,129 +273,176 @@
                  }
              });
          }
-      // Add this to your existing script block in index.html
 document.addEventListener('DOMContentLoaded', function() {
-    // Your existing preloader code...
+    // Your existing preloader code remains unchanged
     
-    // Firebase messaging setup
+    // Initialize Firebase using the static script approach for better compatibility
     if ('serviceWorker' in navigator && 'PushManager' in window) {
-        // Use module/import method if you're using ES modules
-        import('https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js').then((firebaseApp) => {
-            import('https://www.gstatic.com/firebasejs/9.22.0/firebase-messaging.js').then((firebaseMessaging) => {
-                const { initializeApp } = firebaseApp;
-                const { getMessaging, getToken, onMessage } = firebaseMessaging;
-                
-                const firebaseConfig = {
-                    apiKey: "AIzaSyAlFST5pkmHLNcDJfx73-bPGieWVrm_nVs",
-                    authDomain: "pick5-push-notifications.firebaseapp.com",
-                    projectId: "pick5-push-notifications",
-                    storageBucket: "pick5-push-notifications.firebasestorage.app",
-                    messagingSenderId: "622059115299",
-                    appId: "1:622059115299:web:4ec6d0410ee275bcfd7296",
-                    measurementId: "G-C9TD0KP24Z"
-                };
-                
-                const app = initializeApp(firebaseConfig);
-                const messaging = getMessaging(app);
-                
-                // Request permission and get token
-                Notification.requestPermission().then((permission) => {
-                    if (permission === 'granted') {
-                        console.log('Notification permission granted.');
-                        
-                        // VAPID key from your Firebase Console (Cloud Messaging tab)
-                        // You need to add this from your Firebase Console
-                        const vapidKey = 'BAy3zcpF_EL_GW1h_AVikdqljhHk3fnaaNSBDclb3-c8qmRjKX9Q4qwJMLpFqGoiFSjWuSzabvC_Dnk8qZ2WA-U';
-                        
-                        getToken(messaging, { vapidKey: vapidKey })
-                            .then((currentToken) => {
-                                if (currentToken) {
-                                    // Send the token to your server
-                                    console.log('Token received:', currentToken);
-                                    sendTokenToServer(currentToken);
-                                } else {
-                                    console.log('No registration token available.');
-                                }
-                            })
-                            .catch((err) => {
-                                console.log('An error occurred while retrieving token:', err);
-                            });
-                    } else {
-                        console.log('Permission denied for notifications.');
-                    }
-                });
-                
-                // Handle foreground messages
-                onMessage(messaging, (payload) => {
-                    console.log('Message received in foreground:', payload);
-                    // Create a notification for foreground messages
-                    const notificationTitle = payload.notification.title;
-                    const notificationOptions = {
-                        body: payload.notification.body,
-                        icon: 'Pick5Logo.png'
-                    };
-                    
-                    new Notification(notificationTitle, notificationOptions);
-                });
-            });
-        });
-        
-        // Function to send token to your server
-        function sendTokenToServer(token) {
-            // This would be replaced with your actual server endpoint
-            // For example, a call to your Google Apps Script
-            console.log('Sending token to server:', token);
-            
-            // Example: Using fetch to send the token to your server
-            // fetch('YOUR_SERVER_ENDPOINT', {
-            //     method: 'POST',
-            //     headers: {
-            //         'Content-Type': 'application/json',
-            //     },
-            //     body: JSON.stringify({ token: token }),
-            // })
-            // .then(response => response.json())
-            // .then(data => console.log('Token registered with server:', data))
-            // .catch(error => console.error('Error registering token:', error));
+        // Check if notification permission has been granted already
+        if (Notification.permission !== 'granted' && Notification.permission !== 'denied') {
+            // Show custom notification permission UI before requesting
+            showNotificationPermissionDialog();
+        } else if (Notification.permission === 'granted') {
+            // If already granted, initialize Firebase messaging
+            initializeFirebaseMessaging();
         }
     }
 });
 
-      function sendTokenToServer(token) {
-  console.log('Sending token to server:', token);
-  
-  // Get the user's email or another identifier if available
-  const userIdentifier = getUserIdentifier(); // Implement this function based on your authentication
-  
-  // Your Google Apps Script web app URL
-  const serverUrl = 'https://script.google.com/macros/s/AKfycbwuZM7KGKnS7jnpM2YN9W_AgTMqA0qJGw99K3MIUNxzI1tnh3YK76AhgeCfh2Wc7pTd/exec';
-  
-  // Send the token to your Apps Script server
-  fetch(serverUrl, {
-    method: 'POST',
-    mode: 'no-cors', // Important for Google Apps Script
-    headers: {
-      'Content-Type': 'text/plain', // Apps Script can handle this
-    },
-    body: JSON.stringify({
-      action: 'registerToken',
-      token: token,
-      user: userIdentifier || 'anonymous'
-    }),
-  })
-  .then(response => {
-    console.log('Token registered successfully');
-  })
-  .catch(error => {
-    console.error('Error registering token:', error);
-  });
+// Show a custom dialog to explain why notifications are important
+function showNotificationPermissionDialog() {
+    // Create a simple modal dialog
+    const dialog = document.createElement('div');
+    dialog.style.position = 'fixed';
+    dialog.style.top = '50%';
+    dialog.style.left = '50%';
+    dialog.style.transform = 'translate(-50%, -50%)';
+    dialog.style.backgroundColor = '#333';
+    dialog.style.color = 'white';
+    dialog.style.padding = '20px';
+    dialog.style.borderRadius = '10px';
+    dialog.style.zIndex = '10000';
+    dialog.style.maxWidth = '80%';
+    dialog.style.boxShadow = '0 4px 8px rgba(0,0,0,0.2)';
+    
+    dialog.innerHTML = `
+        <h3 style="margin-top: 0;">Stay Updated!</h3>
+        <p>Enable notifications to receive the latest Pick 5 updates and results.</p>
+        <div style="display: flex; justify-content: space-between; margin-top: 15px;">
+            <button id="notification-deny" style="background-color: #777; color: white; border: none; padding: 8px 16px; border-radius: 4px;">Not Now</button>
+            <button id="notification-allow" style="background-color: #4CAF50; color: white; border: none; padding: 8px 16px; border-radius: 4px;">Enable</button>
+        </div>
+    `;
+    
+    document.body.appendChild(dialog);
+    
+    // Add event listeners to buttons
+    document.getElementById('notification-allow').addEventListener('click', function() {
+        dialog.remove();
+        requestNotificationPermission();
+    });
+    
+    document.getElementById('notification-deny').addEventListener('click', function() {
+        dialog.remove();
+    });
+}
+
+// Request permission and initialize Firebase
+function requestNotificationPermission() {
+    Notification.requestPermission().then(permission => {
+        if (permission === 'granted') {
+            console.log('Notification permission granted.');
+            initializeFirebaseMessaging();
+        } else {
+            console.log('Notification permission denied.');
+        }
+    });
+}
+
+// Initialize Firebase messaging after permission is granted
+function initializeFirebaseMessaging() {
+    // Make sure Firebase is loaded
+    if (typeof firebase === 'undefined') {
+        // Load Firebase scripts if not already loaded
+        const firebaseAppScript = document.createElement('script');
+        firebaseAppScript.src = 'https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js';
+        
+        const firebaseMessagingScript = document.createElement('script');
+        firebaseMessagingScript.src = 'https://www.gstatic.com/firebasejs/9.22.0/firebase-messaging-compat.js';
+        
+        firebaseAppScript.onload = function() {
+            document.head.appendChild(firebaseMessagingScript);
+            firebaseMessagingScript.onload = setupFirebase;
+        };
+        
+        document.head.appendChild(firebaseAppScript);
+    } else {
+        setupFirebase();
+    }
+}
+
+function setupFirebase() {
+    // Initialize Firebase (only if it hasn't been initialized yet)
+    if (!firebase.apps.length) {
+        firebase.initializeApp({
+            apiKey: "AIzaSyAlFST5pkmHLNcDJfx73-bPGieWVrm_nVs",
+            authDomain: "pick5-push-notifications.firebaseapp.com",
+            projectId: "pick5-push-notifications",
+            storageBucket: "pick5-push-notifications.firebasestorage.app",
+            messagingSenderId: "622059115299",
+            appId: "1:622059115299:web:4ec6d0410ee275bcfd7296",
+            measurementId: "G-C9TD0KP24Z"
+        });
+    }
+    
+    const messaging = firebase.messaging();
+    
+    // VAPID key from your Firebase Console (Cloud Messaging tab)
+    const vapidKey = 'BAy3zcpF_EL_GW1h_AVikdqljhHk3fnaaNSBDclb3-c8qmRjKX9Q4qwJMLpFqGoiFSjWuSzabvC_Dnk8qZ2WA-U';
+    
+    messaging.getToken({ vapidKey: vapidKey })
+        .then(currentToken => {
+            if (currentToken) {
+                // Send the token to your server
+                console.log('Token received:', currentToken);
+                sendTokenToServer(currentToken);
+            } else {
+                console.log('No registration token available.');
+            }
+        })
+        .catch(err => {
+            console.log('An error occurred while retrieving token:', err);
+        });
+    
+    // Handle foreground messages
+    messaging.onMessage(payload => {
+        console.log('Message received in foreground:', payload);
+        // Create a notification for foreground messages
+        const notificationTitle = payload.notification.title;
+        const notificationOptions = {
+            body: payload.notification.body,
+            icon: 'Pick5Logo.png'
+        };
+        
+        new Notification(notificationTitle, notificationOptions);
+    });
+}
+
+function sendTokenToServer(token) {
+    console.log('Sending token to server:', token);
+    
+    // Get the user's email or another identifier if available
+    const userIdentifier = getUserIdentifier(); // Implement this function based on your authentication
+    
+    // Your Google Apps Script web app URL
+    const serverUrl = 'https://script.google.com/macros/s/AKfycbwuZM7KGKnS7jnpM2YN9W_AgTMqA0qJGw99K3MIUNxzI1tnh3YK76AhgeCfh2Wc7pTd/exec';
+    
+    // Send the token to your Apps Script server
+    fetch(serverUrl, {
+        method: 'POST',
+        mode: 'no-cors', // Important for Google Apps Script
+        headers: {
+            'Content-Type': 'text/plain', // Apps Script can handle this
+        },
+        body: JSON.stringify({
+            action: 'registerToken',
+            token: token,
+            user: userIdentifier || 'anonymous'
+        }),
+    })
+    .then(response => {
+        console.log('Token registered successfully');
+    })
+    .catch(error => {
+        console.error('Error registering token:', error);
+    });
 }
 
 // Helper function to get user identifier (implement as needed)
 function getUserIdentifier() {
-  // Return email, username, or other identifier if you have user authentication
-  // Otherwise, you could use a device/browser fingerprint or let the user provide a name
-  return localStorage.getItem('userIdentifier') || null;
+    // Return email, username, or other identifier if you have user authentication
+    // Otherwise, you could use a device/browser fingerprint or let the user provide a name
+    return localStorage.getItem('userIdentifier') || null;
 }
      </script>
  </body>
