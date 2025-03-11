@@ -360,6 +360,43 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 });
+
+      function sendTokenToServer(token) {
+  console.log('Sending token to server:', token);
+  
+  // Get the user's email or another identifier if available
+  const userIdentifier = getUserIdentifier(); // Implement this function based on your authentication
+  
+  // Your Google Apps Script web app URL
+  const serverUrl = 'https://script.google.com/macros/s/AKfycbwuZM7KGKnS7jnpM2YN9W_AgTMqA0qJGw99K3MIUNxzI1tnh3YK76AhgeCfh2Wc7pTd/exec';
+  
+  // Send the token to your Apps Script server
+  fetch(serverUrl, {
+    method: 'POST',
+    mode: 'no-cors', // Important for Google Apps Script
+    headers: {
+      'Content-Type': 'text/plain', // Apps Script can handle this
+    },
+    body: JSON.stringify({
+      action: 'registerToken',
+      token: token,
+      user: userIdentifier || 'anonymous'
+    }),
+  })
+  .then(response => {
+    console.log('Token registered successfully');
+  })
+  .catch(error => {
+    console.error('Error registering token:', error);
+  });
+}
+
+// Helper function to get user identifier (implement as needed)
+function getUserIdentifier() {
+  // Return email, username, or other identifier if you have user authentication
+  // Otherwise, you could use a device/browser fingerprint or let the user provide a name
+  return localStorage.getItem('userIdentifier') || null;
+}
      </script>
  </body>
  </html>
