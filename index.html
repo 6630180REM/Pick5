@@ -215,7 +215,7 @@ const firebaseConfig = {
 
 async function subscribeUserToPush(registration) {
     try {
-        const vapidPublicKey = 'your-vapid-public-key'; // Replace with actual VAPID key
+        const vapidPublicKey = 'BOM3KFfemC5lGnsF28N-_UGA7H9esoOm5gp0_Eg45HMqaMqviLx_bcAonVaZe-c0GwSFwfwe7-fJVP1n8h1iAAU'; // Replace with actual VAPID key
         console.log('VAPID Public Key:', vapidPublicKey);
         if (!vapidPublicKey || vapidPublicKey === 'your-vapid-public-key') {
             throw new Error('VAPID public key is not set. Please update it in index.html.');
