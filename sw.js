@@ -1,4 +1,5 @@
-const CACHE_NAME = 'pick5-app-v2'; // Increment version number
+// sw.js
+const CACHE_NAME = 'pick5-app-v2';
 const urlsToCache = [
   './',
   './index.html',
@@ -6,7 +7,7 @@ const urlsToCache = [
   './Pick5Logo.png'
 ];
 
-// Install event - cache the app shell
+// Install event
 self.addEventListener('install', event => {
   console.log('Service Worker installing');
   event.waitUntil(
@@ -17,44 +18,37 @@ self.addEventListener('install', event => {
       })
       .then(() => {
         console.log('Service Worker install complete');
-        return self.skipWaiting(); // Force the waiting service worker to become active
+        return self.skipWaiting();
       })
   );
 });
 
-// Activate event - clean up old caches aggressively
+// Activate event
 self.addEventListener('activate', event => {
   console.log('Service Worker activating');
-  const cacheWhitelist = [CACHE_NAME];
   event.waitUntil(
     caches.keys().then(cacheNames => {
       return Promise.all(
         cacheNames.map(cacheName => {
-          // Delete ALL existing caches, not just those not in the whitelist
           console.log('Service Worker: clearing ALL previous caches');
           return caches.delete(cacheName);
         })
       );
     }).then(() => {
       console.log('Service Worker activate complete');
-      return self.clients.claim(); // Take control of all pages immediately
+      return self.clients.claim();
     })
   );
 });
 
-// Fetch event - serve from cache or network with network-first strategy
+// Fetch event
 self.addEventListener('fetch', event => {
-  console.log('Service Worker fetching: ' + event.request.url);
-  
-  // Skip cross-origin requests (like Google Scripts)
   if (!event.request.url.startsWith(self.location.origin)) {
     return;
   }
-  
   event.respondWith(
     fetch(event.request)
       .then(response => {
-        // If network fetch is successful, update the cache
         if (response && response.status === 200) {
           const responseToCache = response.clone();
           caches.open(CACHE_NAME)
@@ -63,12 +57,47 @@ self.addEventListener('fetch', event => {
             });
           return response;
         }
-        // Fallback to cache if network fails
         return caches.match(event.request);
       })
       .catch(() => {
-        // If both network and cache fail, return a fallback
         return caches.match(event.request);
+      })
+  );
+});
+
+// Handle Push Events
+self.addEventListener('push', event => {
+  console.log('Push event received:', event);
+  const data = event.data ? event.data.json() : { title: "Joe's Pick 5", body: "New update available!" };
+  const options = {
+    body: data.body,
+    icon: './Pick5Logo.png',
+    badge: './Pick5Logo.png',
+    vibrate: [200, 100, 200],
+    data: {
+      url: data.url || '/' // Default redirect URL
+    }
+  };
+  event.waitUntil(
+    self.registration.showNotification(data.title, options)
+  );
+});
+
+// Handle Notification Click
+self.addEventListener('notificationclick', event => {
+  event.notification.close();
+  const url = event.notification.data.url;
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true })
+      .then(clientList => {
+        for (const client of clientList) {
+          if (client.url === url && 'focus' in client) {
+            return client.focus();
+          }
+        }
+        if (clients.openWindow) {
+          return clients.openWindow(url);
+        }
       })
   );
 });
