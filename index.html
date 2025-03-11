@@ -1,407 +1,280 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-title" content="Joe's Pick 5">
-    <meta name="application-name" content="Joe's Pick 5">
-    <meta name="theme-color" content="#333">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    
-    <!-- Standard favicon -->
-    <link rel="icon" type="image/png" sizes="32x32" href="Pick5Logo.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="Pick5Logo.png">
-    
-    <!-- iOS icons -->
-    <link rel="apple-touch-icon" href="Pick5Logo.png">
-    <link rel="apple-touch-icon" sizes="152x152" href="Pick5Logo.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="Pick5Logo.png">
-    <link rel="apple-touch-icon" sizes="167x167" href="Pick5Logo.png">
-    
-    <!-- Android icons -->
-    <link rel="shortcut icon" href="Pick5Logo.png">
-    
-    <!-- Web app manifest -->
-    <link rel="manifest" href="manifest.json">
-    
-    <title>Joe's Pick 5</title>
-    <style>
-        html, body {
-            background-color: #333 !important;
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            width: 100%;
-            height: 100%;
-            font-family: Arial, sans-serif;
-            overscroll-behavior: none; /* Prevent bounce effect on some browsers */
-        }
-
-        /* Prevent white background on drag or scroll */
-        * {
-            -webkit-tap-highlight-color: transparent;
-            -webkit-touch-callout: none;
-            -webkit-user-select: none;
-            -khtml-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
-            -webkit-text-size-adjust: none;
-            text-size-adjust: none;
-        }
-        input, textarea {
-            font-size: 16px !important;
-        }
-
-        iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-            display: block;
-            overflow: auto;
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #333;
-        }
-        #install-banner {
-            display: none;
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background-color: #333;
-            color: white;
-            text-align: center;
-            padding: 10px;
-            box-shadow: 0 -2px 5px rgba(0,0,0,0.2);
-            z-index: 1000;
-        }
-        #install-banner button {
-            background-color: #4CAF50;
-            border: none;
-            color: white;
-            padding: 8px 16px;
-            text-align: center;
-            text-decoration: none;
-            display: inline-block;
-            font-size: 16px;
-            margin: 4px 2px;
-            cursor: pointer;
-            border-radius: 4px;
-        }
-
-        /* Preloader Styles */
-        #preloader {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: #333;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            overflow: hidden;
-            background: black url(https://img.freepik.com/premium-photo/3d-rendering-empty-american-football-field-with-stadium_493806-8391.jpg?semt=ais_hybrid);
-            color: white;
-            padding: 0px;
-            background-attachment: fixed;
-            background-repeat: round;
-            background-size: cover;
-        }
-
-        #preloader-text {
-            font-size: 7rem;
-            font-weight: bold;
-            color: transparent;
-            position: relative;
-            text-align: center;
-            -webkit-text-stroke: 7px #478fdf;
-            line-height: .9;
-        }
-
-        #preloader-text::before {
-            content: "JOE'S\A PICK 5";
-            white-space: pre;
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 0;
-            overflow: hidden;
-            color: #478fdf;
-            border-bottom: 3px solid white;
-            animation: fill-text-bottom-up 3s linear forwards;
-            padding: 0px;
-            -webkit-text-stroke: 7px #478fdf;
-        }
-
-        @keyframes fill-text-bottom-up {
-            0% {height: 0;}
-            100% {height: 100%;}
-            }
-    </style>
-</head>
-<body>
-    <!-- Preloader -->
-<div id="preloader">
-    <div id="preloader-text">JOE'S<br>PICK 5</div>
-</div>
-
-    <div id="install-banner">
-        <p>Add to Home Screen for the best experience</p>
-        <button id="install-button">Install</button>
-        <button id="dismiss-button">Dismiss</button>
-    </div>
-    
-    <iframe frameborder="0" scrolling="yes" allowfullscreen="yes" src="https://script.google.com/macros/s/AKfycbwuZM7KGKnS7jnpM2YN9W_AgTMqA0qJGw99K3MIUNxzI1tnh3YK76AhgeCfh2Wc7pTd/exec"></iframe>
-    
-    <script>
-        // Preloader Script
-        document.addEventListener('DOMContentLoaded', function() {
-            const preloader = document.getElementById('preloader');
-            
-            // Hide preloader after 5 seconds
-            setTimeout(() => {
-                preloader.style.display = 'none';
-            }, 5000);
-        });
-
-        // Existing Service Worker Registration
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', function() {
-                navigator.serviceWorker.register('sw.js')
-                    .then(function(registration) {
-                        console.log('Service Worker registered with scope:', registration.scope);
-                    })
-                    .catch(function(error) {
-                        console.log('Service Worker registration failed:', error);
-                    });
-            });
-        }
-
-        // Existing PWA Install Prompt Code (unchanged)
-        let deferredPrompt;
-        const installBanner = document.getElementById('install-banner');
-        const installButton = document.getElementById('install-button');
-        const dismissButton = document.getElementById('dismiss-button');
-
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            installBanner.style.display = 'block';
-        });
-
-        installButton.addEventListener('click', () => {
-            installBanner.style.display = 'none';
-            deferredPrompt.prompt();
-            deferredPrompt.userChoice.then((choiceResult) => {
-                if (choiceResult.outcome === 'accepted') {
-                    console.log('User accepted the install prompt');
-                } else {
-                    console.log('User dismissed the install prompt');
-                }
-                deferredPrompt = null;
-            });
-        });
-
-        dismissButton.addEventListener('click', () => {
-            installBanner.style.display = 'none';
-        });
-
-        // Existing Iframe Sizing Code
-        function resizeIframe() {
-            var iframe = document.querySelector("iframe");
-            iframe.style.height = window.innerHeight + "px";
-            iframe.style.width = window.innerWidth + "px";
-        }
-        window.addEventListener("resize", resizeIframe);
-        window.addEventListener("load", resizeIframe);
-        
-        // Existing Scroll Manipulation Code
-        let lastScrollY = 0;
-        const iframe = document.querySelector("iframe");
-        iframe.addEventListener("load", () => {
-            try {
-                iframe.contentWindow.addEventListener("scroll", () => {
-                    const currentScrollY = iframe.contentWindow.scrollY;
-                    if (Math.abs(currentScrollY - lastScrollY) > 10) {
-                        window.scrollTo(0, window.scrollY + (currentScrollY - lastScrollY));
-                    }
-                    lastScrollY = currentScrollY;
-                });
-            } catch (e) {
-                console.log("Could not add scroll listener to iframe content:", e);
-            }
-        });
-
-        // Existing Standalone Mode Check
-        if (window.matchMedia('(display-mode: standalone)').matches || 
-            window.navigator.standalone === true) {
-            console.log('Display mode is standalone');
-            installBanner.style.display = 'none';
-        }
-
-        function lockOrientation() {
-            if (screen.orientation && screen.orientation.lock) {
-                screen.orientation.lock('portrait')
-                    .catch(function(error) {
-                        console.log('Orientation lock failed:', error);
-                    });
-            }
-        }
-
-        // Try to lock orientation on load and when entering fullscreen
-        window.addEventListener('load', lockOrientation);
-        
-        // Additional checks for different browser support
-        if (window.screen.orientation) {
-            window.screen.orientation.addEventListener('change', function() {
-                if (window.screen.orientation.type.includes('landscape')) {
-                    lockOrientation();
-                }
-            });
-        }
-
-     function checkNotificationPermission() {
-  if (!('Notification' in window)) {
-    console.log('This browser does not support notifications');
-    return false;
-  }
-  
-  // If permission is already granted or denied, hide the button
-  if (Notification.permission === 'granted' || Notification.permission === 'denied') {
-    const existingButton = document.getElementById('notification-button');
-    if (existingButton) {
-      existingButton.style.display = 'none';
-    }
-    return true;
-  }
-  
-  return false; // Permission is in 'default' state (not decided yet)
-}
-
-// Function to request notification permission
-function requestNotificationPermission() {
-  if (!('Notification' in window)) {
-    console.log('This browser does not support notifications');
-    return;
-  }
-  
-  // Hide the button immediately when clicked
-  const notificationButton = document.getElementById('notification-button');
-  if (notificationButton) {
-    notificationButton.style.display = 'none';
-  }
-  
-  Notification.requestPermission().then(permission => {
-    if (permission === 'granted') {
-      console.log('Notification permission granted');
-      subscribeToPushNotifications();
-    } else {
-      console.log('Notification permission denied');
-    }
-  }).catch(error => {
-    console.log('Error requesting notification permission:', error);
-  });
-}
-
-        function subscribeToPushNotifications() {
-  if (!('PushManager' in window)) {
-    console.log('Push notifications not supported');
-    return;
-  }
-  
-  navigator.serviceWorker.ready
-    .then(registration => {
-      // Convert your VAPID public key to Uint8Array
-      function urlBase64ToUint8Array(base64String) {
-        const padding = '='.repeat((4 - base64String.length % 4) % 4);
-        const base64 = (base64String + padding)
-          .replace(/-/g, '+')
-          .replace(/_/g, '/');
-        
-        const rawData = window.atob(base64);
-        const outputArray = new Uint8Array(rawData.length);
-        
-        for (let i = 0; i < rawData.length; ++i) {
-          outputArray[i] = rawData.charCodeAt(i);
-        }
-        return outputArray;
-      }
-      
-      const vapidPublicKey = 'BLy94-OE_jowdq1VzI9Ni58qZPduEiHUGDcuKgNSPwEfVQ40v3xwbsIxrVFhb-H-hWnb74ZvDgpquqOanSy7v3s';
-      const convertedVapidKey = urlBase64ToUint8Array(vapidPublicKey);
-      
-      return registration.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: convertedVapidKey
-      });
-    })
-    .then(subscription => {
-      // Send subscription to your server
-      return fetch('http://localhost:3000/api/subscribe', {
-        method: 'POST',
-        body: JSON.stringify(subscription),
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
-    })
-    .then(response => {
-      if (response.ok) {
-        console.log('Subscription sent to server successfully');
-      } else {
-        throw new Error('Failed to send subscription to server');
-      }
-    })
-    .catch(error => {
-      console.error('Error subscribing to push notifications:', error);
-    });
-}
-
-// Add this to your existing window.load event
-window.addEventListener('load', function() {
-  // Check if we need to show the notification button
-  const permissionAlreadySet = checkNotificationPermission();
-  
-  // Only create and show the button if permission hasn't been set
-  if (!permissionAlreadySet) {
-    const notificationButton = document.createElement('button');
-    notificationButton.id = 'notification-button'; // Add ID for easy reference
-    notificationButton.textContent = 'Enable Notifications';
-    notificationButton.style.position = 'fixed';
-    notificationButton.style.bottom = '60px';
-    notificationButton.style.right = '10px';
-    notificationButton.style.zIndex = '1001';
-    notificationButton.style.padding = '8px 16px';
-    notificationButton.style.backgroundColor = '#4CAF50';
-    notificationButton.style.color = 'white';
-    notificationButton.style.border = 'none';
-    notificationButton.style.borderRadius = '4px';
-    notificationButton.style.cursor = 'pointer';
-    
-    notificationButton.addEventListener('click', requestNotificationPermission);
-    
-    document.body.appendChild(notificationButton);
-  }
-  
-  // If permission is already granted, subscribe without showing the button
-  if (Notification.permission === 'granted') {
-    subscribeToPushNotifications();
-  }
-});
-    </script>
-</body>
-</html>
+ <html lang="en">
+ <head>
+     <meta charset="UTF-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+     <meta name="apple-mobile-web-app-capable" content="yes">
+     <meta name="mobile-web-app-capable" content="yes">
+     <meta name="apple-mobile-web-app-title" content="Joe's Pick 5">
+     <meta name="application-name" content="Joe's Pick 5">
+     <meta name="theme-color" content="#333">
+     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+ 
+     <!-- Standard favicon -->
+     <link rel="icon" type="image/png" sizes="32x32" href="Pick5Logo.png">
+     <link rel="icon" type="image/png" sizes="16x16" href="Pick5Logo.png">
+ 
+     <!-- iOS icons -->
+     <link rel="apple-touch-icon" href="Pick5Logo.png">
+     <link rel="apple-touch-icon" sizes="152x152" href="Pick5Logo.png">
+     <link rel="apple-touch-icon" sizes="180x180" href="Pick5Logo.png">
+     <link rel="apple-touch-icon" sizes="167x167" href="Pick5Logo.png">
+ 
+     <!-- Android icons -->
+     <link rel="shortcut icon" href="Pick5Logo.png">
+ 
+     <!-- Web app manifest -->
+     <link rel="manifest" href="manifest.json">
+ 
+     <title>Joe's Pick 5</title>
+     <style>
+         html, body {
+             background-color: #333 !important;
+             margin: 0;
+             padding: 0;
+             overflow: hidden;
+             position: fixed;
+             top: 0;
+             left: 0;
+             right: 0;
+             bottom: 0;
+             width: 100%;
+             height: 100%;
+             font-family: Arial, sans-serif;
+             overscroll-behavior: none; /* Prevent bounce effect on some browsers */
+         }
+ 
+         /* Prevent white background on drag or scroll */
+         * {
+             -webkit-tap-highlight-color: transparent;
+             -webkit-touch-callout: none;
+             -webkit-user-select: none;
+             -khtml-user-select: none;
+             -moz-user-select: none;
+             -ms-user-select: none;
+             user-select: none;
+             -webkit-text-size-adjust: none;
+             text-size-adjust: none;
+         }
+         input, textarea {
+             font-size: 16px !important;
+         }
+ 
+         iframe {
+             width: 100%;
+             height: 100%;
+             border: none;
+             display: block;
+             overflow: auto;
+             position: absolute;
+             top: 0;
+             left: 0;
+             right: 0;
+             bottom: 0;
+             background-color: #333;
+         }
+         #install-banner {
+             display: none;
+             position: fixed;
+             bottom: 0;
+             left: 0;
+             right: 0;
+             background-color: #333;
+             color: white;
+             text-align: center;
+             padding: 10px;
+             box-shadow: 0 -2px 5px rgba(0,0,0,0.2);
+             z-index: 1000;
+         }
+         #install-banner button {
+             background-color: #4CAF50;
+             border: none;
+             color: white;
+             padding: 8px 16px;
+             text-align: center;
+             text-decoration: none;
+             display: inline-block;
+             font-size: 16px;
+             margin: 4px 2px;
+             cursor: pointer;
+             border-radius: 4px;
+         }
+ 
+         /* Preloader Styles */
+         #preloader {
+             position: fixed;
+             top: 0;
+             left: 0;
+             width: 100%;
+             height: 100%;
+             background-color: #333;
+             display: flex;
+             justify-content: center;
+             align-items: center;
+             z-index: 9999;
+             overflow: hidden;
+             background: black url(https://img.freepik.com/premium-photo/3d-rendering-empty-american-football-field-with-stadium_493806-8391.jpg?semt=ais_hybrid);
+             color: white;
+             padding: 0px;
+             background-attachment: fixed;
+             background-repeat: round;
+             background-size: cover;
+         }
+ 
+         #preloader-text {
+             font-size: 7rem;
+             font-weight: bold;
+             color: transparent;
+             position: relative;
+             text-align: center;
+             -webkit-text-stroke: 7px #478fdf;
+             line-height: .9;
+         }
+ 
+         #preloader-text::before {
+             content: "Welcome\Ato Joe's\A PICK 5";
+             content: "JOE'S\A PICK 5";
+             white-space: pre;
+             position: absolute;
+             top: 0;
+             left: 0;
+             width: 100%;
+             height: 0;
+             overflow: hidden;
+             color: #478fdf;
+             border-bottom: 3px solid white;
+             animation: fill-text-bottom-up 3s linear forwards;
+             padding: 0px;
+             -webkit-text-stroke: 7px #478fdf;
+         }
+ 
+         @keyframes fill-text-bottom-up {
+             0% {height: 0;}
+             100% {height: 100%;}
+             }
+     </style>
+ </head>
+ <body>
+     <!-- Preloader -->
+ <div id="preloader">
+     <div id="preloader-text">Welcome<br>to Joe's<br>PICK 5</div>
+     <div id="preloader-text">JOE'S<br>PICK 5</div>
+ </div>
+ 
+     <div id="install-banner">
+         <p>Add to Home Screen for the best experience</p>
+         <button id="install-button">Install</button>
+         <button id="dismiss-button">Dismiss</button>
+     </div>
+ 
+     <iframe frameborder="0" scrolling="yes" allowfullscreen="yes" src="https://script.google.com/macros/s/AKfycbwuZM7KGKnS7jnpM2YN9W_AgTMqA0qJGw99K3MIUNxzI1tnh3YK76AhgeCfh2Wc7pTd/exec"></iframe>
+ 
+     <script>
+         // Preloader Script
+         document.addEventListener('DOMContentLoaded', function() {
+             const preloader = document.getElementById('preloader');
+ 
+             // Hide preloader after 5 seconds
+             setTimeout(() => {
+                 preloader.style.display = 'none';
+             }, 5000);
+         });
+ 
+         // Existing Service Worker Registration
+         if ('serviceWorker' in navigator) {
+             window.addEventListener('load', function() {
+                 navigator.serviceWorker.register('sw.js')
+                     .then(function(registration) {
+                         console.log('Service Worker registered with scope:', registration.scope);
+                     })
+                     .catch(function(error) {
+                         console.log('Service Worker registration failed:', error);
+                     });
+             });
+         }
+ 
+         // Existing PWA Install Prompt Code (unchanged)
+         let deferredPrompt;
+         const installBanner = document.getElementById('install-banner');
+         const installButton = document.getElementById('install-button');
+         const dismissButton = document.getElementById('dismiss-button');
+ 
+         window.addEventListener('beforeinstallprompt', (e) => {
+             e.preventDefault();
+             deferredPrompt = e;
+             installBanner.style.display = 'block';
+         });
+ 
+         installButton.addEventListener('click', () => {
+             installBanner.style.display = 'none';
+             deferredPrompt.prompt();
+             deferredPrompt.userChoice.then((choiceResult) => {
+                 if (choiceResult.outcome === 'accepted') {
+                     console.log('User accepted the install prompt');
+                 } else {
+                     console.log('User dismissed the install prompt');
+                 }
+                 deferredPrompt = null;
+             });
+         });
+ 
+         dismissButton.addEventListener('click', () => {
+             installBanner.style.display = 'none';
+         });
+ 
+         // Existing Iframe Sizing Code
+         function resizeIframe() {
+             var iframe = document.querySelector("iframe");
+             iframe.style.height = window.innerHeight + "px";
+             iframe.style.width = window.innerWidth + "px";
+         }
+         window.addEventListener("resize", resizeIframe);
+         window.addEventListener("load", resizeIframe);
+ 
+         // Existing Scroll Manipulation Code
+         let lastScrollY = 0;
+         const iframe = document.querySelector("iframe");
+         iframe.addEventListener("load", () => {
+             try {
+                 iframe.contentWindow.addEventListener("scroll", () => {
+                     const currentScrollY = iframe.contentWindow.scrollY;
+                     if (Math.abs(currentScrollY - lastScrollY) > 10) {
+                         window.scrollTo(0, window.scrollY + (currentScrollY - lastScrollY));
+                     }
+                     lastScrollY = currentScrollY;
+                 });
+             } catch (e) {
+                 console.log("Could not add scroll listener to iframe content:", e);
+             }
+         });
+ 
+         // Existing Standalone Mode Check
+         if (window.matchMedia('(display-mode: standalone)').matches || 
+             window.navigator.standalone === true) {
+             console.log('Display mode is standalone');
+             installBanner.style.display = 'none';
+         }
+ 
+         function lockOrientation() {
+             if (screen.orientation && screen.orientation.lock) {
+                 screen.orientation.lock('portrait')
+                     .catch(function(error) {
+                         console.log('Orientation lock failed:', error);
+                     });
+             }
+         }
+ 
+         // Try to lock orientation on load and when entering fullscreen
+         window.addEventListener('load', lockOrientation);
+ 
+         // Additional checks for different browser support
+         if (window.screen.orientation) {
+             window.screen.orientation.addEventListener('change', function() {
+                 if (window.screen.orientation.type.includes('landscape')) {
+                     lockOrientation();
+                 }
+             });
+         }
+     </script>
+ </body>
+ </html>
