@@ -282,14 +282,14 @@
 <script>
   // Initialize Firebase
   const firebaseConfig = {
-    apiKey: "your-api-key",
-    authDomain: "your-project.firebaseapp.com",
-    projectId: "your-project-id",
-    storageBucket: "your-project.appspot.com",
-    messagingSenderId: "your-sender-id",
-    appId: "your-app-id",
-    measurementId: "your-measurement-id"
-  };
+  apiKey: "AIzaSyB5r_KL2eKVFd66VQU_5pznKrVHa9xzCfc",
+  authDomain: "joespick5push.firebaseapp.com",
+  projectId: "joespick5push",
+  storageBucket: "joespick5push.firebasestorage.app",
+  messagingSenderId: "783669343677",
+  appId: "1:783669343677:web:c1f72d2a2a58b0349a4ed4"
+};
+
   firebase.initializeApp(firebaseConfig);
   const messaging = firebase.messaging();
 
@@ -317,7 +317,7 @@
   // Subscribe User to Push
   async function subscribeUserToPush(registration) {
     try {
-      const vapidPublicKey = 'your-vapid-public-key'; // From Firebase Console
+      const vapidPublicKey = 'BOM3KFfemC5lGnsF28N-_UGA7H9esoOm5gp0_Eg45HMqaMqviLx_bcAonVaZe-c0GwSFwfwe7-fJVP1n8h1iAAU'; // From Firebase Console
       const subscription = await registration.pushManager.subscribe({
         userVisibleOnly: true,
         applicationServerKey: urlBase64ToUint8Array(vapidPublicKey)
