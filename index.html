@@ -213,26 +213,31 @@ const firebaseConfig = {
             });
         }
 
-        // Subscribe User to Push
-        async function subscribeUserToPush(registration) {
-            try {
-                const vapidPublicKey = 'BOM3KFfemC5lGnsF28N-_UGA7H9esoOm5gp0_Eg45HMqaMqviLx_bcAonVaZe-c0GwSFwfwe7-fJVP1n8h1iAAU'; // From Firebase Console
-                const subscription = await registration.pushManager.subscribe({
-                    userVisibleOnly: true,
-                    applicationServerKey: urlBase64ToUint8Array(vapidPublicKey)
-                });
-                console.log('Push subscription:', JSON.stringify(subscription));
-
-                // Send subscription to Google Apps Script
-                await fetch('https://script.google.com/macros/s/AKfycbwuZM7KGKnS7jnpM2YN9W_AgTMqA0qJGw99K3MIUNxzI1tnh3YK76AhgeCfh2Wc7pTd/exec', {
-                    method: 'POST',
-                    body: JSON.stringify({ subscription }),
-                    headers: { 'Content-Type': 'application/json' }
-                });
-            } catch (error) {
-                console.error('Failed to subscribe to push:', error);
-            }
+async function subscribeUserToPush(registration) {
+    try {
+        const vapidPublicKey = 'your-vapid-public-key'; // Replace with actual VAPID key
+        console.log('VAPID Public Key:', vapidPublicKey);
+        if (!vapidPublicKey || vapidPublicKey === 'your-vapid-public-key') {
+            throw new Error('VAPID public key is not set. Please update it in index.html.');
         }
+        const subscription = await registration.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: urlBase64ToUint8Array(vapidPublicKey)
+        });
+        console.log('Push subscription:', JSON.stringify(subscription));
+
+        // Send subscription to Google Apps Script with no-cors
+        const response = await fetch('https://script.google.com/macros/s/AKfycbwuZM7KGKnS7jnpM2YN9W_AgTMqA0qJGw99K3MIUNxzI1tnh3YK76AhgeCfh2Wc7pTd/exec', {
+            method: 'POST',
+            mode: 'no-cors', // Add this
+            body: JSON.stringify({ subscription }),
+            headers: { 'Content-Type': 'application/json' }
+        });
+        console.log('Subscription sent to server (no-cors mode, response opaque)');
+    } catch (error) {
+        console.error('Failed to subscribe to push:', error);
+    }
+}
 
         // Convert VAPID key to Uint8Array
         function urlBase64ToUint8Array(base64String) {
