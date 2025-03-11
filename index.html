@@ -1,449 +1,278 @@
 <!DOCTYPE html>
- <html lang="en">
- <head>
-     <meta charset="UTF-8">
-     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-     <meta name="apple-mobile-web-app-capable" content="yes">
-     <meta name="mobile-web-app-capable" content="yes">
-     <meta name="apple-mobile-web-app-title" content="Joe's Pick 5">
-     <meta name="application-name" content="Joe's Pick 5">
-     <meta name="theme-color" content="#333">
-     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
- 
-     <!-- Standard favicon -->
-     <link rel="icon" type="image/png" sizes="32x32" href="Pick5Logo.png">
-     <link rel="icon" type="image/png" sizes="16x16" href="Pick5Logo.png">
- 
-     <!-- iOS icons -->
-     <link rel="apple-touch-icon" href="Pick5Logo.png">
-     <link rel="apple-touch-icon" sizes="152x152" href="Pick5Logo.png">
-     <link rel="apple-touch-icon" sizes="180x180" href="Pick5Logo.png">
-     <link rel="apple-touch-icon" sizes="167x167" href="Pick5Logo.png">
- 
-     <!-- Android icons -->
-     <link rel="shortcut icon" href="Pick5Logo.png">
- 
-     <!-- Web app manifest -->
-     <link rel="manifest" href="manifest.json">
- 
-     <title>Joe's Pick 5</title>
-     <style>
-         html, body {
-             background-color: #333 !important;
-             margin: 0;
-             padding: 0;
-             overflow: hidden;
-             position: fixed;
-             top: 0;
-             left: 0;
-             right: 0;
-             bottom: 0;
-             width: 100%;
-             height: 100%;
-             font-family: Arial, sans-serif;
-             overscroll-behavior: none; /* Prevent bounce effect on some browsers */
-         }
- 
-         /* Prevent white background on drag or scroll */
-         * {
-             -webkit-tap-highlight-color: transparent;
-             -webkit-touch-callout: none;
-             -webkit-user-select: none;
-             -khtml-user-select: none;
-             -moz-user-select: none;
-             -ms-user-select: none;
-             user-select: none;
-             -webkit-text-size-adjust: none;
-             text-size-adjust: none;
-         }
-         input, textarea {
-             font-size: 16px !important;
-         }
- 
-         iframe {
-             width: 100%;
-             height: 100%;
-             border: none;
-             display: block;
-             overflow: auto;
-             position: absolute;
-             top: 0;
-             left: 0;
-             right: 0;
-             bottom: 0;
-             background-color: #333;
-         }
-         #install-banner {
-             display: none;
-             position: fixed;
-             bottom: 0;
-             left: 0;
-             right: 0;
-             background-color: #333;
-             color: white;
-             text-align: center;
-             padding: 10px;
-             box-shadow: 0 -2px 5px rgba(0,0,0,0.2);
-             z-index: 1000;
-         }
-         #install-banner button {
-             background-color: #4CAF50;
-             border: none;
-             color: white;
-             padding: 8px 16px;
-             text-align: center;
-             text-decoration: none;
-             display: inline-block;
-             font-size: 16px;
-             margin: 4px 2px;
-             cursor: pointer;
-             border-radius: 4px;
-         }
- 
-         /* Preloader Styles */
-         #preloader {
-             position: fixed;
-             top: 0;
-             left: 0;
-             width: 100%;
-             height: 100%;
-             background-color: #333;
-             display: flex;
-             justify-content: center;
-             align-items: center;
-             z-index: 9999;
-             overflow: hidden;
-             background: black url(https://img.freepik.com/premium-photo/3d-rendering-empty-american-football-field-with-stadium_493806-8391.jpg?semt=ais_hybrid);
-             color: white;
-             padding: 0px;
-             background-attachment: fixed;
-             background-repeat: round;
-             background-size: cover;
-         }
- 
-         #preloader-text {
-             font-size: 7rem;
-             font-weight: bold;
-             color: transparent;
-             position: relative;
-             text-align: center;
-             -webkit-text-stroke: 7px #478fdf;
-             line-height: .9;
-         }
- 
-         #preloader-text::before {
-             content: "JOE'S\A PICK 5";
-             white-space: pre;
-             position: absolute;
-             top: 0;
-             left: 0;
-             width: 100%;
-             height: 0;
-             overflow: hidden;
-             color: #478fdf;
-             border-bottom: 3px solid white;
-             animation: fill-text-bottom-up 3s linear forwards;
-             padding: 0px;
-             -webkit-text-stroke: 7px #478fdf;
-         }
- 
-         @keyframes fill-text-bottom-up {
-             0% {height: 0;}
-             100% {height: 100%;}
-             }
-     </style>
- </head>
- <body>
-     <!-- Preloader -->
- <div id="preloader">
-     <div id="preloader-text">JOE'S<br>PICK 5</div>
- </div>
- 
-     <div id="install-banner">
-         <p>Add to Home Screen for the best experience</p>
-         <button id="install-button">Install</button>
-         <button id="dismiss-button">Dismiss</button>
-     </div>
- 
-     <iframe frameborder="0" scrolling="yes" allowfullscreen="yes" src="https://script.google.com/macros/s/AKfycbwuZM7KGKnS7jnpM2YN9W_AgTMqA0qJGw99K3MIUNxzI1tnh3YK76AhgeCfh2Wc7pTd/exec"></iframe>
- 
-     <script>
-         // Preloader Script
-         document.addEventListener('DOMContentLoaded', function() {
-             const preloader = document.getElementById('preloader');
- 
-             // Hide preloader after 5 seconds
-             setTimeout(() => {
-                 preloader.style.display = 'none';
-             }, 5000);
-         });
- 
-         // Existing Service Worker Registration
-         if ('serviceWorker' in navigator) {
-             window.addEventListener('load', function() {
-                 navigator.serviceWorker.register('sw.js')
-                     .then(function(registration) {
-                         console.log('Service Worker registered with scope:', registration.scope);
-                     })
-                     .catch(function(error) {
-                         console.log('Service Worker registration failed:', error);
-                     });
-             });
-         }
- 
-         // Existing PWA Install Prompt Code (unchanged)
-         let deferredPrompt;
-         const installBanner = document.getElementById('install-banner');
-         const installButton = document.getElementById('install-button');
-         const dismissButton = document.getElementById('dismiss-button');
- 
-         window.addEventListener('beforeinstallprompt', (e) => {
-             e.preventDefault();
-             deferredPrompt = e;
-             installBanner.style.display = 'block';
-         });
- 
-         installButton.addEventListener('click', () => {
-             installBanner.style.display = 'none';
-             deferredPrompt.prompt();
-             deferredPrompt.userChoice.then((choiceResult) => {
-                 if (choiceResult.outcome === 'accepted') {
-                     console.log('User accepted the install prompt');
-                 } else {
-                     console.log('User dismissed the install prompt');
-                 }
-                 deferredPrompt = null;
-             });
-         });
- 
-         dismissButton.addEventListener('click', () => {
-             installBanner.style.display = 'none';
-         });
- 
-         // Existing Iframe Sizing Code
-         function resizeIframe() {
-             var iframe = document.querySelector("iframe");
-             iframe.style.height = window.innerHeight + "px";
-             iframe.style.width = window.innerWidth + "px";
-         }
-         window.addEventListener("resize", resizeIframe);
-         window.addEventListener("load", resizeIframe);
- 
-         // Existing Scroll Manipulation Code
-         let lastScrollY = 0;
-         const iframe = document.querySelector("iframe");
-         iframe.addEventListener("load", () => {
-             try {
-                 iframe.contentWindow.addEventListener("scroll", () => {
-                     const currentScrollY = iframe.contentWindow.scrollY;
-                     if (Math.abs(currentScrollY - lastScrollY) > 10) {
-                         window.scrollTo(0, window.scrollY + (currentScrollY - lastScrollY));
-                     }
-                     lastScrollY = currentScrollY;
-                 });
-             } catch (e) {
-                 console.log("Could not add scroll listener to iframe content:", e);
-             }
-         });
- 
-         // Existing Standalone Mode Check
-         if (window.matchMedia('(display-mode: standalone)').matches || 
-             window.navigator.standalone === true) {
-             console.log('Display mode is standalone');
-             installBanner.style.display = 'none';
-         }
- 
-         function lockOrientation() {
-             if (screen.orientation && screen.orientation.lock) {
-                 screen.orientation.lock('portrait')
-                     .catch(function(error) {
-                         console.log('Orientation lock failed:', error);
-                     });
-             }
-         }
- 
-         // Try to lock orientation on load and when entering fullscreen
-         window.addEventListener('load', lockOrientation);
- 
-         // Additional checks for different browser support
-         if (window.screen.orientation) {
-             window.screen.orientation.addEventListener('change', function() {
-                 if (window.screen.orientation.type.includes('landscape')) {
-                     lockOrientation();
-                 }
-             });
-         }
-document.addEventListener('DOMContentLoaded', function() {
-    // Your existing preloader code remains unchanged
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Joe's Pick 5">
+    <meta name="application-name" content="Joe's Pick 5">
+    <meta name="theme-color" content="#333">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     
-    // Initialize Firebase using the static script approach for better compatibility
-    if ('serviceWorker' in navigator && 'PushManager' in window) {
-        // Check if notification permission has been granted already
-        if (Notification.permission !== 'granted' && Notification.permission !== 'denied') {
-            // Show custom notification permission UI before requesting
-            showNotificationPermissionDialog();
-        } else if (Notification.permission === 'granted') {
-            // If already granted, initialize Firebase messaging
-            initializeFirebaseMessaging();
+    <!-- Standard favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="Pick5Logo.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="Pick5Logo.png">
+    
+    <!-- iOS icons -->
+    <link rel="apple-touch-icon" href="Pick5Logo.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="Pick5Logo.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="Pick5Logo.png">
+    <link rel="apple-touch-icon" sizes="167x167" href="Pick5Logo.png">
+    
+    <!-- Android icons -->
+    <link rel="shortcut icon" href="Pick5Logo.png">
+    
+    <!-- Web app manifest -->
+    <link rel="manifest" href="manifest.json">
+    
+    <title>Joe's Pick 5</title>
+    <style>
+        html, body {
+            background-color: #333 !important;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            width: 100%;
+            height: 100%;
+            font-family: Arial, sans-serif;
+            overscroll-behavior: none; /* Prevent bounce effect on some browsers */
         }
-    }
-});
 
-// Show a custom dialog to explain why notifications are important
-function showNotificationPermissionDialog() {
-    // Create a simple modal dialog
-    const dialog = document.createElement('div');
-    dialog.style.position = 'fixed';
-    dialog.style.top = '50%';
-    dialog.style.left = '50%';
-    dialog.style.transform = 'translate(-50%, -50%)';
-    dialog.style.backgroundColor = '#333';
-    dialog.style.color = 'white';
-    dialog.style.padding = '20px';
-    dialog.style.borderRadius = '10px';
-    dialog.style.zIndex = '10000';
-    dialog.style.maxWidth = '80%';
-    dialog.style.boxShadow = '0 4px 8px rgba(0,0,0,0.2)';
-    
-    dialog.innerHTML = `
-        <h3 style="margin-top: 0;">Stay Updated!</h3>
-        <p>Enable notifications to receive the latest Pick 5 updates and results.</p>
-        <div style="display: flex; justify-content: space-between; margin-top: 15px;">
-            <button id="notification-deny" style="background-color: #777; color: white; border: none; padding: 8px 16px; border-radius: 4px;">Not Now</button>
-            <button id="notification-allow" style="background-color: #4CAF50; color: white; border: none; padding: 8px 16px; border-radius: 4px;">Enable</button>
-        </div>
-    `;
-    
-    document.body.appendChild(dialog);
-    
-    // Add event listeners to buttons
-    document.getElementById('notification-allow').addEventListener('click', function() {
-        dialog.remove();
-        requestNotificationPermission();
-    });
-    
-    document.getElementById('notification-deny').addEventListener('click', function() {
-        dialog.remove();
-    });
-}
-
-// Request permission and initialize Firebase
-function requestNotificationPermission() {
-    Notification.requestPermission().then(permission => {
-        if (permission === 'granted') {
-            console.log('Notification permission granted.');
-            initializeFirebaseMessaging();
-        } else {
-            console.log('Notification permission denied.');
+        /* Prevent white background on drag or scroll */
+        * {
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -webkit-text-size-adjust: none;
+            text-size-adjust: none;
         }
-    });
-}
+        input, textarea {
+            font-size: 16px !important;
+        }
 
-// Initialize Firebase messaging after permission is granted
-function initializeFirebaseMessaging() {
-    // Make sure Firebase is loaded
-    if (typeof firebase === 'undefined') {
-        // Load Firebase scripts if not already loaded
-        const firebaseAppScript = document.createElement('script');
-        firebaseAppScript.src = 'https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js';
-        
-        const firebaseMessagingScript = document.createElement('script');
-        firebaseMessagingScript.src = 'https://www.gstatic.com/firebasejs/9.22.0/firebase-messaging-compat.js';
-        
-        firebaseAppScript.onload = function() {
-            document.head.appendChild(firebaseMessagingScript);
-            firebaseMessagingScript.onload = setupFirebase;
-        };
-        
-        document.head.appendChild(firebaseAppScript);
-    } else {
-        setupFirebase();
-    }
-}
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block;
+            overflow: auto;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #333;
+        }
+        #install-banner {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            box-shadow: 0 -2px 5px rgba(0,0,0,0.2);
+            z-index: 1000;
+        }
+        #install-banner button {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
 
-function setupFirebase() {
-    // Initialize Firebase (only if it hasn't been initialized yet)
-    if (!firebase.apps.length) {
-        firebase.initializeApp({
-            apiKey: "AIzaSyAlFST5pkmHLNcDJfx73-bPGieWVrm_nVs",
-            authDomain: "pick5-push-notifications.firebaseapp.com",
-            projectId: "pick5-push-notifications",
-            storageBucket: "pick5-push-notifications.firebasestorage.app",
-            messagingSenderId: "622059115299",
-            appId: "1:622059115299:web:4ec6d0410ee275bcfd7296",
-            measurementId: "G-C9TD0KP24Z"
-        });
-    }
-    
-    const messaging = firebase.messaging();
-    
-    // VAPID key from your Firebase Console (Cloud Messaging tab)
-    const vapidKey = 'BAy3zcpF_EL_GW1h_AVikdqljhHk3fnaaNSBDclb3-c8qmRjKX9Q4qwJMLpFqGoiFSjWuSzabvC_Dnk8qZ2WA-U';
-    
-    messaging.getToken({ vapidKey: vapidKey })
-        .then(currentToken => {
-            if (currentToken) {
-                // Send the token to your server
-                console.log('Token received:', currentToken);
-                sendTokenToServer(currentToken);
-            } else {
-                console.log('No registration token available.');
+        /* Preloader Styles */
+        #preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            overflow: hidden;
+            background: black url(https://img.freepik.com/premium-photo/3d-rendering-empty-american-football-field-with-stadium_493806-8391.jpg?semt=ais_hybrid);
+            color: white;
+            padding: 0px;
+            background-attachment: fixed;
+            background-repeat: round;
+            background-size: cover;
+        }
+
+        #preloader-text {
+            font-size: 7rem;
+            font-weight: bold;
+            color: transparent;
+            position: relative;
+            text-align: center;
+            -webkit-text-stroke: 7px #478fdf;
+            line-height: .9;
+        }
+
+        #preloader-text::before {
+            content: "JOE'S\A PICK 5";
+            white-space: pre;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 0;
+            overflow: hidden;
+            color: #478fdf;
+            border-bottom: 3px solid white;
+            animation: fill-text-bottom-up 3s linear forwards;
+            padding: 0px;
+            -webkit-text-stroke: 7px #478fdf;
+        }
+
+        @keyframes fill-text-bottom-up {
+            0% {height: 0;}
+            100% {height: 100%;}
             }
-        })
-        .catch(err => {
-            console.log('An error occurred while retrieving token:', err);
+    </style>
+</head>
+<body>
+    <!-- Preloader -->
+<div id="preloader">
+    <div id="preloader-text">JOE'S<br>PICK 5</div>
+</div>
+
+    <div id="install-banner">
+        <p>Add to Home Screen for the best experience</p>
+        <button id="install-button">Install</button>
+        <button id="dismiss-button">Dismiss</button>
+    </div>
+    
+    <iframe frameborder="0" scrolling="yes" allowfullscreen="yes" src="https://script.google.com/macros/s/AKfycbwuZM7KGKnS7jnpM2YN9W_AgTMqA0qJGw99K3MIUNxzI1tnh3YK76AhgeCfh2Wc7pTd/exec"></iframe>
+    
+    <script>
+        // Preloader Script
+        document.addEventListener('DOMContentLoaded', function() {
+            const preloader = document.getElementById('preloader');
+            
+            // Hide preloader after 5 seconds
+            setTimeout(() => {
+                preloader.style.display = 'none';
+            }, 5000);
         });
-    
-    // Handle foreground messages
-    messaging.onMessage(payload => {
-        console.log('Message received in foreground:', payload);
-        // Create a notification for foreground messages
-        const notificationTitle = payload.notification.title;
-        const notificationOptions = {
-            body: payload.notification.body,
-            icon: 'Pick5Logo.png'
-        };
+
+        // Existing Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('sw.js')
+                    .then(function(registration) {
+                        console.log('Service Worker registered with scope:', registration.scope);
+                    })
+                    .catch(function(error) {
+                        console.log('Service Worker registration failed:', error);
+                    });
+            });
+        }
+
+        // Existing PWA Install Prompt Code (unchanged)
+        let deferredPrompt;
+        const installBanner = document.getElementById('install-banner');
+        const installButton = document.getElementById('install-button');
+        const dismissButton = document.getElementById('dismiss-button');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            installBanner.style.display = 'block';
+        });
+
+        installButton.addEventListener('click', () => {
+            installBanner.style.display = 'none';
+            deferredPrompt.prompt();
+            deferredPrompt.userChoice.then((choiceResult) => {
+                if (choiceResult.outcome === 'accepted') {
+                    console.log('User accepted the install prompt');
+                } else {
+                    console.log('User dismissed the install prompt');
+                }
+                deferredPrompt = null;
+            });
+        });
+
+        dismissButton.addEventListener('click', () => {
+            installBanner.style.display = 'none';
+        });
+
+        // Existing Iframe Sizing Code
+        function resizeIframe() {
+            var iframe = document.querySelector("iframe");
+            iframe.style.height = window.innerHeight + "px";
+            iframe.style.width = window.innerWidth + "px";
+        }
+        window.addEventListener("resize", resizeIframe);
+        window.addEventListener("load", resizeIframe);
         
-        new Notification(notificationTitle, notificationOptions);
-    });
-}
+        // Existing Scroll Manipulation Code
+        let lastScrollY = 0;
+        const iframe = document.querySelector("iframe");
+        iframe.addEventListener("load", () => {
+            try {
+                iframe.contentWindow.addEventListener("scroll", () => {
+                    const currentScrollY = iframe.contentWindow.scrollY;
+                    if (Math.abs(currentScrollY - lastScrollY) > 10) {
+                        window.scrollTo(0, window.scrollY + (currentScrollY - lastScrollY));
+                    }
+                    lastScrollY = currentScrollY;
+                });
+            } catch (e) {
+                console.log("Could not add scroll listener to iframe content:", e);
+            }
+        });
 
-function sendTokenToServer(token) {
-    console.log('Sending token to server:', token);
-    
-    // Get the user's email or another identifier if available
-    const userIdentifier = getUserIdentifier(); // Implement this function based on your authentication
-    
-    // Your Google Apps Script web app URL
-    const serverUrl = 'https://script.google.com/macros/s/AKfycbwuZM7KGKnS7jnpM2YN9W_AgTMqA0qJGw99K3MIUNxzI1tnh3YK76AhgeCfh2Wc7pTd/exec';
-    
-    // Send the token to your Apps Script server
-    fetch(serverUrl, {
-        method: 'POST',
-        mode: 'no-cors', // Important for Google Apps Script
-        headers: {
-            'Content-Type': 'text/plain', // Apps Script can handle this
-        },
-        body: JSON.stringify({
-            action: 'registerToken',
-            token: token,
-            user: userIdentifier || 'anonymous'
-        }),
-    })
-    .then(response => {
-        console.log('Token registered successfully');
-    })
-    .catch(error => {
-        console.error('Error registering token:', error);
-    });
-}
+        // Existing Standalone Mode Check
+        if (window.matchMedia('(display-mode: standalone)').matches || 
+            window.navigator.standalone === true) {
+            console.log('Display mode is standalone');
+            installBanner.style.display = 'none';
+        }
 
-// Helper function to get user identifier (implement as needed)
-function getUserIdentifier() {
-    // Return email, username, or other identifier if you have user authentication
-    // Otherwise, you could use a device/browser fingerprint or let the user provide a name
-    return localStorage.getItem('userIdentifier') || null;
-}
-     </script>
- </body>
- </html>
+        function lockOrientation() {
+            if (screen.orientation && screen.orientation.lock) {
+                screen.orientation.lock('portrait')
+                    .catch(function(error) {
+                        console.log('Orientation lock failed:', error);
+                    });
+            }
+        }
+
+        // Try to lock orientation on load and when entering fullscreen
+        window.addEventListener('load', lockOrientation);
+        
+        // Additional checks for different browser support
+        if (window.screen.orientation) {
+            window.screen.orientation.addEventListener('change', function() {
+                if (window.screen.orientation.type.includes('landscape')) {
+                    lockOrientation();
+                }
+            });
+        }
+    </script>
+</body>
+</html>
