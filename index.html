@@ -177,10 +177,27 @@
                 appId: "1:783669343677:web:c1f72d2a2a58b0349a4ed4"
             };
 
-            // Initialize Firebase
-            firebase.initializeApp(firebaseConfig);
+            // Initialize Firebase (with check to prevent duplicate initialization)
+            if (!firebase.apps.length) {
+                firebase.initializeApp(firebaseConfig);
+            }
             const messaging = firebase.messaging();
             const db = firebase.firestore();
+
+            // Set up token refresh listener (replacing onTokenRefresh)
+            navigator.serviceWorker.addEventListener('message', event => {
+                if (event.data && event.data.type === 'tokenRefresh') {
+                    console.log('Token refresh detected');
+                    messaging.getToken({
+                        vapidKey: 'BOM3KFfemC5lGnsF28N-_UGA7H9esoOm5gp0_Eg45HMqaMqviLx_bcAonVaZe-c0GwSFwfwe7-fJVP1n8h1iAAU'
+                    }).then(refreshedToken => {
+                        console.log('Token refreshed:', refreshedToken);
+                        saveTokenToFirestore(refreshedToken);
+                    }).catch(err => {
+                        console.error('Unable to refresh token:', err);
+                    });
+                }
+            });
 
             // Create notification permission prompt
             const createNotificationPrompt = () => {
@@ -236,56 +253,68 @@
                         
                         // Get FCM token
                         try {
-    const token = await messaging.getToken({
-        vapidKey: 'BOM3KFfemC5lGnsF28N-_UGA7H9esoOm5gp0_Eg45HMqaMqviLx_bcAonVaZe-c0GwSFwfwe7-fJVP1n8h1iAAU',
-        serviceWorkerRegistration: await navigator.serviceWorker.getRegistration(
-            window.location.pathname.includes('/Pick5/') ? 
-            '/Pick5/' : 
-            './'
-        )
-    });
-    
-    console.log('Device token:', token);
+                            // Determine service worker path
+                            const swPath = window.location.pathname.includes('/Pick5/') ? 
+                                '/Pick5/' : 
+                                './';
+                            
+                            console.log('Service Worker path being used:', swPath);
+                            
+                            const registration = await navigator.serviceWorker.getRegistration(swPath);
+                            if (!registration) {
+                                throw new Error('Service worker registration not found');
+                            }
+                            
+                            const token = await messaging.getToken({
+                                vapidKey: 'BOM3KFfemC5lGnsF28N-_UGA7H9esoOm5gp0_Eg45HMqaMqviLx_bcAonVaZe-c0GwSFwfwe7-fJVP1n8h1iAAU',
+                                serviceWorkerRegistration: registration
+                            });
+                            
+                            console.log('Device token:', token);
                             
                             // Save token to Firestore
                             await saveTokenToFirestore(token);
-                            
-                            // Set up token refresh
-                            messaging.onTokenRefresh(async () => {
-                                try {
-                                    const refreshedToken = await messaging.getToken({
-                                        vapidKey: 'BOM3KFfemC5lGnsF28N-_UGA7H9esoOm5gp0_Eg45HMqaMqviLx_bcAonVaZe-c0GwSFwfwe7-fJVP1n8h1iAAU'
-                                    });
-                                    console.log('Token refreshed:', refreshedToken);
-                                    await saveTokenToFirestore(refreshedToken);
-                                } catch (err) {
-                                    console.error('Unable to refresh token:', err);
-                                }
-                            });
                             
                             // Handle foreground messages
                             messaging.onMessage((payload) => {
                                 console.log('Message received in foreground:', payload);
                                 // You can show a custom notification here if needed
+                                
+                                // Example of showing a notification for foreground messages
+                                const notificationTitle = payload.notification?.title || "Joe's Pick 5";
+                                const notificationOptions = {
+                                    body: payload.notification?.body || "You have a new notification",
+                                    icon: 'Pick5Logo.png',
+                                };
+                                
+                                // Create and show notification if browser supports it
+                                if ('Notification' in window) {
+                                    new Notification(notificationTitle, notificationOptions);
+                                }
                             });
                             
                         } catch (error) {
-                            console.error('Error getting token:', error);
+                            console.error('Error getting token:', error.code, error.message);
                         }
                     } else {
                         console.log('Notification permission denied.');
                         localStorage.setItem('notificationPermissionDenied', 'true');
                     }
                 } catch (error) {
-                    console.error('Error requesting permission:', error);
+                    console.error('Error requesting permission:', error.code, error.message);
                 }
             };
 
             // Save token to Firestore with additional user info
             const saveTokenToFirestore = async (token) => {
-                if (!token) return;
+                if (!token) {
+                    console.error('No token provided to saveTokenToFirestore');
+                    return;
+                }
                 
                 try {
+                    console.log('Attempting to save token to Firestore...');
+                    
                     // Check if token already exists to avoid duplicates
                     const tokenDoc = await db.collection('fcmTokens').doc(token).get();
                     
@@ -300,20 +329,22 @@
                             createdAt: firebase.firestore.FieldValue.serverTimestamp(),
                             lastActive: firebase.firestore.FieldValue.serverTimestamp()
                         });
-                        console.log('Token saved to Firestore');
+                        console.log('Token saved to Firestore successfully');
                     } else {
                         // Token exists, update last active timestamp
                         await db.collection('fcmTokens').doc(token).update({
                             lastActive: firebase.firestore.FieldValue.serverTimestamp()
                         });
-                        console.log('Token last active timestamp updated');
+                        console.log('Token last active timestamp updated successfully');
                     }
                     
                     // Store token in localStorage for future reference
                     localStorage.setItem('fcmToken', token);
                     
                 } catch (error) {
-                    console.error('Error saving token to Firestore:', error);
+                    console.error('Error saving token to Firestore:', error.code, error.message);
+                    // Show an error message to the user (optional)
+                    console.log('Please check your Firestore security rules to ensure write access to fcmTokens collection');
                 }
             };
 
@@ -340,26 +371,26 @@
 
             // Register service worker
             if ('serviceWorker' in navigator) {
-    // Determine if we're in the repository context or not
-    const swPath = window.location.pathname.includes('/Pick5/') ? 
-        '/Pick5/firebase-messaging-sw.js' : 
-        './firebase-messaging-sw.js';
-    
-    console.log('Attempting to register service worker at:', swPath);
-    
-    navigator.serviceWorker.register(swPath)
-        .then(registration => {
-            console.log('Service Worker registered with scope:', registration.scope);
-            
-            // Check notification permission after service worker is registered
-            checkPermissionAndPrompt();
-        })
-        .catch(error => {
-            console.error('Service Worker registration failed:', error);
-        });
-} else {
-    console.log('Service workers not supported');
-}
+                // Determine if we're in the repository context or not
+                const swPath = window.location.pathname.includes('/Pick5/') ? 
+                    '/Pick5/firebase-messaging-sw.js' : 
+                    './firebase-messaging-sw.js';
+                
+                console.log('Attempting to register service worker at:', swPath);
+                
+                navigator.serviceWorker.register(swPath)
+                    .then(registration => {
+                        console.log('Service Worker registered with scope:', registration.scope);
+                        
+                        // Check notification permission after service worker is registered
+                        checkPermissionAndPrompt();
+                    })
+                    .catch(error => {
+                        console.error('Service Worker registration failed:', error.code, error.message);
+                    });
+            } else {
+                console.log('Service workers not supported');
+            }
         }
 
         // Preloader Script
