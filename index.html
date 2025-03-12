@@ -151,6 +151,19 @@
             0% {height: 0;}
             100% {height: 100%;}
         }
+        
+        #notification-status {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 4px;
+            z-index: 1001;
+            font-size: 14px;
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -164,6 +177,8 @@
         <button id="install-button">Install</button>
         <button id="dismiss-button">Dismiss</button>
     </div>
+    
+    <div id="notification-status"></div>
     
     <iframe frameborder="0" scrolling="yes" allowfullscreen="yes" src="https://script.google.com/macros/s/AKfycbwuZM7KGKnS7jnpM2YN9W_AgTMqA0qJGw99K3MIUNxzI1tnh3YK76AhgeCfh2Wc7pTd/exec"></iframe>
     
@@ -180,17 +195,39 @@
             }, 5000);
         });
 
+        // Notification status display helper
+        function showNotificationStatus(message, isError = false) {
+            const statusEl = document.getElementById('notification-status');
+            statusEl.textContent = message;
+            statusEl.style.backgroundColor = isError ? 'rgba(255, 0, 0, 0.7)' : 'rgba(0, 0, 0, 0.7)';
+            statusEl.style.display = 'block';
+            
+            setTimeout(() => {
+                statusEl.style.display = 'none';
+            }, 5000);
+        }
+
         // Initialize Firebase
-const firebaseConfig = {
-  apiKey: "AIzaSyB5r_KL2eKVFd66VQU_5pznKrVHa9xzCfc",
-  authDomain: "joespick5push.firebaseapp.com",
-  projectId: "joespick5push",
-  storageBucket: "joespick5push.firebasestorage.app",
-  messagingSenderId: "783669343677",
-  appId: "1:783669343677:web:c1f72d2a2a58b0349a4ed4"
-};
-        firebase.initializeApp(firebaseConfig);
-        const messaging = firebase.messaging();
+        const firebaseConfig = {
+          apiKey: "AIzaSyB5r_KL2eKVFd66VQU_5pznKrVHa9xzCfc",
+          authDomain: "joespick5push.firebaseapp.com",
+          projectId: "joespick5push",
+          storageBucket: "joespick5push.firebasestorage.app",
+          messagingSenderId: "783669343677",
+          appId: "1:783669343677:web:c1f72d2a2a58b0349a4ed4"
+        };
+        
+        // Global messaging variable
+        let messaging;
+        
+        try {
+            firebase.initializeApp(firebaseConfig);
+            messaging = firebase.messaging();
+            console.log('Firebase initialized successfully');
+        } catch (error) {
+            console.error('Firebase initialization error:', error);
+            showNotificationStatus('Push notification system error', true);
+        }
 
         // Register Service Worker and Handle Push
         if ('serviceWorker' in navigator) {
@@ -203,46 +240,106 @@ const firebaseConfig = {
                     const permission = await Notification.requestPermission();
                     if (permission === 'granted') {
                         console.log('Notification permission granted.');
+                        showNotificationStatus('Notifications enabled');
                         subscribeUserToPush(registration);
                     } else {
                         console.log('Notification permission denied.');
+                        showNotificationStatus('Notifications disabled');
                     }
                 } catch (error) {
                     console.error('Service Worker registration failed:', error);
+                    showNotificationStatus('Service worker registration failed', true);
                 }
             });
         }
 
-async function subscribeUserToPush(registration) {
-    try {
-        const vapidPublicKey = 'BOM3KFfemC5lGnsF28N-_UGA7H9esoOm5gp0_Eg45HMqaMqviLx_bcAonVaZe-c0GwSFwfwe7-fJVP1n8h1iAAU'; // Replace with actual VAPID key
-        console.log('VAPID Public Key:', vapidPublicKey);
-        if (!vapidPublicKey || vapidPublicKey === 'BOM3KFfemC5lGnsF28N-_UGA7H9esoOm5gp0_Eg45HMqaMqviLx_bcAonVaZe-c0GwSFwfwe7-fJVP1n8h1iAAU') {
-            throw new Error('VAPID public key is not set. Please update it in index.html.');
+        async function subscribeUserToPush(registration) {
+            try {
+                const vapidPublicKey = 'BOM3KFfemC5lGnsF28N-_UGA7H9esoOm5gp0_Eg45HMqaMqviLx_bcAonVaZe-c0GwSFwfwe7-fJVP1n8h1iAAU';
+                console.log('Using VAPID Public Key:', vapidPublicKey.substring(0, 10) + '...');
+                
+                // Better check for invalid VAPID key
+                if (!vapidPublicKey || vapidPublicKey.includes('YOUR_PUBLIC_VAPID_KEY')) {
+                    throw new Error('Invalid VAPID public key');
+                }
+                
+                const subscription = await registration.pushManager.subscribe({
+                    userVisibleOnly: true,
+                    applicationServerKey: urlBase64ToUint8Array(vapidPublicKey)
+                });
+                
+                console.log('Push subscription obtained');
+                
+                // Store token in localStorage for debugging
+                localStorage.setItem('pushSubscription', JSON.stringify(subscription));
+                
+                // Create an array of tokens if this is the first one
+                let existingTokens = [];
+                try {
+                    const storedTokens = localStorage.getItem('fcmTokens');
+                    if (storedTokens) {
+                        existingTokens = JSON.parse(storedTokens);
+                    }
+                } catch (e) {
+                    console.error('Error parsing stored tokens:', e);
+                }
+                
+                // Add current token if not already present
+                const currentToken = JSON.stringify(subscription);
+                if (!existingTokens.includes(currentToken)) {
+                    existingTokens.push(currentToken);
+                    localStorage.setItem('fcmTokens', JSON.stringify(existingTokens));
+                }
+                
+                // Send subscription to server
+                const scriptUrl = 'https://script.google.com/macros/s/AKfycbwuZM7KGKnS7jnpM2YN9W_AgTMqA0qJGw99K3MIUNxzI1tnh3YK76AhgeCfh2Wc7pTd/exec';
+                
+                // First check if the server is accessible with a preflight OPTIONS request
+                try {
+                    const optionsResponse = await fetch(scriptUrl, {
+                        method: 'OPTIONS',
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+                    
+                    console.log('CORS preflight status:', optionsResponse.status);
+                    
+                    // Now send the actual subscription data
+                    const response = await fetch(scriptUrl, {
+                        method: 'POST',
+                        mode: 'cors',
+                        body: JSON.stringify({ subscription }),
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error(`Server responded with ${response.status}: ${response.statusText}`);
+                    }
+                    
+                    const result = await response.json();
+                    console.log('Subscription successfully sent to server:', result);
+                    showNotificationStatus('Push notifications setup complete');
+                } catch (error) {
+                    console.error('Failed to send subscription to server:', error);
+                    showNotificationStatus('Failed to register for notifications', true);
+                    
+                    // Fallback to no-cors mode as a last resort
+                    try {
+                        await fetch(scriptUrl, {
+                            method: 'POST',
+                            mode: 'no-cors',
+                            body: JSON.stringify({ subscription }),
+                            headers: { 'Content-Type': 'application/json' }
+                        });
+                        console.log('Fallback subscription attempt complete (no response available in no-cors mode)');
+                    } catch (e) {
+                        console.error('Even fallback subscription failed:', e);
+                    }
+                }
+            } catch (error) {
+                console.error('Failed to subscribe to push:', error);
+                showNotificationStatus('Push notification setup failed', true);
+            }
         }
-        const subscription = await registration.pushManager.subscribe({
-            userVisibleOnly: true,
-            applicationServerKey: urlBase64ToUint8Array(vapidPublicKey)
-        });
-        console.log('Push subscription:', JSON.stringify(subscription));
-
-        // Send subscription to Google Apps Script with no-cors
-        const response = await fetch('https://script.google.com/macros/s/AKfycbwuZM7KGKnS7jnpM2YN9W_AgTMqA0qJGw99K3MIUNxzI1tnh3YK76AhgeCfh2Wc7pTd/exec', {
-                method: 'POST',
-    mode: 'cors', // ✅ Switch from "no-cors" to "cors"
-    body: JSON.stringify({ subscription }),
-    headers: { 'Content-Type': 'application/json' }
-});
-if (!response.ok) {
-    console.error('Failed to send subscription:', response.statusText);
-} else {
-    const result = await response.json();
-    console.log('Subscription response:', result);
-}
-    } catch (error) {
-        console.error('Failed to subscribe to push:', error);
-    }
-}
 
         // Convert VAPID key to Uint8Array
         function urlBase64ToUint8Array(base64String) {
@@ -256,7 +353,7 @@ if (!response.ok) {
             return outputArray;
         }
 
-        // Existing PWA Install Prompt Code
+        // PWA Install Prompt Code
         let deferredPrompt;
         const installBanner = document.getElementById('install-banner');
         const installButton = document.getElementById('install-button');
@@ -285,7 +382,7 @@ if (!response.ok) {
             installBanner.style.display = 'none';
         });
 
-        // Existing Iframe Sizing Code
+        // Iframe Sizing Code
         function resizeIframe() {
             var iframe = document.querySelector("iframe");
             iframe.style.height = window.innerHeight + "px";
@@ -294,7 +391,7 @@ if (!response.ok) {
         window.addEventListener("resize", resizeIframe);
         window.addEventListener("load", resizeIframe);
         
-        // Existing Scroll Manipulation Code
+        // Scroll Manipulation Code
         let lastScrollY = 0;
         const iframe = document.querySelector("iframe");
         iframe.addEventListener("load", () => {
@@ -311,7 +408,7 @@ if (!response.ok) {
             }
         });
 
-        // Existing Standalone Mode Check
+        // Standalone Mode Check
         if (window.matchMedia('(display-mode: standalone)').matches || 
             window.navigator.standalone === true) {
             console.log('Display mode is standalone');
