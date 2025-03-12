@@ -253,9 +253,13 @@
             });
         }
 
-        async function subscribeUserToPush(registration) {
-            try {
-                const vapidPublicKey = 'BOM3KFfemC5lGnsF28N-_UGA7H9esoOm5gp0_Eg45HMqaMqviLx_bcAonVaZe-c0GwSFwfwe7-fJVP1n8h1iAAU';
+function subscribeUserToPush() {
+  return navigator.serviceWorker.ready
+    .then(registration => {
+      // Your existing subscription code...
+      return registration.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array('BOM3KFfemC5lGnsF28N-_UGA7H9esoOm5gp0_Eg45HMqaMqviLx_bcAonVaZe-c0GwSFwfwe7-fJVP1n8h1iAAU';
                 console.log('Using VAPID Public Key:', vapidPublicKey.substring(0, 10) + '...');
                 
                 // Better check for invalid VAPID key
@@ -292,55 +296,40 @@
                 }
                 
                 // Send subscription to server
-                const scriptUrl = 'https://script.google.com/macros/s/AKfycbyev1VGNgTFoAynyQtro3CEVLZ_2PXzFfQdZ0mHomj8YR8sy5ZCCIIMMo9Ulj7-5zw6/exec';
-                
-                // First check if the server is accessible with a preflight OPTIONS request
-                try {
-                    const optionsResponse = await fetch(scriptUrl, {
-                        method: 'OPTIONS',
-                        headers: { 'Content-Type': 'application/json' }
-                    });
-                    
-                    console.log('CORS preflight status:', optionsResponse.status);
-                    
-                    // Now send the actual subscription data
-                    const response = await fetch(scriptUrl, {
-                        method: 'POST',
-                        mode: 'cors',
-                        body: JSON.stringify({ subscription }),
-                        headers: { 'Content-Type': 'application/json' }
-                    });
-                    
-                    if (!response.ok) {
-                        throw new Error(`Server responded with ${response.status}: ${response.statusText}`);
-                    }
-                    
-                    const result = await response.json();
-                    console.log('Subscription successfully sent to server:', result);
-                    showNotificationStatus('Push notifications setup complete');
-                } catch (error) {
-                    console.error('Failed to send subscription to server:', error);
-                    showNotificationStatus('Failed to register for notifications', true);
-                    
-                    // Fallback to no-cors mode as a last resort
-                    try {
-                        await fetch(scriptUrl, {
-                            method: 'POST',
-                            mode: 'no-cors',
-                            body: JSON.stringify({ subscription }),
-                            headers: { 'Content-Type': 'application/json' }
-                        });
-                        console.log('Fallback subscription attempt complete (no response available in no-cors mode)');
-                    } catch (e) {
-                        console.error('Even fallback subscription failed:', e);
-                    }
-                }
-            } catch (error) {
-                console.error('Failed to subscribe to push:', error);
-                showNotificationStatus('Push notification setup failed', true);
-            }
-        }
-
+                const scriptUrl = 'https://script.google.com/macros/s/AKfycbyev1VGNgTFoAynyQtro3CEVLZ_2PXzFfQdZ0mHomj8YR8sy5ZCCIIMMo9Ulj7-5zw6/exec')
+      });
+    })
+    .then(subscription => {
+      // Send the subscription to your server
+      return fetch('https://script.google.com/macros/s/AKfycbyev1VGNgTFoAynyQtro3CEVLZ_2PXzFfQdZ0mHomj8YR8sy5ZCCIIMMo9Ulj7-5zw6/exec', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          subscription: subscription,
+          action: 'subscribe'
+        }),
+        // If using Google sign-in or other auth, you might need:
+        // credentials: 'include'
+      });
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Bad status code from server: ' + response.status);
+      }
+      return response.json();
+    })
+    .then(responseData => {
+      if (!(responseData.success)) {
+        throw new Error('Bad response from server: ' + JSON.stringify(responseData));
+      }
+      console.log('Successfully subscribed to push notifications');
+    })
+    .catch(error => {
+      console.error('Failed to send subscription to server:', error);
+    });
+}
         // Convert VAPID key to Uint8Array
         function urlBase64ToUint8Array(base64String) {
             const padding = '='.repeat((4 - base64String.length % 4) % 4);
