@@ -118,19 +118,22 @@ const messaging = firebase.messaging();
 async function getToken() {
   try {
     const currentToken = await messaging.getToken({
-      vapidKey: 'BOM3KFfemC5lGnsF28N-_UGA7H9esoOm5gp0_Eg45HMqaMqviLx_bcAonVaZe-c0GwSFwfwe7-fJVP1n8h1iAAU'
+      vapidKey: 'YOUR_PUBLIC_VAPID_KEY'
     });
-    console.log('FCM Token:', currentToken);
+    console.log('FCM Token:', currentToken); // ✅ Add this to confirm token generation
 
     if (currentToken) {
-      // Send the valid FCM token to the backend
-      await fetch('https://script.google.com/macros/s/AKfycbwuZM7KGKnS7jnpM2YN9W_AgTMqA0qJGw99K3MIUNxzI1tnh3YK76AhgeCfh2Wc7pTd/exec', {
+      // ✅ Send token to backend
+      const response = await fetch('https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec', {
         method: 'POST',
-        body: JSON.stringify({ token: currentToken }), // Send the FCM token directly
+        body: JSON.stringify({ token: currentToken }),
         headers: {
           'Content-Type': 'application/json'
         }
       });
+
+      const result = await response.text();
+      console.log('Token registration response:', result); // ✅ Add logging
     } else {
       console.log('No registration token available. Request permission to generate one.');
     }
@@ -138,6 +141,7 @@ async function getToken() {
     console.error('Error getting token', err);
   }
 }
+
 
 // Request permission and get token
 Notification.requestPermission().then((permission) => {
