@@ -334,8 +334,16 @@
             };
 
             // Register service worker
+            // Register service worker with correct path for GitHub Pages repository
             if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('firebase-messaging-sw.js')
+                // Determine if we're in the repository context or not
+                const swPath = window.location.pathname.includes('/Pick5/') ? 
+                    '/Pick5/firebase-messaging-sw.js' : 
+                    './firebase-messaging-sw.js';
+                
+                console.log('Attempting to register service worker at:', swPath);
+                
+                navigator.serviceWorker.register(swPath)
                     .then(registration => {
                         console.log('Service Worker registered with scope:', registration.scope);
                         
@@ -348,7 +356,6 @@
             } else {
                 console.log('Service workers not supported');
             }
-        }
 
         // Preloader Script
         document.addEventListener('DOMContentLoaded', function() {
