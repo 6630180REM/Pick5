@@ -134,7 +134,6 @@
     }
 
     #preloader-text::before {
-      content: "Welcome\Ato Joe's\A PICK 5";
       content: "JOE'S\A PICK 5";
       white-space: pre;
       position: absolute;
@@ -165,7 +164,6 @@
 <body>
   <!-- Preloader -->
   <div id="preloader">
-    <div id="preloader-text">Welcome<br>to Joe's<br>PICK 5</div>
     <div id="preloader-text">JOE'S<br>PICK 5</div>
   </div>
   <div id="install-banner">
@@ -175,6 +173,10 @@
   </div>
   <iframe frameborder="0" scrolling="yes" allowfullscreen="yes"
     src="https://script.google.com/macros/s/AKfycbwuZM7KGKnS7jnpM2YN9W_AgTMqA0qJGw99K3MIUNxzI1tnh3YK76AhgeCfh2Wc7pTd/exec"></iframe>
+  
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-messaging-compat.js"></script>
+  
   <script>
     // Preloader Script
 document.addEventListener('DOMContentLoaded', function() {
@@ -269,6 +271,58 @@ lockOrientation();
 }
 });
 }
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyB5r_KL2eKVFd66VQU_5pznKrVHa9xzCfc",
+        authDomain: "joespick5push.firebaseapp.com",
+        projectId: "joespick5push",
+        storageBucket: "joespick5push.firebasestorage.app",
+        messagingSenderId: "783669343677",
+        appId: "1:783669343677:web:c1f72d2a2a58b0349a4ed4"
+    };
+    const app = firebase.initializeApp(firebaseConfig);
+    const messaging = firebase.messaging();
+
+    function requestNotificationPermission() {
+        Notification.requestPermission().then((permission) => {
+            if (permission === 'granted') {
+                console.log('Notification permission granted.');
+                getToken();
+            } else {
+                console.log('Unable to get permission to notify.');
+            }
+        });
+    }
+
+    function getToken() {
+        messaging.getToken({ vapidKey: 'BOM3KFfemC5lGnsF28N-_UGA7H9esoOm5gp0_Eg45HMqaMqviLx_bcAonVaZe-c0GwSFwfwe7-fJVP1n8h1iAAU' }).then((currentToken) => {
+            if (currentToken) {
+                console.log('FCM registration token:', currentToken);
+                sendTokenToServer(currentToken);
+            } else {
+                console.log('No registration token available. Request permission to generate one.');
+            }
+        }).catch((err) => {
+            console.log('An error occurred while retrieving token. ', err);
+        });
+    }
+
+    function sendTokenToServer(token) {
+        fetch('https://script.google.com/macros/s/AKfycbyev1VGNgTFoAynyQtro3CEVLZ_2PXzFfQdZ0mHomj8YR8sy5ZCCIIMMo9Ulj7-5zw6/exec?token=' + token); //Replace YOUR_APPS_SCRIPT_URL with your Apps Script URL
+    }
+
+    window.addEventListener('load', function() {
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js')
+                .then(function(registration) {
+                    console.log('Service Worker registered with scope:', registration.scope);
+                    requestNotificationPermission();
+                })
+                .catch(function(error) {
+                    console.log('Service Worker registration failed:', error);
+                });
+        }
+    });
   </script>
 </body>
 
