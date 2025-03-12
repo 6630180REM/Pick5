@@ -198,6 +198,10 @@
                  preloader.style.display = 'none';
              }, 5000);
          });
+
+         document.addEventListener('DOMContentLoaded', () => {
+    requestNotificationPermission();
+  });
  
          // Existing Service Worker Registration
          if ('serviceWorker' in navigator) {
