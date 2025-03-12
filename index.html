@@ -205,23 +205,24 @@
                 promptDiv.id = 'notification-prompt';
                 promptDiv.style.cssText = `
                     position: fixed;
-                    bottom: 20px;
+                    bottom: 50%;
                     left: 50%;
                     transform: translateX(-50%);
-                    background: #478fdf;
+                    background: rgb(71, 143, 223);
                     color: white;
                     padding: 15px 20px;
                     border-radius: 10px;
-                    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+                    box-shadow: rgba(0, 0, 0, 0.2) 0px 4px 12px;
                     text-align: center;
                     z-index: 1001;
                     font-family: Arial, sans-serif;
                     max-width: 90%;
                     width: 340px;
+                    border: 2px solid black;
                 `;
 
                 promptDiv.innerHTML = `
-                    <p style="margin: 0 0 15px 0; font-size: 16px;">Get notified about new picks and updates</p>
+                    <p style="margin: 0 0 15px 0; font-size: 16px; font-weight: 700;">Get notified when Picks and Entry Form are availiable</p>
                     <div style="display: flex; justify-content: space-between; gap: 10px;">
                         <button id="enable-notifications" style="background-color: white; color: #478fdf; border: none; padding: 8px 16px; border-radius: 4px; font-weight: bold; cursor: pointer; flex: 1;">Allow</button>
                         <button id="decline-notifications" style="background-color: transparent; color: white; border: 1px solid white; padding: 8px 16px; border-radius: 4px; cursor: pointer; flex: 1;">Not Now</button>
