@@ -9,55 +9,27 @@
     <meta name="application-name" content="Joe's Pick 5">
     <meta name="theme-color" content="#333">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    
-    <!-- Standard favicon -->
+
+    <!-- Icons -->
     <link rel="icon" type="image/png" sizes="32x32" href="Pick5Logo.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="Pick5Logo.png">
-    
-    <!-- iOS icons -->
     <link rel="apple-touch-icon" href="Pick5Logo.png">
-    <link rel="apple-touch-icon" sizes="152x152" href="Pick5Logo.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="Pick5Logo.png">
-    <link rel="apple-touch-icon" sizes="167x167" href="Pick5Logo.png">
-    
-    <!-- Android icons -->
-    <link rel="shortcut icon" href="Pick5Logo.png">
-    
-    <!-- Web app manifest -->
     <link rel="manifest" href="manifest.json">
-    
+
     <title>Joe's Pick 5</title>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-compat.js"></script>
+
     <style>
         html, body {
-            background-color: #333 !important;
+            background-color: #333;
             margin: 0;
             padding: 0;
-            overflow: hidden;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            width: 100%;
             height: 100%;
+            width: 100%;
             font-family: Arial, sans-serif;
-            overscroll-behavior: none; /* Prevent bounce effect on some browsers */
-        }
-
-        /* Prevent white background on drag or scroll */
-        * {
-            -webkit-tap-highlight-color: transparent;
-            -webkit-touch-callout: none;
-            -webkit-user-select: none;
-            -khtml-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
-            -webkit-text-size-adjust: none;
-            text-size-adjust: none;
-        }
-        input, textarea {
-            font-size: 16px !important;
+            overscroll-behavior: none;
         }
 
         iframe {
@@ -65,14 +37,11 @@
             height: 100%;
             border: none;
             display: block;
-            overflow: auto;
             position: absolute;
             top: 0;
             left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #333;
         }
+
         #install-banner {
             display: none;
             position: fixed;
@@ -81,306 +50,140 @@
             right: 0;
             background-color: #333;
             color: white;
-            text-align: center;
             padding: 10px;
+            text-align: center;
             box-shadow: 0 -2px 5px rgba(0,0,0,0.2);
             z-index: 1000;
         }
+
         #install-banner button {
             background-color: #4CAF50;
             border: none;
             color: white;
             padding: 8px 16px;
-            text-align: center;
-            text-decoration: none;
-            display: inline-block;
-            font-size: 16px;
-            margin: 4px 2px;
+            margin: 4px;
+            border-radius: 4px;
             cursor: pointer;
-            border-radius: 4px;
-        }
-
-        /* Preloader Styles */
-        #preloader {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: #333;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            overflow: hidden;
-            background: black url(https://img.freepik.com/premium-photo/3d-rendering-empty-american-football-field-with-stadium_493806-8391.jpg?semt=ais_hybrid);
-            color: white;
-            padding: 0px;
-            background-attachment: fixed;
-            background-repeat: round;
-            background-size: cover;
-        }
-
-        #preloader-text {
-            font-size: 7rem;
-            font-weight: bold;
-            color: transparent;
-            position: relative;
-            text-align: center;
-            -webkit-text-stroke: 7px #478fdf;
-            line-height: .9;
-        }
-
-        #preloader-text::before {
-            content: "JOE'S\A PICK 5";
-            white-space: pre;
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 0;
-            overflow: hidden;
-            color: #478fdf;
-            border-bottom: 3px solid white;
-            animation: fill-text-bottom-up 3s linear forwards;
-            padding: 0px;
-            -webkit-text-stroke: 7px #478fdf;
-        }
-
-        @keyframes fill-text-bottom-up {
-            0% {height: 0;}
-            100% {height: 100%;}
-        }
-        
-        #notification-status {
-            position: fixed;
-            top: 10px;
-            right: 10px;
-            background-color: rgba(0, 0, 0, 0.7);
-            color: white;
-            padding: 8px 12px;
-            border-radius: 4px;
-            z-index: 1001;
-            font-size: 14px;
-            display: none;
         }
     </style>
 </head>
 <body>
-    <!-- Preloader -->
-    <div id="preloader">
-        <div id="preloader-text">JOE'S<br>PICK 5</div>
-    </div>
 
     <div id="install-banner">
         <p>Add to Home Screen for the best experience</p>
         <button id="install-button">Install</button>
         <button id="dismiss-button">Dismiss</button>
     </div>
-    
-    <div id="notification-status"></div>
-    
-    <iframe frameborder="0" scrolling="yes" allowfullscreen="yes" src="https://script.google.com/macros/s/AKfycbwuZM7KGKnS7jnpM2YN9W_AgTMqA0qJGw99K3MIUNxzI1tnh3YK76AhgeCfh2Wc7pTd/exec"></iframe>
-    
-    <!-- Firebase Compatibility SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-messaging-compat.js"></script>
+
+    <!-- Iframe for the app -->
+    <iframe src="https://script.google.com/macros/s/AKfycbyev1VGNgTFoAynyQtro3CEVLZ_2PXzFfQdZ0mHomj8YR8sy5ZCCIIMMo9Ulj7-5zw6/exec"></iframe>
 
     <script>
-        // Preloader Script
-        document.addEventListener('DOMContentLoaded', function() {
-            const preloader = document.getElementById('preloader');
-            setTimeout(() => {
-                preloader.style.display = 'none';
-            }, 5000);
-        });
-
-        // Notification status display helper
-        function showNotificationStatus(message, isError = false) {
-            const statusEl = document.getElementById('notification-status');
-            statusEl.textContent = message;
-            statusEl.style.backgroundColor = isError ? 'rgba(255, 0, 0, 0.7)' : 'rgba(0, 0, 0, 0.7)';
-            statusEl.style.display = 'block';
-            
-            setTimeout(() => {
-                statusEl.style.display = 'none';
-            }, 5000);
-        }
+        // Firebase config
+        const firebaseConfig = {
+            apiKey: "AIzaSyB5r_KL2eKVFd66VQU_5pznKrVHa9xzCfc",
+            authDomain: "joespick5push.firebaseapp.com",
+            projectId: "joespick5push",
+            storageBucket: "joespick5push.firebasestorage.app",
+            messagingSenderId: "783669343677",
+            appId: "1:783669343677:web:c1f72d2a2a58b0349a4ed4"
+        };
 
         // Initialize Firebase
-        const firebaseConfig = {
-          apiKey: "AIzaSyB5r_KL2eKVFd66VQU_5pznKrVHa9xzCfc",
-          authDomain: "joespick5push.firebaseapp.com",
-          projectId: "joespick5push",
-          storageBucket: "joespick5push.firebasestorage.app",
-          messagingSenderId: "783669343677",
-          appId: "1:783669343677:web:c1f72d2a2a58b0349a4ed4"
-        };
-        
-        let messaging;
-        try {
-            firebase.initializeApp(firebaseConfig);
-            messaging = firebase.messaging();
-            console.log('Firebase initialized successfully');
-        } catch (error) {
-            console.error('Firebase initialization error:', error);
-            showNotificationStatus('Push notification system error', true);
-        }
+        const app = firebase.initializeApp(firebaseConfig);
+        const messaging = firebase.messaging();
 
-        // Convert VAPID key to Uint8Array
-        function urlBase64ToUint8Array(base64String) {
-            const padding = '='.repeat((4 - base64String.length % 4) % 4);
-            const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/');
-            const rawData = window.atob(base64);
-            const outputArray = new Uint8Array(rawData.length);
-            for (let i = 0; i < rawData.length; ++i) {
-                outputArray[i] = rawData.charCodeAt(i);
-            }
-            return outputArray;
-        }
-
-        // Subscribe to Push Notifications
-        async function subscribeUserToPush(registration) {
-            try {
-                const vapidPublicKey = 'BOM3KFfemC5lGnsF28N-_UGA7H9esoOm5gp0_Eg45HMqaMqviLx_bcAonVaZe-c0GwSFwfwe7-fJVP1n8h1iAAU';
-                console.log('Using VAPID Public Key:', vapidPublicKey.substring(0, 10) + '...');
-
-                const subscription = await registration.pushManager.subscribe({
-                    userVisibleOnly: true,
-                    applicationServerKey: urlBase64ToUint8Array(vapidPublicKey)
+        // Register service worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js')
+                .then(registration => {
+                    console.log('Service Worker registered with scope:', registration.scope);
+                    messaging.useServiceWorker(registration);
+                })
+                .catch(error => {
+                    console.log('Service Worker registration failed:', error);
                 });
+        }
 
-                console.log('Push subscription obtained:', subscription);
+        // Request notification permission and get token
+        async function requestPermission() {
+            try {
+                const token = await messaging.getToken({
+                    vapidKey: 'BOM3KFfemC5lGnsF28N-_UGA7H9esoOm5gp0_Eg45HMqaMqviLx_bcAonVaZe-c0GwSFwfwe7-fJVP1n8h1iAAU'
+                });
+                console.log('FCM Token:', token);
 
-                // Send subscription to server with no-cors mode
+                // Send token to backend (Apps Script)
                 await fetch('https://script.google.com/macros/s/AKfycbyev1VGNgTFoAynyQtro3CEVLZ_2PXzFfQdZ0mHomj8YR8sy5ZCCIIMMo9Ulj7-5zw6/exec', {
                     method: 'POST',
+                    body: JSON.stringify({ token }),
                     headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        subscription: subscription.toJSON(),
-                        action: 'subscribe'
-                    }),
-                    mode: 'no-cors' // Bypass CORS
+                        'Content-Type': 'application/json'
+                    }
                 });
-
-                console.log('Subscription sent to server (no-cors mode)');
-                showNotificationStatus('Subscribed to notifications');
-                return subscription;
             } catch (error) {
-                console.error('Failed to subscribe to push:', error);
-                showNotificationStatus('Subscription failed: ' + error.message, true);
-                throw error;
+                console.error('Error getting FCM token:', error);
             }
         }
 
-        // Register Service Worker and Handle Push
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', async () => {
-                try {
-                    const registration = await navigator.serviceWorker.register('sw.js');
-                    console.log('Service Worker registered with scope:', registration.scope);
+        requestPermission();
 
-                    // Request Notification Permission
-                    const permission = await Notification.requestPermission();
-                    if (permission === 'granted') {
-                        console.log('Notification permission granted.');
-                        showNotificationStatus('Notifications enabled');
-                        await subscribeUserToPush(registration);
-                    } else {
-                        console.log('Notification permission denied.');
-                        showNotificationStatus('Notifications disabled');
-                    }
-                } catch (error) {
-                    console.error('Service Worker registration failed:', error);
-                    showNotificationStatus('Service worker registration failed', true);
-                }
-            });
-        }
+        // Handle foreground messages
+        messaging.onMessage((payload) => {
+            console.log('Message received:', payload);
+            const { title, body } = payload.notification;
+            new Notification(title, { body });
+        });
 
-        // PWA Install Prompt Code
+        // Install prompt for PWA
         let deferredPrompt;
-        const installBanner = document.getElementById('install-banner');
-        const installButton = document.getElementById('install-button');
-        const dismissButton = document.getElementById('dismiss-button');
-
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
-            installBanner.style.display = 'block';
+            document.getElementById('install-banner').style.display = 'block';
         });
 
-        installButton.addEventListener('click', () => {
-            installBanner.style.display = 'none';
+        document.getElementById('install-button').addEventListener('click', () => {
+            document.getElementById('install-banner').style.display = 'none';
             deferredPrompt.prompt();
-            deferredPrompt.userChoice.then((choiceResult) => {
-                if (choiceResult.outcome === 'accepted') {
-                    console.log('User accepted the install prompt');
-                } else {
-                    console.log('User dismissed the install prompt');
-                }
-                deferredPrompt = null;
-            });
+            deferredPrompt = null;
         });
 
-        dismissButton.addEventListener('click', () => {
-            installBanner.style.display = 'none';
+        document.getElementById('dismiss-button').addEventListener('click', () => {
+            document.getElementById('install-banner').style.display = 'none';
         });
 
-        // Iframe Sizing Code
-        function resizeIframe() {
-            var iframe = document.querySelector("iframe");
-            iframe.style.height = window.innerHeight + "px";
-            iframe.style.width = window.innerWidth + "px";
-        }
-        window.addEventListener("resize", resizeIframe);
-        window.addEventListener("load", resizeIframe);
-        
-        // Scroll Manipulation Code
-        let lastScrollY = 0;
-        const iframe = document.querySelector("iframe");
-        iframe.addEventListener("load", () => {
-            try {
-                iframe.contentWindow.addEventListener("scroll", () => {
-                    const currentScrollY = iframe.contentWindow.scrollY;
-                    if (Math.abs(currentScrollY - lastScrollY) > 10) {
-                        window.scrollTo(0, window.scrollY + (currentScrollY - lastScrollY));
-                    }
-                    lastScrollY = currentScrollY;
-                });
-            } catch (e) {
-                console.log("Could not add scroll listener to iframe content:", e);
-            }
-        });
-
-        // Standalone Mode Check
-        if (window.matchMedia('(display-mode: standalone)').matches || 
-            window.navigator.standalone === true) {
-            console.log('Display mode is standalone');
-            installBanner.style.display = 'none';
-        }
-
-        function lockOrientation() {
-            if (screen.orientation && screen.orientation.lock) {
-                screen.orientation.lock('portrait')
-                    .catch(function(error) {
-                        console.log('Orientation lock failed:', error);
-                    });
-            }
-        }
-
-        // Try to lock orientation on load and when entering fullscreen
-        window.addEventListener('load', lockOrientation);
-        
-        // Additional checks for different browser support
-        if (window.screen.orientation) {
-            window.screen.orientation.addEventListener('change', function() {
-                if (window.screen.orientation.type.includes('landscape')) {
-                    lockOrientation();
-                }
-            });
-        }
+         function resizeIframe() {
+             var iframe = document.querySelector("iframe");
+             iframe.style.height = window.innerHeight + "px";
+             iframe.style.width = window.innerWidth + "px";
+         }
+         window.addEventListener("resize", resizeIframe);
+         window.addEventListener("load", resizeIframe);
+ 
+         // Existing Scroll Manipulation Code
+         let lastScrollY = 0;
+         const iframe = document.querySelector("iframe");
+         iframe.addEventListener("load", () => {
+             try {
+                 iframe.contentWindow.addEventListener("scroll", () => {
+                     const currentScrollY = iframe.contentWindow.scrollY;
+                     if (Math.abs(currentScrollY - lastScrollY) > 10) {
+                         window.scrollTo(0, window.scrollY + (currentScrollY - lastScrollY));
+                     }
+                     lastScrollY = currentScrollY;
+                 });
+             } catch (e) {
+                 console.log("Could not add scroll listener to iframe content:", e);
+             }
+         });
+ 
+         // Existing Standalone Mode Check
+         if (window.matchMedia('(display-mode: standalone)').matches || 
+             window.navigator.standalone === true) {
+             console.log('Display mode is standalone');
+             installBanner.style.display = 'none';
+         }
     </script>
 </body>
 </html>
