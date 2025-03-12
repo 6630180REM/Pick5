@@ -1,6 +1,6 @@
-// Import Firebase scripts
-importScripts('https://www.gstatic.com/firebasejs/9.0.2/firebase-app.js');
-importScripts('https://www.gstatic.com/firebasejs/9.0.2/firebase-messaging.js');
+// Import the latest Firebase scripts
+importScripts('https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js');
+importScripts('https://www.gstatic.com/firebasejs/9.6.1/firebase-messaging.js');
 
 // Firebase configuration (use your Firebase config here)
 const firebaseConfig = {
@@ -19,7 +19,6 @@ const messaging = firebase.messaging();
 // Handle background messages
 messaging.onBackgroundMessage(function(payload) {
   console.log('Received background message: ', payload);
-  // Customize notification here
   const notificationTitle = 'Background Message Title';
   const notificationOptions = {
     body: 'Background message body.',
