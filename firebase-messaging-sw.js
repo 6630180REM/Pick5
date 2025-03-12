@@ -1,8 +1,8 @@
-// Import the latest Firebase scripts
-importScripts('https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js');
-importScripts('https://www.gstatic.com/firebasejs/9.6.1/firebase-messaging.js');
+// Import Firebase scripts (using compat version for service workers)
+importScripts('https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js');
+importScripts('https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-compat.js');
 
-// Firebase configuration (use your Firebase config here)
+// Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyB5r_KL2eKVFd66VQU_5pznKrVHa9xzCfc",
   authDomain: "joespick5push.firebaseapp.com",
@@ -12,18 +12,21 @@ const firebaseConfig = {
   appId: "1:783669343677:web:c1f72d2a2a58b0349a4ed4"
 };
 
+// Initialize Firebase
 firebase.initializeApp(firebaseConfig);
-
 const messaging = firebase.messaging();
 
 // Handle background messages
 messaging.onBackgroundMessage(function(payload) {
-  console.log('Received background message: ', payload);
-  const notificationTitle = 'Background Message Title';
+  console.log('Received background message:', payload);
+  
+  // Customize notification based on payload
+  const notificationTitle = payload.notification?.title || "Joe's Pick 5";
   const notificationOptions = {
-    body: 'Background message body.',
-    icon: '/firebase-logo.png'
+    body: payload.notification?.body || "You have a new notification",
+    icon: '/Pick5Logo.png',
+    badge: '/Pick5Logo.png'
   };
-
-  self.registration.showNotification(notificationTitle, notificationOptions);
+  
+  return self.registration.showNotification(notificationTitle, notificationOptions);
 });
