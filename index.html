@@ -1,3 +1,23 @@
+
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+<script>
+  const firebaseConfig = {
+  apiKey: "AIzaSyB5r_KL2eKVFd66VQU_5pznKrVHa9xzCfc",
+  authDomain: "joespick5push.firebaseapp.com",
+  projectId: "joespick5push",
+  storageBucket: "joespick5push.firebasestorage.app",
+  messagingSenderId: "783669343677",
+  appId: "1:783669343677:web:c1f72d2a2a58b0349a4ed4"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const messaging = firebase.messaging();
+  const db = firebase.firestore();
+</script>
+
 <!DOCTYPE html>
  <html lang="en">
  <head>
@@ -166,7 +186,8 @@
      </div>
  
      <iframe frameborder="0" scrolling="yes" allowfullscreen="yes" src="https://script.google.com/macros/s/AKfycbwuZM7KGKnS7jnpM2YN9W_AgTMqA0qJGw99K3MIUNxzI1tnh3YK76AhgeCfh2Wc7pTd/exec"></iframe>
- 
+
+  
      <script>
          // Preloader Script
          document.addEventListener('DOMContentLoaded', function() {
@@ -273,6 +294,35 @@
                  }
              });
          }
+
+        async function requestNotificationPermission() {
+    try {
+      const permission = await Notification.requestPermission();
+      if (permission === 'granted') {
+        console.log('Notification permission granted.');
+        const token = await messaging.getToken({ vapidKey: 'BOM3KFfemC5lGnsF28N-_UGA7H9esoOm5gp0_Eg45HMqaMqviLx_bcAonVaZe-c0GwSFwfwe7-fJVP1n8h1iAAU' });
+        console.log('Device token:', token);
+        await saveTokenToFirestore(token);
+      } else {
+        console.log('Notification permission denied.');
+      }
+    } catch (error) {
+      console.error('Error requesting notification permission:', error);
+    }
+  }
+
+  async function saveTokenToFirestore(token) {
+    if (!token) return;
+    try {
+      await db.collection('fcmTokens').doc(token).set({
+        token: token,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      });
+      console.log('Token saved to Firestore');
+    } catch (error) {
+      console.error('Error saving token:', error);
+    }
+  }
      </script>
  </body>
  </html>
