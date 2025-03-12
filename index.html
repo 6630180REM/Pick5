@@ -263,7 +263,7 @@ function subscribeUserToPush() {
                 console.log('Using VAPID Public Key:', vapidPublicKey.substring(0, 10) + '...');
                 
                 // Better check for invalid VAPID key
-                if (!vapidPublicKey || vapidPublicKey.includes('YOUR_PUBLIC_VAPID_KEY')) {
+                if (!vapidPublicKey || vapidPublicKey.includes('BOM3KFfemC5lGnsF28N-_UGA7H9esoOm5gp0_Eg45HMqaMqviLx_bcAonVaZe-c0GwSFwfwe7-fJVP1n8h1iAAU')) {
                     throw new Error('Invalid VAPID public key');
                 }
                 
