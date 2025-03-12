@@ -101,3 +101,47 @@ self.addEventListener('notificationclick', event => {
       })
   );
 });
+
+const firebaseConfig = {
+  apiKey: "AIzaSyB5r_KL2eKVFd66VQU_5pznKrVHa9xzCfc",
+  authDomain: "joespick5push.firebaseapp.com",
+  projectId: "joespick5push",
+  storageBucket: "joespick5push.firebasestorage.app",
+  messagingSenderId: "783669343677",
+  appId: "1:783669343677:web:c1f72d2a2a58b0349a4ed4"
+};
+
+firebase.initializeApp(firebaseConfig);
+
+const messaging = firebase.messaging();
+
+async function getToken() {
+  try {
+    const currentToken = await messaging.getToken({
+      vapidKey: 'BOM3KFfemC5lGnsF28N-_UGA7H9esoOm5gp0_Eg45HMqaMqviLx_bcAonVaZe-c0GwSFwfwe7-fJVP1n8h1iAAU'
+    });
+    console.log('FCM Token:', currentToken);
+
+    if (currentToken) {
+      // Send the valid FCM token to the backend
+      await fetch('https://script.google.com/macros/s/AKfycbwuZM7KGKnS7jnpM2YN9W_AgTMqA0qJGw99K3MIUNxzI1tnh3YK76AhgeCfh2Wc7pTd/exec', {
+        method: 'POST',
+        body: JSON.stringify({ token: currentToken }), // Send the FCM token directly
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+    } else {
+      console.log('No registration token available. Request permission to generate one.');
+    }
+  } catch (err) {
+    console.error('Error getting token', err);
+  }
+}
+
+// Request permission and get token
+Notification.requestPermission().then((permission) => {
+  if (permission === 'granted') {
+    getToken();
+  }
+});
