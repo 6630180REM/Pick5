@@ -23,15 +23,16 @@ self.addEventListener('install', event => {
   );
 });
 
-// Activate event
 self.addEventListener('activate', event => {
   console.log('Service Worker activating');
   event.waitUntil(
     caches.keys().then(cacheNames => {
       return Promise.all(
         cacheNames.map(cacheName => {
-          console.log('Service Worker: clearing ALL previous caches');
-          return caches.delete(cacheName);
+          if (cacheName !== CACHE_NAME) { // ✅ Keep only the latest cache
+            console.log('Service Worker: clearing old cache', cacheName);
+            return caches.delete(cacheName);
+          }
         })
       );
     }).then(() => {
@@ -40,6 +41,7 @@ self.addEventListener('activate', event => {
     })
   );
 });
+
 
 // Fetch event
 self.addEventListener('fetch', event => {
