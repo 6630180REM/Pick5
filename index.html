@@ -283,33 +283,36 @@ lockOrientation();
     const app = firebase.initializeApp(firebaseConfig);
     const messaging = firebase.messaging();
 
-    function requestNotificationPermission() {
-        Notification.requestPermission().then((permission) => {
-            if (permission === 'granted') {
-                console.log('Notification permission granted.');
-                getToken();
-            } else {
-                console.log('Unable to get permission to notify.');
-            }
-        });
-    }
+function requestNotificationPermission() {
+    Notification.requestPermission().then((permission) => {
+        console.log("Notification permission:", permission);
+        if (permission === 'granted') {
+            getToken();
+        } else {
+            console.log('Unable to get permission to notify.');
+        }
+    });
+}
 
-    function getToken() {
-        messaging.getToken({ vapidKey: 'BOM3KFfemC5lGnsF28N-_UGA7H9esoOm5gp0_Eg45HMqaMqviLx_bcAonVaZe-c0GwSFwfwe7-fJVP1n8h1iAAU' }).then((currentToken) => {
-            if (currentToken) {
-                console.log('FCM registration token:', currentToken);
-                sendTokenToServer(currentToken);
-            } else {
-                console.log('No registration token available. Request permission to generate one.');
-            }
-        }).catch((err) => {
-            console.log('An error occurred while retrieving token. ', err);
-        });
-    }
+function getToken() {
+    messaging.getToken({ vapidKey: 'BOM3KFfemC5lGnsF28N-_UGA7H9esoOm5gp0_Eg45HMqaMqviLx_bcAonVaZe-c0GwSFwfwe7-fJVP1n8h1iAAU' }).then((currentToken) => {
+        console.log("FCM token:", currentToken);
+        if (currentToken) {
+            sendTokenToServer(currentToken);
+        } else {
+            console.log('No registration token available. Request permission to generate one.');
+        }
+    }).catch((err) => {
+        console.log('An error occurred while retrieving token. ', err);
+    });
+}
 
-    function sendTokenToServer(token) {
-        fetch('https://script.google.com/macros/s/AKfycbyev1VGNgTFoAynyQtro3CEVLZ_2PXzFfQdZ0mHomj8YR8sy5ZCCIIMMo9Ulj7-5zw6/exec?token=' + token + "&origin=" + window.location.origin); //Replace YOUR_APPS_SCRIPT_URL with your Apps Script URL
-    }
+function sendTokenToServer(token) {
+    console.log("Sending token to server:", token);
+    fetch('YOUR_APPS_SCRIPT_URL?token=' + token + "&origin=" + window.location.origin)
+    .then(response => console.log("server response:", response))
+    .catch(error => console.log("fetch error:", error));
+}
 
     window.addEventListener('load', function() {
         if ('serviceWorker' in navigator) {
