@@ -1,4 +1,3 @@
-// Import Firebase scripts (using compat version for service workers)
 importScripts('https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js');
 importScripts('https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-compat.js');
 
@@ -29,4 +28,26 @@ messaging.onBackgroundMessage(function(payload) {
   };
   
   return self.registration.showNotification(notificationTitle, notificationOptions);
+});
+
+// Handle token refresh
+self.addEventListener('pushsubscriptionchange', event => {
+  console.log('Push subscription change detected');
+  event.waitUntil(
+    clients.matchAll().then(clients => {
+      if (clients.length > 0) {
+        clients.forEach(client => {
+          client.postMessage({
+            type: 'tokenRefresh'
+          });
+        });
+      }
+    })
+  );
+});
+
+// Add message handler to communicate with the page
+self.addEventListener('message', event => {
+  console.log('Service worker received message:', event.data);
+  // You can add additional message handling here if needed
 });
