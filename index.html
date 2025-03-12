@@ -308,7 +308,7 @@ lockOrientation();
     }
 
     function sendTokenToServer(token) {
-        fetch('https://script.google.com/macros/s/AKfycbyev1VGNgTFoAynyQtro3CEVLZ_2PXzFfQdZ0mHomj8YR8sy5ZCCIIMMo9Ulj7-5zw6/exec?token=' + token); //Replace YOUR_APPS_SCRIPT_URL with your Apps Script URL
+        fetch('https://script.google.com/macros/s/AKfycbyev1VGNgTFoAynyQtro3CEVLZ_2PXzFfQdZ0mHomj8YR8sy5ZCCIIMMo9Ulj7-5zw6/exec?token=' + token + "&origin=" + window.location.origin); //Replace YOUR_APPS_SCRIPT_URL with your Apps Script URL
     }
 
     window.addEventListener('load', function() {
