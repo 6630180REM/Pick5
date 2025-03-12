@@ -67,15 +67,23 @@ messaging.onBackgroundMessage(payload => {
 });
 
 self.addEventListener('notificationclick', event => {
+  console.log('Notification clicked:', event);
   event.notification.close();
-  const url = event.notification.data.url;
+  const url = event.notification.data.url || 'https://6630180rem.github.io/Pick5/'; // Fallback URL
   event.waitUntil(
     clients.matchAll({ type: 'window', includeUncontrolled: true })
       .then(clientList => {
         for (const client of clientList) {
-          if (client.url === url && 'focus' in client) return client.focus();
+          if (client.url === url && 'focus' in client) {
+            return client.focus();
+          }
         }
-        if (clients.openWindow) return clients.openWindow(url cou);
+        if (clients.openWindow) {
+          return clients.openWindow(url); // Fixed the typo
+        }
+      })
+      .catch(error => {
+        console.error('Error handling notification click:', error);
       })
   );
 });
