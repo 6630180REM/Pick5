@@ -236,11 +236,14 @@
                         
                         // Get FCM token
                         try {
-                            const token = await messaging.getToken({
-                                vapidKey: 'BOM3KFfemC5lGnsF28N-_UGA7H9esoOm5gp0_Eg45HMqaMqviLx_bcAonVaZe-c0GwSFwfwe7-fJVP1n8h1iAAU'
-                            });
-                            
-                            console.log('Device token:', token);
+    const token = await messaging.getToken({
+        vapidKey: 'BOM3KFfemC5lGnsF28N-_UGA7H9esoOm5gp0_Eg45HMqaMqviLx_bcAonVaZe-c0GwSFwfwe7-fJVP1n8h1iAAU',
+        serviceWorkerRegistration: await navigator.serviceWorker.getRegistration(
+            window.location.pathname.includes('/Pick5/') ? 
+            '/Pick5/' : 
+            './'
+        )
+    });
                             
                             // Save token to Firestore
                             await saveTokenToFirestore(token);
