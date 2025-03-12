@@ -1,6 +1,6 @@
 {
     "name": "Joe's Pick 5",
-    "short_name": "test Pick 5",
+    "short_name": "Pick 5",
     "start_url": "index.html",
     "scope": "./",
     "display": "standalone",
