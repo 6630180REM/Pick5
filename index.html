@@ -253,7 +253,7 @@
             });
         }
 
-async function subscribeUserToPush(registration) { // Changed to async for cleaner error handling
+async function subscribeUserToPush(registration) {
   try {
     const vapidPublicKey = 'BOM3KFfemC5lGnsF28N-_UGA7H9esoOm5gp0_Eg45HMqaMqviLx_bcAonVaZe-c0GwSFwfwe7-fJVP1n8h1iAAU';
     console.log('Using VAPID Public Key:', vapidPublicKey.substring(0, 10) + '...');
@@ -274,7 +274,8 @@ async function subscribeUserToPush(registration) { // Changed to async for clean
       body: JSON.stringify({
         subscription: subscription.toJSON(),
         action: 'subscribe'
-      })
+      }),
+      mode: 'cors', // Explicitly set to cors (default), but ensure server allows it
     });
 
     const responseData = await response.json();
