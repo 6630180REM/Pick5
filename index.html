@@ -1,547 +1,490 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-title" content="Joe's Pick 5">
-    <meta name="application-name" content="Joe's Pick 5">
-    <meta name="theme-color" content="#333">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-
-    <!-- Standard favicon -->
-    <link rel="icon" type="image/png" sizes="32x32" href="Pick5Logo.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="Pick5Logo.png">
-
-    <!-- iOS icons -->
-    <link rel="apple-touch-icon" href="Pick5Logo.png">
-    <link rel="apple-touch-icon" sizes="152x152" href="Pick5Logo.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="Pick5Logo.png">
-    <link rel="apple-touch-icon" sizes="167x167" href="Pick5Logo.png">
-
-    <!-- Android icons -->
-    <link rel="shortcut icon" href="Pick5Logo.png">
-
-    <!-- Web app manifest -->
-    <link rel="manifest" href="manifest.json">
-
-    <title>Joe's Pick 5</title>
-    <style>
-        html, body {
-            background-color: #333 !important;
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            width: 100%;
-            height: 100%;
-            font-family: Arial, sans-serif;
-            overscroll-behavior: none;
-        }
-        * {
-            -webkit-tap-highlight-color: transparent;
-            -webkit-touch-callout: none;
-            -webkit-user-select: none;
-            -khtml-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
-            -webkit-text-size-adjust: none;
-            text-size-adjust: none;
-        }
-        input, textarea {
-            font-size: 16px !important;
-        }
-        iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-            display: block;
-            overflow: auto;
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #333;
-        }
-        #install-banner {
-            display: none;
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background-color: #333;
-            color: white;
-            text-align: center;
-            padding: 10px;
-            box-shadow: 0 -2px 5px rgba(0,0,0,0.2);
-            z-index: 1000;
-        }
-        #install-banner button {
-            background-color: #4CAF50;
-            border: none;
-            color: white;
-            padding: 8px 16px;
-            text-align: center;
-            text-decoration: none;
-            display: inline-block;
-            font-size: 16px;
-            margin: 4px 2px;
-            cursor: pointer;
-            border-radius: 4px;
-        }
-        #preloader {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: #333;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            overflow: hidden;
-            background: black url(https://img.freepik.com/premium-photo/3d-rendering-empty-american-football-field-with-stadium_493806-8391.jpg?semt=ais_hybrid);
-            color: white;
-            padding: 0px;
-            background-attachment: fixed;
-            background-repeat: round;
-            background-size: cover;
-        }
-        #preloader-text {
-            font-size: 7rem;
-            font-weight: bold;
-            color: transparent;
-            position: relative;
-            text-align: center;
-            -webkit-text-stroke: 7px #478fdf;
-            line-height: .9;
-        }
-        #preloader-text::before {
-            content: "JOE'S\A PICK 5";
-            white-space: pre;
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 0;
-            overflow: hidden;
-            color: #478fdf;
-            border-bottom: 3px solid white;
-            animation: fill-text-bottom-up 3s linear forwards;
-            padding: 0px;
-            -webkit-text-stroke: 7px #478fdf;
-        }
-        @keyframes fill-text-bottom-up {
-            0% {height: 0;}
-            100% {height: 100%;}
-        }
-    </style>
-</head>
-<body>
-    <!-- Preloader -->
-    <div id="preloader">
-        <div id="preloader-text">JOE'S<br>PICK 5</div>
-    </div>
-
-    <div id="install-banner">
-        <p>Add to Home Screen for the best experience</p>
-        <button id="install-button">Install</button>
-        <button id="dismiss-button">Dismiss</button>
-    </div>
-
-    <iframe frameborder="0" scrolling="yes" allowfullscreen="yes" src="https://script.google.com/macros/s/AKfycbwuZM7KGKnS7jnpM2YN9W_AgTMqA0qJGw99K3MIUNxzI1tnh3YK76AhgeCfh2Wc7pTd/exec"></iframe>
-
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-
-    <script>
-        // Device detection functions
-        function isMobileOrTablet() {
-            const userAgent = navigator.userAgent.toLowerCase();
-            const mobileKeywords = [
-                'android', 'iphone', 'ipad', 'ipod', 'blackberry', 'windows phone', 
-                'opera mini', 'opera mobi', 'iemobile', 'mobile', 'tablet', 
-                'kindle', 'silk','MacIntel'
-            ];
-            
-            // Check if any mobile keywords exist in the user agent string
-            return mobileKeywords.some(keyword => userAgent.includes(keyword));
-        }
-
-        function isAppleDevice() {
-            const userAgent = navigator.userAgent.toLowerCase();
-            return /iphone|ipad|ipod/.test(userAgent) && !window.MSStream;
-        }
-
-        // Firebase Setup and Notification Permission Function
-        function setupFirebaseAndNotifications() {
-            // Firebase Configuration
-            const firebaseConfig = {
-                apiKey: "AIzaSyB5r_KL2eKVFd66VQU_5pznKrVHa9xzCfc",
-                authDomain: "joespick5push.firebaseapp.com",
-                projectId: "joespick5push",
-                storageBucket: "joespick5push.firebasestorage.app",
-                messagingSenderId: "783669343677",
-                appId: "1:783669343677:web:c1f72d2a2a58b0349a4ed4"
-            };
-
-            // Initialize Firebase (with check to prevent duplicate initialization)
-            if (!firebase.apps.length) {
-                firebase.initializeApp(firebaseConfig);
-            }
-            const messaging = firebase.messaging();
-            const db = firebase.firestore();
-
-            // Set up token refresh listener (replacing onTokenRefresh)
-            navigator.serviceWorker.addEventListener('message', event => {
-                if (event.data && event.data.type === 'tokenRefresh') {
-                    console.log('Token refresh detected');
-                    messaging.getToken({
-                        vapidKey: 'BOM3KFfemC5lGnsF28N-_UGA7H9esoOm5gp0_Eg45HMqaMqviLx_bcAonVaZe-c0GwSFwfwe7-fJVP1n8h1iAAU'
-                    }).then(refreshedToken => {
-                        console.log('Token refreshed:', refreshedToken);
-                        saveTokenToFirestore(refreshedToken);
-                    }).catch(err => {
-                        console.error('Unable to refresh token:', err);
-                    });
-                }
-            });
-
-            // Create notification permission prompt
-            const createNotificationPrompt = () => {
-                const promptDiv = document.createElement('div');
-                promptDiv.id = 'notification-prompt';
-                promptDiv.style.cssText = `
-                            position: fixed;
-                            bottom: 50%;
-                            left: 50%;
-                            transform: translateX(-50%);
-                            background: rgb(0, 0, 0, .8);
-                            color: white;
-                            padding: 18px 11px;
-                            border-radius: 10px;
-                            box-shadow: 0 10px 13px rgba(0, 0, 0, 0.9);
-                            text-align: center;
-                            z-index: 1001;
-                            font-family: Arial, sans-serif;
-                            max-width: 90%;
-                            width: max-content;
-                            border: 2px solid #478fdf;
-                `;
-
-                promptDiv.innerHTML = `
-                    <p style="margin: 0 0 15px 0; font-size: 16px; font-weight: 700;">Get notified when Picks and Entry Form are availiable</p>
-                    <div style="display: flex; justify-content: space-between; gap: 10px;">
-                        <button id="enable-notifications" style="background-color: white; color: #478fdf; border: none; padding: 8px 16px; border-radius: 4px; font-weight: bold; cursor: pointer; flex: 1;">Allow</button>
-                        <button id="enable-notifications" style="background-color: #478fdf;color: white;border: none;padding: 8px;border-radius: 4px;font-weight: bold;cursor: pointer;flex: 1;">Allow</button>
-                        <button id="decline-notifications" style="background-color: transparent; color: white; border: 1px solid white; padding: 8px 16px; border-radius: 4px; cursor: pointer; flex: 1;">Not Now</button>
-                    </div>
-                `;
-
-                document.body.appendChild(promptDiv);
-
-                // Add event listeners
-                document.getElementById('enable-notifications').addEventListener('click', requestPermission);
-                document.getElementById('decline-notifications').addEventListener('click', () => {
-                    document.getElementById('notification-prompt').remove();
-                    localStorage.setItem('notificationPromptDismissed', Date.now());
-                });
-            };
-
-            // Request notification permission
-            const requestPermission = async () => {
-                try {
-                    // Remove the prompt
-                    const promptDiv = document.getElementById('notification-prompt');
-                    if (promptDiv) promptDiv.remove();
-
-                    // Request permission
-                    const permission = await Notification.requestPermission();
-
-                    if (permission === 'granted') {
-                        console.log('Notification permission granted.');
-
-                        // Get FCM token
-                        try {
-                            // Determine service worker path
-                            const swPath = window.location.pathname.includes('/Pick5/') ? 
-                                '/Pick5/' : 
-                                './';
-
-                            console.log('Service Worker path being used:', swPath);
-
-                            const registration = await navigator.serviceWorker.getRegistration(swPath);
-                            if (!registration) {
-                                throw new Error('Service worker registration not found');
-                            }
-
-                            const token = await messaging.getToken({
-                                vapidKey: 'BOM3KFfemC5lGnsF28N-_UGA7H9esoOm5gp0_Eg45HMqaMqviLx_bcAonVaZe-c0GwSFwfwe7-fJVP1n8h1iAAU',
-                                serviceWorkerRegistration: registration
-                            });
-
-                            console.log('Device token:', token);
-
-                            // Save token to Firestore
-                            await saveTokenToFirestore(token);
-
-                            // Handle foreground messages
-                            messaging.onMessage((payload) => {
-                                console.log('Message received in foreground:', payload);
-                                // Remove the notification creation code or add custom in-app notification UI instead
-                            });
-
-                        } catch (error) {
-                            console.error('Error getting token:', error.code, error.message);
-                        }
-                    } else {
-                        console.log('Notification permission denied.');
-                        localStorage.setItem('notificationPermissionDenied', 'true');
-                    }
-                } catch (error) {
-                    console.error('Error requesting permission:', error.code, error.message);
-                }
-            };
-
-            // Save token to Firestore with additional user info
-            const saveTokenToFirestore = async (token) => {
-                if (!token) {
-                    console.error('No token provided to saveTokenToFirestore');
-                    return;
-                }
-
-                try {
-                    console.log('Attempting to save token to Firestore...');
-
-                    // Check if token already exists to avoid duplicates
-                    const tokenDoc = await db.collection('fcmTokens').doc(token).get();
-
-                    if (!tokenDoc.exists) {
-                        // Token doesn't exist, save it
-                        await db.collection('fcmTokens').doc(token).set({
-                            token: token,
-                            device: {
-                                userAgent: navigator.userAgent,
-                                platform: navigator.platform,
-                            },
-                            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                            lastActive: firebase.firestore.FieldValue.serverTimestamp()
-                        });
-                        console.log('Token saved to Firestore successfully');
-                    } else {
-                        // Token exists, update last active timestamp
-                        await db.collection('fcmTokens').doc(token).update({
-                            lastActive: firebase.firestore.FieldValue.serverTimestamp()
-                        });
-                        console.log('Token last active timestamp updated successfully');
-                    }
-
-                    // Store token in localStorage for future reference
-                    localStorage.setItem('fcmToken', token);
-
-                } catch (error) {
-                    console.error('Error saving token to Firestore:', error.code, error.message);
-                    // Show an error message to the user (optional)
-                    console.log('Please check your Firestore security rules to ensure write access to fcmTokens collection');
-                }
-            };
-
-            // Check existing permissions and prompt if needed - MODIFIED TO CHECK FOR MOBILE/TABLET
-            const checkPermissionAndPrompt = () => {
-                // First check if this is a mobile or tablet device
-                if (!isMobileOrTablet()) {
-                    console.log('Desktop device detected - skipping notification permission request');
-                    return; // Exit the function early for desktop devices
-                }
-                
-                // Continue with normal permission flow for mobile/tablet devices
-                if (Notification.permission === 'granted') {
-                    // Already granted, request token
-                    requestPermission();
-                } else if (Notification.permission === 'denied') {
-                    // Permission already denied
-                    console.log('Notifications already denied');
-                    localStorage.setItem('notificationPermissionDenied', 'true');
-                } else {
-                    // Not decided yet, check if we've recently shown the prompt
-                    const lastDismissed = localStorage.getItem('notificationPromptDismissed');
-                    const ONE_DAY = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
-
-                    if (!lastDismissed || (Date.now() - parseInt(lastDismissed)) > ONE_DAY) {
-                        // Show prompt after a delay
-                        setTimeout(createNotificationPrompt, 5000);
-                    }
-                }
-            };
-
-            // Register service worker
-            if ('serviceWorker' in navigator) {
-                // Determine if we're in the repository context or not
-                const swPath = window.location.pathname.includes('/Pick5/') ? 
-                    '/Pick5/firebase-messaging-sw.js' : 
-                    './firebase-messaging-sw.js';
-
-                console.log('Attempting to register service worker at:', swPath);
-
-                navigator.serviceWorker.register(swPath)
-                    .then(registration => {
-                        console.log('Service Worker registered with scope:', registration.scope);
-
-                        // Check notification permission after service worker is registered
-                        checkPermissionAndPrompt();
-                    })
-                    .catch(error => {
-                        console.error('Service Worker registration failed:', error.code, error.message);
-                    });
-            } else {
-                console.log('Service workers not supported');
-            }
-        }
-
-        // Add Apple device specific home screen prompt
-        function showIOSInstallInstructions() {
-            // Only show for iOS devices that are running in Safari
-            if (!isAppleDevice() || !navigator.userAgent.includes('Safari') || 
-                navigator.userAgent.includes('CriOS') || navigator.userAgent.includes('FxiOS')) {
-                return;
-            }
-            
-            // Check if we've shown this recently
-            const lastShown = localStorage.getItem('iosPromptLastShown');
-            const THREE_DAYS = 3 * 24 * 60 * 60 * 1000; // 3 days in milliseconds
-            if (lastShown && (Date.now() - parseInt(lastShown)) < THREE_DAYS) {
-                return;
-            }
-            
-            // Create iOS-specific install prompt
-            const iosPrompt = document.createElement('div');
-            iosPrompt.id = 'ios-install-prompt';
-            iosPrompt.style.cssText = `
-                position: fixed;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                background-color: rgba(0, 0, 0, 0.85);
-                color: white;
-                text-align: center;
-                padding: 15px;
-                z-index: 1000;
-                font-family: Arial, sans-serif;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-            `;
-            
-            iosPrompt.innerHTML = `
-                <div style="display: flex; align-items: center; margin-bottom: 10px; width: 100%;">
-                    <div style="flex: 0 0 40px; text-align: center;">
-                        <img src="Pick5Logo.png" alt="Logo" style="width: 30px; height: 30px;">
-                    </div>
-                    <div style="flex: 1; text-align: left; padding-left: 10px;">
-                        <div style="font-weight: bold; font-size: 16px;">Add to Home Screen</div>
-                        <div style="font-size: 12px;">For the best experience, add this app to your home screen</div>
-                    </div>
-                </div>
-                <div style="text-align: center; margin-top: 5px; display: flex; width: 100%;">
-                    <div style="flex: 1; display: flex; align-items: center; justify-content: center;">
-                        <div style="margin-right: 5px;">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M4 11h16v2H4z"></path><path d="M11 4h2v16h-2z"></path>
-                            </svg>
-                        </div>
-                        <div style="text-align: left; font-size: 12px;">
-                            Tap the share icon, then<br>"Add to Home Screen"
-                        </div>
-                    </div>
-                    <button id="ios-prompt-dismiss" style="background: #478fdf; border: none; color: white; padding: 8px 15px; border-radius: 5px; font-weight: bold; margin-left: 10px;">
-                        Got it
-                    </button>
-                </div>
-            `;
-            
-            document.body.appendChild(iosPrompt);
-            
-            // Add event listener to the dismiss button
-            document.getElementById('ios-prompt-dismiss').addEventListener('click', () => {
-                document.getElementById('ios-install-prompt').remove();
-                localStorage.setItem('iosPromptLastShown', Date.now().toString());
-            });
-        }
-
-        // Preloader Script
-        document.addEventListener('DOMContentLoaded', function() {
-            const preloader = document.getElementById('preloader');
-            setTimeout(() => {
-                preloader.style.display = 'none';
-                
-                // Only setup Firebase notifications on mobile/tablet
-                if (isMobileOrTablet()) {
-                    setupFirebaseAndNotifications();
-                    
-                    // Show iOS install prompt after a delay for Apple devices
-                    setTimeout(() => {
-                        showIOSInstallInstructions();
-                    }, 7000);
-                } else {
-                    console.log('Desktop device detected - skipping notification setup');
-                }
-            }, 5000);
-        });
-
-        // Modified PWA Install Prompt Code - Only show on mobile/tablet non-Apple devices
-        let deferredPrompt;
-        const installBanner = document.getElementById('install-banner');
-        const installButton = document.getElementById('install-button');
-        const dismissButton = document.getElementById('dismiss-button');
-
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            
-            // Only show install banner on mobile/tablet devices that aren't Apple devices
-            if (isMobileOrTablet() && !isAppleDevice()) {
-                installBanner.style.display = 'block';
-            } else {
-                console.log('Desktop or Apple device detected - hiding install banner');
-            }
-        });
-
-        installButton.addEventListener('click', () => {
-            installBanner.style.display = 'none';
-            deferredPrompt.prompt();
-            deferredPrompt.userChoice.then((choiceResult) => {
-                if (choiceResult.outcome === 'accepted') {
-                    console.log('User accepted the install prompt');
-                } else {
-                    console.log('User dismissed the install prompt');
-                }
-                deferredPrompt = null;
-            });
-        });
-
-        dismissButton.addEventListener('click', () => {
-            installBanner.style.display = 'none';
-        });
-
-        // Resize iframe based on window size
-        function resizeIframe() {
-            var iframe = document.querySelector("iframe");
-            iframe.style.height = window.innerHeight + "px";
-            iframe.style.width = window.innerWidth + "px";
-        }
-
-        window.addEventListener("resize", resizeIframe);
-        window.addEventListener("load", resizeIframe);
-    </script>
-</body>
-</html>
+  <html lang="en">
+  <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+      <meta name="apple-mobile-web-app-capable" content="yes">
+      <meta name="mobile-web-app-capable" content="yes">
+      <meta name="apple-mobile-web-app-title" content="Joe's Pick 5">
+      <meta name="application-name" content="Joe's Pick 5">
+      <meta name="theme-color" content="#333">
+      <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+ 
+      <!-- Standard favicon -->
+      <link rel="icon" type="image/png" sizes="32x32" href="Pick5Logo.png">
+      <link rel="icon" type="image/png" sizes="16x16" href="Pick5Logo.png">
+ 
+      <!-- iOS icons -->
+      <link rel="apple-touch-icon" href="Pick5Logo.png">
+      <link rel="apple-touch-icon" sizes="152x152" href="Pick5Logo.png">
+      <link rel="apple-touch-icon" sizes="180x180" href="Pick5Logo.png">
+      <link rel="apple-touch-icon" sizes="167x167" href="Pick5Logo.png">
+ 
+      <!-- Android icons -->
+      <link rel="shortcut icon" href="Pick5Logo.png">
+ 
+      <!-- Web app manifest -->
+      <link rel="manifest" href="manifest.json">
+ 
+      <title>Joe's Pick 5</title>
+      <style>
+          html, body {
+              background-color: #333 !important;
+              margin: 0;
+              padding: 0;
+              overflow: hidden;
+              position: fixed;
+              top: 0;
+              left: 0;
+              right: 0;
+              bottom: 0;
+              width: 100%;
+              height: 100%;
+              font-family: Arial, sans-serif;
+              overscroll-behavior: none;
+          }
+          * {
+              -webkit-tap-highlight-color: transparent;
+              -webkit-touch-callout: none;
+              -webkit-user-select: none;
+              -khtml-user-select: none;
+              -moz-user-select: none;
+              -ms-user-select: none;
+              user-select: none;
+              -webkit-text-size-adjust: none;
+              text-size-adjust: none;
+          }
+          input, textarea {
+              font-size: 16px !important;
+          }
+          iframe {
+              width: 100%;
+              height: 100%;
+              border: none;
+              display: block;
+              overflow: auto;
+              position: absolute;
+              top: 0;
+              left: 0;
+              right: 0;
+              bottom: 0;
+              background-color: #333;
+          }
+          #install-banner {
+              display: none;
+              position: fixed;
+              bottom: 0;
+              left: 0;
+              right: 0;
+              background-color: #333;
+              color: white;
+              text-align: center;
+              padding: 10px;
+              box-shadow: 0 -2px 5px rgba(0,0,0,0.2);
+              z-index: 1000;
+          }
+          #install-banner button {
+              background-color: #4CAF50;
+              border: none;
+              color: white;
+              padding: 8px 16px;
+              text-align: center;
+              text-decoration: none;
+              display: inline-block;
+              font-size: 16px;
+              margin: 4px 2px;
+              cursor: pointer;
+              border-radius: 4px;
+          }
+          #preloader {
+              position: fixed;
+              top: 0;
+              left: 0;
+              width: 100%;
+              height: 100%;
+              background-color: #333;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              z-index: 9999;
+              overflow: hidden;
+              background: black url(https://img.freepik.com/premium-photo/3d-rendering-empty-american-football-field-with-stadium_493806-8391.jpg?semt=ais_hybrid);
+              color: white;
+              padding: 0px;
+              background-attachment: fixed;
+              background-repeat: round;
+              background-size: cover;
+          }
+          #preloader-text {
+              font-size: 7rem;
+              font-weight: bold;
+              color: transparent;
+              position: relative;
+              text-align: center;
+              -webkit-text-stroke: 7px #478fdf;
+              line-height: .9;
+          }
+          #preloader-text::before {
+              content: "JOE'S\A PICK 5";
+              white-space: pre;
+              position: absolute;
+              top: 0;
+              left: 0;
+              width: 100%;
+              height: 0;
+              overflow: hidden;
+              color: #478fdf;
+              border-bottom: 3px solid white;
+              animation: fill-text-bottom-up 3s linear forwards;
+              padding: 0px;
+              -webkit-text-stroke: 7px #478fdf;
+          }
+          @keyframes fill-text-bottom-up {
+              0% {height: 0;}
+              100% {height: 100%;}
+          }
+      </style>
+  </head>
+  <body>
+      <!-- Preloader -->
+      <div id="preloader">
+          <div id="preloader-text">JOE'S<br>PICK 5</div>
+      </div>
+ 
+      <div id="install-banner">
+          <p>Add to Home Screen for the best experience</p>
+          <button id="install-button">Install</button>
+          <button id="dismiss-button">Dismiss</button>
+      </div>
+ 
+      <iframe frameborder="0" scrolling="yes" allowfullscreen="yes" src="https://script.google.com/macros/s/AKfycbwuZM7KGKnS7jnpM2YN9W_AgTMqA0qJGw99K3MIUNxzI1tnh3YK76AhgeCfh2Wc7pTd/exec"></iframe>
+ 
+      <!-- Firebase SDK -->
+      <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+      <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-compat.js"></script>
+      <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+ 
+      <script>
+          // Firebase Setup and Notification Permission Function
+          function setupFirebaseAndNotifications() {
+              // Firebase Configuration
+              const firebaseConfig = {
+                  apiKey: "AIzaSyB5r_KL2eKVFd66VQU_5pznKrVHa9xzCfc",
+                  authDomain: "joespick5push.firebaseapp.com",
+                  projectId: "joespick5push",
+                  storageBucket: "joespick5push.firebasestorage.app",
+                  messagingSenderId: "783669343677",
+                  appId: "1:783669343677:web:c1f72d2a2a58b0349a4ed4"
+              };
+ 
+              // Initialize Firebase (with check to prevent duplicate initialization)
+              if (!firebase.apps.length) {
+                  firebase.initializeApp(firebaseConfig);
+              }
+              const messaging = firebase.messaging();
+              const db = firebase.firestore();
+ 
+              // Set up token refresh listener (replacing onTokenRefresh)
+              navigator.serviceWorker.addEventListener('message', event => {
+                  if (event.data && event.data.type === 'tokenRefresh') {
+                      console.log('Token refresh detected');
+                      messaging.getToken({
+                          vapidKey: 'BOM3KFfemC5lGnsF28N-_UGA7H9esoOm5gp0_Eg45HMqaMqviLx_bcAonVaZe-c0GwSFwfwe7-fJVP1n8h1iAAU'
+                      }).then(refreshedToken => {
+                          console.log('Token refreshed:', refreshedToken);
+                          saveTokenToFirestore(refreshedToken);
+                      }).catch(err => {
+                          console.error('Unable to refresh token:', err);
+                      });
+                  }
+              });
+ 
+              // Create notification permission prompt
+              const createNotificationPrompt = () => {
+                  const promptDiv = document.createElement('div');
+                  promptDiv.id = 'notification-prompt';
+                  promptDiv.style.cssText = `
+                              position: fixed;
+                              bottom: 50%;
+                              left: 50%;
+                              transform: translateX(-50%);
+                              background: rgb(0, 0, 0, .8);
+                              color: white;
+                              padding: 18px 11px;
+                              border-radius: 10px;
+                              box-shadow: 0 10px 13px rgba(0, 0, 0, 0.9);
+                              text-align: center;
+                              z-index: 1001;
+                              font-family: Arial, sans-serif;
+                              max-width: 90%;
+                              width: max-content;
+                              border: 2px solid #478fdf;
+                  `;
+ 
+                  promptDiv.innerHTML = `
+                      <p style="margin: 0 0 15px 0; font-size: 16px; font-weight: 700;">Get notified when Picks and Entry Form are availiable</p>
+                      <div style="display: flex; justify-content: space-between; gap: 10px;">
+                          <button id="enable-notifications" style="background-color: white; color: #478fdf; border: none; padding: 8px 16px; border-radius: 4px; font-weight: bold; cursor: pointer; flex: 1;">Allow</button>
+                          <button id="enable-notifications" style="background-color: #478fdf;color: white;border: none;padding: 8px;border-radius: 4px;font-weight: bold;cursor: pointer;flex: 1;">Allow</button>
+                          <button id="decline-notifications" style="background-color: transparent; color: white; border: 1px solid white; padding: 8px 16px; border-radius: 4px; cursor: pointer; flex: 1;">Not Now</button>
+                      </div>
+                  `;
+ 
+                  document.body.appendChild(promptDiv);
+ 
+                  // Add event listeners
+                  document.getElementById('enable-notifications').addEventListener('click', requestPermission);
+                  document.getElementById('decline-notifications').addEventListener('click', () => {
+                      document.getElementById('notification-prompt').remove();
+                      localStorage.setItem('notificationPromptDismissed', Date.now());
+                  });
+              };
+ 
+              // Request notification permission
+              const requestPermission = async () => {
+                  try {
+                      // Remove the prompt
+                      const promptDiv = document.getElementById('notification-prompt');
+                      if (promptDiv) promptDiv.remove();
+ 
+                      // Request permission
+                      const permission = await Notification.requestPermission();
+ 
+                      if (permission === 'granted') {
+                          console.log('Notification permission granted.');
+ 
+                          // Get FCM token
+                          try {
+                              // Determine service worker path
+                              const swPath = window.location.pathname.includes('/Pick5/') ? 
+                                  '/Pick5/' : 
+                                  './';
+ 
+                              console.log('Service Worker path being used:', swPath);
+ 
+                              const registration = await navigator.serviceWorker.getRegistration(swPath);
+                              if (!registration) {
+                                  throw new Error('Service worker registration not found');
+                              }
+ 
+                              const token = await messaging.getToken({
+                                  vapidKey: 'BOM3KFfemC5lGnsF28N-_UGA7H9esoOm5gp0_Eg45HMqaMqviLx_bcAonVaZe-c0GwSFwfwe7-fJVP1n8h1iAAU',
+                                  serviceWorkerRegistration: registration
+                              });
+ 
+                              console.log('Device token:', token);
+ 
+                              // Save token to Firestore
+                              await saveTokenToFirestore(token);
+ 
+                              // Handle foreground messages
+                              messaging.onMessage((payload) => {
+      console.log('Message received in foreground:', payload);
+      // Remove the notification creation code or add custom in-app notification UI instead
+  });
+                              // messaging.onMessage((payload) => {
+                              //     console.log('Message received in foreground:', payload);
+                              //     // You can show a custom notification here if needed
+ 
+                              //     // Example of showing a notification for foreground messages
+                              //     const notificationTitle = payload.notification?.title || "Joe's Pick 5";
+                              //     const notificationOptions = {
+                              //         body: payload.notification?.body || "You have a new notification",
+                              //         icon: 'Pick5Logo.png',
+                              //     };
+ 
+                              //     // Create and show notification if browser supports it
+                              //     if ('Notification' in window) {
+                              //         new Notification(notificationTitle, notificationOptions);
+                              //     }
+                              // });
+ 
+                          } catch (error) {
+                              console.error('Error getting token:', error.code, error.message);
+                          }
+                      } else {
+                          console.log('Notification permission denied.');
+                          localStorage.setItem('notificationPermissionDenied', 'true');
+                      }
+                  } catch (error) {
+                      console.error('Error requesting permission:', error.code, error.message);
+                  }
+              };
+ 
+              // Save token to Firestore with additional user info
+              const saveTokenToFirestore = async (token) => {
+                  if (!token) {
+                      console.error('No token provided to saveTokenToFirestore');
+                      return;
+                  }
+ 
+                  try {
+                      console.log('Attempting to save token to Firestore...');
+ 
+                      // Check if token already exists to avoid duplicates
+                      const tokenDoc = await db.collection('fcmTokens').doc(token).get();
+ 
+                      if (!tokenDoc.exists) {
+                          // Token doesn't exist, save it
+                          await db.collection('fcmTokens').doc(token).set({
+                              token: token,
+                              device: {
+                                  userAgent: navigator.userAgent,
+                                  platform: navigator.platform,
+                              },
+                              createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                              lastActive: firebase.firestore.FieldValue.serverTimestamp()
+                          });
+                          console.log('Token saved to Firestore successfully');
+                      } else {
+                          // Token exists, update last active timestamp
+                          await db.collection('fcmTokens').doc(token).update({
+                              lastActive: firebase.firestore.FieldValue.serverTimestamp()
+                          });
+                          console.log('Token last active timestamp updated successfully');
+                      }
+ 
+                      // Store token in localStorage for future reference
+                      localStorage.setItem('fcmToken', token);
+ 
+                  } catch (error) {
+                      console.error('Error saving token to Firestore:', error.code, error.message);
+                      // Show an error message to the user (optional)
+                      console.log('Please check your Firestore security rules to ensure write access to fcmTokens collection');
+                  }
+              };
+ 
+              // Check existing permissions and show prompt if needed
+              // const checkPermissionAndPrompt = () => {
+              //     if (Notification.permission === 'granted') {
+              //         // Already granted, request token
+              //         requestPermission();
+              //     } else if (Notification.permission === 'denied') {
+              //         // Permission already denied
+              //         console.log('Notifications already denied');
+              //         localStorage.setItem('notificationPermissionDenied', 'true');
+              //     } else {
+              //         // Not decided yet, check if we've recently shown the prompt
+              //         const lastDismissed = localStorage.getItem('notificationPromptDismissed');
+              //         const ONE_DAY = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+  
+              //         if (!lastDismissed || (Date.now() - parseInt(lastDismissed)) > ONE_DAY) {
+              //             // Show prompt after a delay
+              //             setTimeout(createNotificationPrompt, 5000);
+              //         }
+              //     }
+              // };
+ function isMobileOrTablet() {
+     const userAgent = navigator.userAgent.toLowerCase();
+     const mobileKeywords = [
+         'android', 'iphone', 'ipad', 'ipod', 'blackberry', 'windows phone', 
+         'opera mini', 'opera mobi', 'iemobile', 'mobile', 'tablet', 
+         'kindle', 'silk'
+     ];
+     
+     // Check if any mobile keywords exist in the user agent string
+     return mobileKeywords.some(keyword => userAgent.includes(keyword));
+ }
+ 
+ // Then modify your checkPermissionAndPrompt function like this:
+ const checkPermissionAndPrompt = () => {
+     // First check if this is a mobile or tablet device
+     if (!isMobileOrTablet()) {
+         console.log('Desktop device detected - skipping notification permission request');
+         return; // Exit the function early for desktop devices
+     }
+     
+     // Continue with normal permission flow for mobile/tablet devices
+     if (Notification.permission === 'granted') {
+         // Already granted, request token
+         requestPermission();
+     } else if (Notification.permission === 'denied') {
+         // Permission already denied
+         console.log('Notifications already denied');
+         localStorage.setItem('notificationPermissionDenied', 'true');
+     } else {
+         // Not decided yet, check if we've recently shown the prompt
+         const lastDismissed = localStorage.getItem('notificationPromptDismissed');
+         const ONE_DAY = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+ 
+         if (!lastDismissed || (Date.now() - parseInt(lastDismissed)) > ONE_DAY) {
+             // Show prompt after a delay
+             setTimeout(createNotificationPrompt, 5000);
+         }
+     }
+ };
+ 
+              // Register service worker
+              if ('serviceWorker' in navigator) {
+                  // Determine if we're in the repository context or not
+                  const swPath = window.location.pathname.includes('/Pick5/') ? 
+                      '/Pick5/firebase-messaging-sw.js' : 
+                      './firebase-messaging-sw.js';
+ 
+                  console.log('Attempting to register service worker at:', swPath);
+ 
+                  navigator.serviceWorker.register(swPath)
+                      .then(registration => {
+                          console.log('Service Worker registered with scope:', registration.scope);
+ 
+                          // Check notification permission after service worker is registered
+                          checkPermissionAndPrompt();
+                      })
+                      .catch(error => {
+                          console.error('Service Worker registration failed:', error.code, error.message);
+                      });
+              } else {
+                  console.log('Service workers not supported');
+              }
+          }
+ 
+          // Preloader Script
+          document.addEventListener('DOMContentLoaded', function() {
+              const preloader = document.getElementById('preloader');
+              setTimeout(() => {
+                  preloader.style.display = 'none';
+                  setupFirebaseAndNotifications();
+              }, 5000);
+          });
+ 
+          // Existing PWA Install Prompt Code
+          let deferredPrompt;
+          const installBanner = document.getElementById('install-banner');
+          const installButton = document.getElementById('install-button');
+          const dismissButton = document.getElementById('dismiss-button');
+ 
+          window.addEventListener('beforeinstallprompt', (e) => {
+              e.preventDefault();
+              deferredPrompt = e;
+              installBanner.style.display = 'block';
+          });
+ 
+          installButton.addEventListener('click', () => {
+              installBanner.style.display = 'none';
+              deferredPrompt.prompt();
+              deferredPrompt.userChoice.then((choiceResult) => {
+                  if (choiceResult.outcome === 'accepted') {
+                      console.log('User accepted the install prompt');
+                  } else {
+                      console.log('User dismissed the install prompt');
+                  }
+                  deferredPrompt = null;
+              });
+          });
+ 
+          dismissButton.addEventListener('click', () => {
+              installBanner.style.display = 'none';
+          });
+ 
+          // Resize iframe based on window size
+          function resizeIframe() {
+              var iframe = document.querySelector("iframe");
+              iframe.style.height = window.innerHeight + "px";
+              iframe.style.width = window.innerWidth + "px";
+          }
+ 
+          window.addEventListener("resize", resizeIframe);
+          window.addEventListener("load", resizeIframe);
+      </script>
+  </body>
+  </html>
