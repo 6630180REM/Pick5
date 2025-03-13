@@ -24,7 +24,13 @@ messaging.onBackgroundMessage(function(payload) {
   const notificationOptions = {
     body: payload.notification?.body || "You have a new notification",
     icon: '/Pick5Logo.png',
-    badge: '/Pick5Logo.png'
+    badge: '/Pick5Logo.png',
+    tag: 'joe-pick5-notification', // Add this to prevent duplicates
+    renotify: false,
+    silent: true, // This can help on some browsers
+    data: {
+      source: 'joespick5' // Custom data
+    }
   };
   
   return self.registration.showNotification(notificationTitle, notificationOptions);
