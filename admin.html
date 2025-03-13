@@ -1,49 +1,84 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Firebase Admin Panel</title>
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-functions-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Joe's Pick 5 - Admin Panel</title>
 </head>
 <body>
-  <h1>Send Push Notification</h1>
-  <textarea id="message" placeholder="Notification message"></textarea><br><br>
-  <button onclick="sendNotification()">Send Notification</button>
+    <h1>Joe's Pick 5 - Send Push Notification</h1>
+    <form id="notificationForm">
+        <label for="notificationBody">Notification Body:</label>
+        <textarea id="notificationBody" required></textarea>
+        <br>
+        <button type="submit">Send Notification</button>
+    </form>
+    <div id="status"></div>
 
-  <script>
-    const firebaseConfig = {
-  apiKey: "AIzaSyB5r_KL2eKVFd66VQU_5pznKrVHa9xzCfc",
-  authDomain: "joespick5push.firebaseapp.com",
-  projectId: "joespick5push",
-  storageBucket: "joespick5push.firebasestorage.app",
-  messagingSenderId: "783669343677",
-  appId: "1:783669343677:web:c1f72d2a2a58b0349a4ed4",
-  measurementId: "G-JDCJZPXHZM"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const functions = firebase.functions();
-    const db = firebase.firestore();
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
-    async function sendNotification() {
-      const message = document.getElementById('message').value;
-      const sendPushNotification = functions.httpsCallable('sendPushNotification');
-      const tokens = [];
+    <script>
+        // Firebase Config
+        const firebaseConfig = {
+            apiKey: "AIzaSyB5r_KL2eKVFd66VQU_5pznKrVHa9xzCfc",
+            authDomain: "joespick5push.firebaseapp.com",
+            projectId: "joespick5push",
+            storageBucket: "joespick5push.firebasestorage.app",
+            messagingSenderId: "783669343677",
+            appId: "1:783669343677:web:c1f72d2a2a58b0349a4ed4"
+        };
 
-      try {
-        const snapshot = await db.collection('fcmTokens').get();
-        snapshot.forEach(doc => {
-          tokens.push(doc.id);
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const db = firebase.firestore();
+
+        // Handle Form Submission
+        document.getElementById('notificationForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const body = document.getElementById('notificationBody').value;
+            if (!body) {
+                alert('Please enter a notification body.');
+                return;
+            }
+
+            try {
+                document.getElementById('status').innerText = 'Sending notifications...';
+
+                // Fetch stored tokens from Firestore
+                const tokensSnapshot = await db.collection('fcmTokens').get();
+                const tokens = tokensSnapshot.docs.map(doc => doc.id);
+
+                if (tokens.length === 0) {
+                    alert('No tokens found!');
+                    return;
+                }
+
+                // Send the notification using a Firebase Cloud Function
+                const response = await fetch('https://<YOUR_REGION>-joespick5push.cloudfunctions.net/sendNotification', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        tokens,
+                        body
+                    })
+                });
+
+                if (response.ok) {
+                    document.getElementById('status').innerText = 'Notifications sent successfully!';
+                } else {
+                    const error = await response.json();
+                    document.getElementById('status').innerText = `Error: ${error.message}`;
+                }
+            } catch (error) {
+                console.error('Error sending notifications:', error);
+                document.getElementById('status').innerText = `Error: ${error.message}`;
+            }
         });
-
-        const result = await sendPushNotification({ message: message, tokens: tokens });
-        console.log('Notification sent:', result);
-        alert('Notification sent!');
-      } catch (error) {
-        console.error('Error sending notification:', error);
-        alert('Error sending notification: ' + error.message);
-      }
-    }
-  </script>
+    </script>
 </body>
 </html>
