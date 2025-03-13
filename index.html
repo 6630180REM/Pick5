@@ -379,7 +379,7 @@ const checkPermissionAndPrompt = () => {
     // Function to detect mobile/tablet devices
     const isMobileDevice = () => {
         const userAgent = navigator.userAgent || navigator.vendor || window.opera;
-        return /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent.toLowerCase());
+        return /android|webos|iphone|ipad|ipod|macintel|blackberry|iemobile|opera mini/i.test(userAgent.toLowerCase());
     };
 
     // Only proceed if it's a mobile device
