@@ -379,7 +379,7 @@ const checkPermissionAndPrompt = () => {
     // Function to detect mobile/tablet devices
     const isMobileDevice = () => {
         const userAgent = navigator.userAgent || navigator.vendor || window.opera;
-        return /android|webos|iphone|ipad|ipod|macintel|blackberry|iemobile|opera mini/i.test(userAgent.toLowerCase());
+        return /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent.toLowerCase());
     };
 
     // Only proceed if it's a mobile device
@@ -388,47 +388,100 @@ const checkPermissionAndPrompt = () => {
         return;
     }
 
+    // Check if this is a fresh install by looking for an install flag
+    const isFreshInstall = !localStorage.getItem('appInstalled');
+
+    if (isFreshInstall) {
+        console.log('Fresh install detected - resetting notification state');
+        // Reset notification-related local storage
+        localStorage.removeItem('notificationPromptDismissed');
+        localStorage.removeItem('notificationPermissionDenied');
+        localStorage.setItem('appInstalled', 'true'); // Mark as installed
+    }
+
     if (Notification.permission === 'granted') {
         // Already granted, request token
         requestPermission();
     } else if (Notification.permission === 'denied') {
-        // Permission already denied
-        console.log('Notifications already denied');
-        localStorage.setItem('notificationPermissionDenied', 'true');
+        // Permission denied - log but don’t prompt unless fresh install
+        console.log('Notifications previously denied');
+        if (isFreshInstall) {
+            console.log('Fresh install - showing prompt despite previous denial');
+            setTimeout(createNotificationPrompt, 5000);
+        }
     } else {
-        // Not decided yet, check if we've recently shown the prompt
+        // Permission not yet decided
         const lastDismissed = localStorage.getItem('notificationPromptDismissed');
         const ONE_DAY = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
 
-        if (!lastDismissed || (Date.now() - parseInt(lastDismissed)) > ONE_DAY) {
-            // Show prompt after a delay
+        // Show prompt if never dismissed, or if dismissed over a day ago, or if fresh install
+        if (!lastDismissed || (Date.now() - parseInt(lastDismissed)) > ONE_DAY || isFreshInstall) {
             setTimeout(createNotificationPrompt, 5000);
+        } else {
+            console.log('Notification prompt recently dismissed - skipping');
         }
     }
 };
  
               // Register service worker
               if ('serviceWorker' in navigator) {
-                  // Determine if we're in the repository context or not
-                  const swPath = window.location.pathname.includes('/Pick5/') ? 
-                      '/Pick5/firebase-messaging-sw.js' : 
-                      './firebase-messaging-sw.js';
- 
-                  console.log('Attempting to register service worker at:', swPath);
- 
-                  navigator.serviceWorker.register(swPath)
-                      .then(registration => {
-                          console.log('Service Worker registered with scope:', registration.scope);
- 
-                          // Check notification permission after service worker is registered
-                          checkPermissionAndPrompt();
-                      })
-                      .catch(error => {
-                          console.error('Service Worker registration failed:', error.code, error.message);
-                      });
-              } else {
-                  console.log('Service workers not supported');
-              }
+    // Determine if we're in the repository context or not
+    const swPath = window.location.pathname.includes('/Pick5/') ? 
+        '/Pick5/firebase-messaging-sw.js' : 
+        './firebase-messaging-sw.js';
+
+    console.log('Attempting to register service worker at:', swPath);
+
+    // Function to handle service worker registration
+    const registerServiceWorker = () => {
+        navigator.serviceWorker.register(swPath)
+            .then(registration => {
+                console.log('Service Worker registered with scope:', registration.scope);
+                // Check notification permission after service worker is registered
+                checkPermissionAndPrompt();
+            })
+            .catch(error => {
+                console.error('Service Worker registration failed:', error.code, error.message);
+            });
+    };
+
+    // Check if this is a fresh install
+    const isFreshInstall = !localStorage.getItem('appInstalled');
+
+    if (isFreshInstall) {
+        console.log('Fresh install detected - resetting service worker and notification state');
+        // Reset notification-related local storage
+        localStorage.removeItem('notificationPromptDismissed');
+        localStorage.removeItem('notificationPermissionDenied');
+        localStorage.setItem('appInstalled', 'true'); // Mark as installed
+
+        // Unregister existing service workers for a clean slate
+        navigator.serviceWorker.getRegistrations()
+            .then(registrations => {
+                const unregisterPromises = registrations.map(registration => {
+                    return registration.unregister().then(() => {
+                        console.log('Service worker unregistered for fresh install:', registration.scope);
+                    });
+                });
+                // Wait for all unregisters to complete, then register anew
+                return Promise.all(unregisterPromises);
+            })
+            .then(() => {
+                console.log('All previous service workers unregistered - registering new one');
+                registerServiceWorker();
+            })
+            .catch(error => {
+                console.error('Error unregistering service workers:', error);
+                // Even if unregistration fails, try registering anyway
+                registerServiceWorker();
+            });
+    } else {
+        // Not a fresh install - proceed with normal registration
+        registerServiceWorker();
+    }
+} else {
+    console.log('Service workers not supported');
+}
           }
  
           // Preloader Script
