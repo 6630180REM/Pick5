@@ -278,21 +278,25 @@
                             
                             // Handle foreground messages
                             messaging.onMessage((payload) => {
-                                console.log('Message received in foreground:', payload);
-                                // You can show a custom notification here if needed
+    console.log('Message received in foreground:', payload);
+    // Remove the notification creation code or add custom in-app notification UI instead
+});
+                            // messaging.onMessage((payload) => {
+                            //     console.log('Message received in foreground:', payload);
+                            //     // You can show a custom notification here if needed
                                 
-                                // Example of showing a notification for foreground messages
-                                const notificationTitle = payload.notification?.title || "Joe's Pick 5";
-                                const notificationOptions = {
-                                    body: payload.notification?.body || "You have a new notification",
-                                    icon: 'Pick5Logo.png',
-                                };
+                            //     // Example of showing a notification for foreground messages
+                            //     const notificationTitle = payload.notification?.title || "Joe's Pick 5";
+                            //     const notificationOptions = {
+                            //         body: payload.notification?.body || "You have a new notification",
+                            //         icon: 'Pick5Logo.png',
+                            //     };
                                 
-                                // Create and show notification if browser supports it
-                                if ('Notification' in window) {
-                                    new Notification(notificationTitle, notificationOptions);
-                                }
-                            });
+                            //     // Create and show notification if browser supports it
+                            //     if ('Notification' in window) {
+                            //         new Notification(notificationTitle, notificationOptions);
+                            //     }
+                            // });
                             
                         } catch (error) {
                             console.error('Error getting token:', error.code, error.message);
