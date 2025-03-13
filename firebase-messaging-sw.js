@@ -17,25 +17,32 @@ importScripts('https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js'
  
  // Handle background messages
  messaging.onBackgroundMessage(function(payload) {
-   console.log('Received background message:', payload);
- 
-   // Customize notification based on payload
-  // const notificationTitle = payload.notification?.title || "Joe's Pick 5"
-   const notificationTitle = payload.notification?.title;
-   const notificationOptions = {
-     // body: payload.notification?.body || "You have a new notification",
-     icon: '/Pick5Logo.png',
-     badge: '/Pick5Logo.png',
-     tag: 'joe-pick5-notification',
-     renotify: false,
-     silent: true,
-     data: {
-       source: 'joespick5' // Custom data
-     }
-   };
- 
-   return self.registration.showNotification(notificationTitle, notificationOptions);
- });
+    console.log('Received background message:', payload);
+
+    const notificationTitle = payload.data?.title || "Default Title";
+    const notificationOptions = {
+        body: payload.data?.body || "You have a new notification",
+        icon: '/Pick5Logo.png',
+        badge: '/Pick5Logo.png',
+        tag: 'joe-pick5-notification',
+        renotify: false,
+        silent: true,
+        click_action: 'https://6630180rem.github.io/Pick5/'
+        data: {
+            source: 'joespick5'
+        }
+    };
+
+    return self.registration.showNotification(notificationTitle, notificationOptions);
+});const notificationOptions = {
+    body: payload.notification?.body || "You have a new notification",
+    icon: '/Pick5Logo.png',
+    badge: '/Pick5Logo.png',
+    tag: 'joe-pick5-notification',
+    renotify: false,
+    silent: true,
+    click_action: 'https://your-custom-url.com'
+};
  
  // Handle token refresh
  self.addEventListener('pushsubscriptionchange', event => {
