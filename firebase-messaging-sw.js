@@ -27,7 +27,7 @@ const notificationTitle = payload.data?.title || "Default Title";
         tag: 'joe-pick5-notification',
         renotify: false,
         silent: true,
-     click_action: 'https://6630180rem.github.io/Pick5/'
+     click_action: 'https://6630180rem.github.io/Pick5/',
         data: {
             source: 'joespick5'
         }
