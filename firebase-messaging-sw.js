@@ -20,9 +20,10 @@ importScripts('https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js'
    console.log('Received background message:', payload);
  
    // Customize notification based on payload
-   const notificationTitle = payload.notification?.title || "Joe's Pick 5";
+  // const notificationTitle = payload.notification?.title || "Joe's Pick 5"
+   const notificationTitle = payload.notification?.title;
    const notificationOptions = {
-     body: payload.notification?.body || "You have a new notification",
+     // body: payload.notification?.body || "You have a new notification",
      icon: '/Pick5Logo.png',
      badge: '/Pick5Logo.png',
      tag: 'joe-pick5-notification',
