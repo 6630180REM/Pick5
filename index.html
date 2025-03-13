@@ -354,26 +354,45 @@
                  }
              };
  
-             // Check existing permissions and show prompt if needed
-             const checkPermissionAndPrompt = () => {
-                 if (Notification.permission === 'granted') {
-                     // Already granted, request token
-                     requestPermission();
-                 } else if (Notification.permission === 'denied') {
-                     // Permission already denied
-                     console.log('Notifications already denied');
-                     localStorage.setItem('notificationPermissionDenied', 'true');
-                 } else {
-                     // Not decided yet, check if we've recently shown the prompt
-                     const lastDismissed = localStorage.getItem('notificationPromptDismissed');
-                     const ONE_DAY = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
- 
-                     if (!lastDismissed || (Date.now() - parseInt(lastDismissed)) > ONE_DAY) {
-                         // Show prompt after a delay
-                         setTimeout(createNotificationPrompt, 5000);
-                     }
-                 }
-             };
+function isMobileOrTablet() {
+    const userAgent = navigator.userAgent.toLowerCase();
+    const mobileKeywords = [
+        'android', 'iphone', 'ipad', 'ipod', 'blackberry', 'windows phone', 
+        'opera mini', 'opera mobi', 'iemobile', 'mobile', 'tablet', 
+        'kindle', 'silk'
+    ];
+    
+    // Check if any mobile keywords exist in the user agent string
+    return mobileKeywords.some(keyword => userAgent.includes(keyword));
+}
+
+// Then modify your checkPermissionAndPrompt function like this:
+const checkPermissionAndPrompt = () => {
+    // First check if this is a mobile or tablet device
+    if (!isMobileOrTablet()) {
+        console.log('Desktop device detected - skipping notification permission request');
+        return; // Exit the function early for desktop devices
+    }
+    
+    // Continue with normal permission flow for mobile/tablet devices
+    if (Notification.permission === 'granted') {
+        // Already granted, request token
+        requestPermission();
+    } else if (Notification.permission === 'denied') {
+        // Permission already denied
+        console.log('Notifications already denied');
+        localStorage.setItem('notificationPermissionDenied', 'true');
+    } else {
+        // Not decided yet, check if we've recently shown the prompt
+        const lastDismissed = localStorage.getItem('notificationPromptDismissed');
+        const ONE_DAY = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+
+        if (!lastDismissed || (Date.now() - parseInt(lastDismissed)) > ONE_DAY) {
+            // Show prompt after a delay
+            setTimeout(createNotificationPrompt, 5000);
+        }
+    }
+};
  
              // Register service worker
              if ('serviceWorker' in navigator) {
