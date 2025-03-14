@@ -19,9 +19,9 @@ importScripts('https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js'
  messaging.onBackgroundMessage(function(payload) {
    console.log('Received background message:', payload);
  
-const notificationTitle = payload.data?.title || "Default Title";
+const notificationTitle = payload.data?.title;
     const notificationOptions = {
-        body: payload.data?.body || "You have a new notification",
+        body: payload.data?.body,
         icon: '/Pick5Logo.png',
         badge: '/Pick5Logo.png',
         tag: 'joe-pick5-notification',
