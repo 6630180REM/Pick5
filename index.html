@@ -204,21 +204,21 @@
                  const promptDiv = document.createElement('div');
                  promptDiv.id = 'notification-prompt';
                  promptDiv.style.cssText = `
-                         position: fixed;
-                         bottom: 50%;
-                         left: 50%;
-                         transform: translateX(-50%);
-                         background: rgb(71, 143, 223);
-                         color: white;
-                         padding: 18px 11px;
-                         border-radius: 10px;
-                         box-shadow: rgba(0, 0, 0, 0.2) 0px 4px 12px;
-                         text-align: center;
-                         z-index: 1001;
-                         font-family: Arial, sans-serif;
-                         max-width: 90%;
-                         width: 441px;
-                         border: 2px solid black;
+                             position: fixed;
+                             bottom: 50%;
+                             left: 50%;
+                             transform: translateX(-50%);
+                             background: rgb(0, 0, 0, .8);
+                             color: white;
+                             padding: 18px 11px;
+                             border-radius: 10px;
+                             box-shadow: 0 10px 13px rgba(0, 0, 0, 0.9);
+                             text-align: center;
+                             z-index: 1001;
+                             font-family: Arial, sans-serif;
+                             max-width: 90%;
+                             width: max-content;
+                             border: 2px solid #478fdf;
                  `;
  
                  promptDiv.innerHTML = `
@@ -278,21 +278,13 @@
  
                              // Handle foreground messages
                              messaging.onMessage((payload) => {
-                                 console.log('Message received in foreground:', payload);
-                                 // You can show a custom notification here if needed
-                                 console.log('Message received in foreground:', payload);
+     console.log('Message received in foreground:', payload);
      // Remove the notification creation code or add custom in-app notification UI instead
  });
                              // messaging.onMessage((payload) => {
                              //     console.log('Message received in foreground:', payload);
                              //     // You can show a custom notification here if needed
  
-                                 // Example of showing a notification for foreground messages
-                                 const notificationTitle = payload.notification?.title || "Joe's Pick 5";
-                                 const notificationOptions = {
-                                     body: payload.notification?.body || "You have a new notification",
-                                     icon: 'Pick5Logo.png',
-                                 };
                              //     // Example of showing a notification for foreground messages
                              //     const notificationTitle = payload.notification?.title || "Joe's Pick 5";
                              //     const notificationOptions = {
@@ -300,11 +292,6 @@
                              //         icon: 'Pick5Logo.png',
                              //     };
  
-                                 // Create and show notification if browser supports it
-                                 if ('Notification' in window) {
-                                     new Notification(notificationTitle, notificationOptions);
-                                 }
-                             });
                              //     // Create and show notification if browser supports it
                              //     if ('Notification' in window) {
                              //         new Notification(notificationTitle, notificationOptions);
