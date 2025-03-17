@@ -21,7 +21,7 @@ importScripts('https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js'
  
 const notificationTitle = payload.data?.title;
     const notificationOptions = {
-        body: "",
+        body: payload.data?.body,
         icon: '/Pick5Logo.png',
         badge: '/Pick5Logo.png',
         tag: 'joe-pick5-notification',
