@@ -312,92 +312,100 @@
               };
  
               // Save token to Firestore with additional user info
-              const saveTokenToFirestore = async (token) => {
-                  if (!token) {
-                      console.error('No token provided to saveTokenToFirestore');
-                      return;
-                  }
- 
-                  try {
-                      console.log('Attempting to save token to Firestore...');
- 
-                      // Check if token already exists to avoid duplicates
-                      const tokenDoc = await db.collection('fcmTokens').doc(token).get();
- 
-                      if (!tokenDoc.exists) {
-                          // Token doesn't exist, save it
-                          await db.collection('fcmTokens').doc(token).set({
-                              token: token,
-                              device: {
-                                  userAgent: navigator.userAgent,
-                                  platform: navigator.platform,
-                              },
-                              createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                              lastActive: firebase.firestore.FieldValue.serverTimestamp()
-                          });
-                          console.log('Token saved to Firestore successfully');
-                      } else {
-                          // Token exists, update last active timestamp
-                          await db.collection('fcmTokens').doc(token).update({
-                              lastActive: firebase.firestore.FieldValue.serverTimestamp()
-                          });
-                          console.log('Token last active timestamp updated successfully');
-                      }
- 
-                      // Store token in localStorage for future reference
-                      localStorage.setItem('fcmToken', token);
- 
-                  } catch (error) {
-                      console.error('Error saving token to Firestore:', error.code, error.message);
-                      // Show an error message to the user (optional)
-                      console.log('Please check your Firestore security rules to ensure write access to fcmTokens collection');
-                  }
-              };
+const saveTokenToFirestore = async (token, retries = 3) => {
+    if (!token) {
+        console.error('No token provided to saveTokenToFirestore');
+        return;
+    }
+
+    const attemptSave = async (attempt) => {
+        try {
+            const tokenDoc = await db.collection('fcmTokens').doc(token).get();
+
+            if (!tokenDoc.exists) {
+                await db.collection('fcmTokens').doc(token).set({
+                    token,
+                    device: {
+                        userAgent: navigator.userAgent,
+                        platform: navigator.platform,
+                    },
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    lastActive: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                console.log('Token saved to Firestore successfully');
+            } else {
+                await db.collection('fcmTokens').doc(token).update({
+                    lastActive: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                console.log('Token last active timestamp updated successfully');
+            }
+            localStorage.setItem('fcmToken', token);
+        } catch (error) {
+            console.error(`Attempt ${attempt} failed:`, error.message);
+            if (attempt < retries) {
+                console.log(`Retrying... (${attempt + 1}/${retries})`);
+                await new Promise(resolve => setTimeout(resolve, 1000)); // Wait 1s
+                await attemptSave(attempt + 1);
+            } else {
+                console.error('Max retries reached. Token save failed.');
+                // Optional: Show user feedback
+                alert('Failed to enable notifications. Please try again later.');
+            }
+        }
+    };
+
+    await attemptSave(1);
+};
  
               // Check existing permissions and show prompt if needed
-              const checkPermissionAndPrompt = () => {
-                  if (Notification.permission === 'granted') {
-                      // Already granted, request token
-                      requestPermission();
-                  } else if (Notification.permission === 'denied') {
-                      // Permission already denied
-                      console.log('Notifications already denied');
-                      localStorage.setItem('notificationPermissionDenied', 'true');
-                  } else {
-                      // Not decided yet, check if we've recently shown the prompt
-                      const lastDismissed = localStorage.getItem('notificationPromptDismissed');
-                      const ONE_DAY = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
- 
-                      if (!lastDismissed || (Date.now() - parseInt(lastDismissed)) > ONE_DAY) {
-                          // Show prompt after a delay
-                          setTimeout(createNotificationPrompt, 5000);
-                      }
-                  }
-              };
+const checkPermissionAndPrompt = () => {
+    if (Notification.permission === 'granted') {
+        requestPermission();
+    } else if (Notification.permission === 'denied') {
+        console.log('Notifications already denied');
+        localStorage.setItem('notificationPermissionDenied', 'true');
+    } else {
+        const lastDismissed = localStorage.getItem('notificationPromptDismissed');
+        const ONE_WEEK = 7 * 24 * 60 * 60 * 1000; // 1 week in milliseconds
+
+        if (!lastDismissed || (Date.now() - parseInt(lastDismissed)) > ONE_WEEK) {
+            // Show prompt after user interaction
+            document.addEventListener('scroll', showPromptOnInteraction, { once: true });
+            document.addEventListener('click', showPromptOnInteraction, { once: true });
+        }
+    }
+};
+
+const showPromptOnInteraction = () => {
+    setTimeout(createNotificationPrompt, 1000); // Slight delay after interaction
+}
  
               // Register service worker
               if ('serviceWorker' in navigator) {
-                  // Determine if we're in the repository context or not
-                  const swPath = window.location.pathname.includes('/Pick5/') ? 
-                      '/Pick5/firebase-messaging-sw.js' : 
-                      './firebase-messaging-sw.js';
- 
-                  console.log('Attempting to register service worker at:', swPath);
- 
-                  navigator.serviceWorker.register(swPath)
-                      .then(registration => {
-                          console.log('Service Worker registered with scope:', registration.scope);
- 
-                          // Check notification permission after service worker is registered
-                          checkPermissionAndPrompt();
-                      })
-                      .catch(error => {
-                          console.error('Service Worker registration failed:', error.code, error.message);
-                      });
-              } else {
-                  console.log('Service workers not supported');
-              }
-          }
+    const swPath = window.location.pathname.includes('/Pick5/') 
+        ? '/Pick5/firebase-messaging-sw.js' 
+        : './firebase-messaging-sw.js';
+
+    console.log('Attempting to register service worker at:', swPath);
+
+    fetch(swPath, { method: 'HEAD' })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Service worker file not found at ${swPath}`);
+            }
+            return navigator.serviceWorker.register(swPath);
+        })
+        .then(registration => {
+            console.log('Service Worker registered with scope:', registration.scope);
+            checkPermissionAndPrompt();
+        })
+        .catch(error => {
+            console.error('Service Worker registration failed:', error.message);
+            // Optional: Show a user-facing message about notification unavailability
+        });
+} else {
+    console.log('Service workers not supported');
+}
  
           // Preloader Script
           document.addEventListener('DOMContentLoaded', function() {
