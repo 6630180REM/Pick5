@@ -22,6 +22,3 @@
         }
     ]
 }
-OneSignalDeferred.push(function(OneSignal) {
-  OneSignal.Notifications.requestPermission();
-});
