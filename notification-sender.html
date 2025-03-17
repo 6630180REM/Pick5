@@ -111,6 +111,8 @@
             margin-bottom: 20px;
         }
     </style>
+    <!-- OneSignal SDK -->
+    <script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" async></script>
 </head>
 <body>
     <div class="container">
@@ -118,7 +120,7 @@
         
         <div class="tabs">
             <div class="tab active" data-tab="send">Send Notification</div>
-            <div class="tab" data-tab="tokens">Manage Tokens</div>
+            <div class="tab" data-tab="segments">Manage Segments</div>
             <div class="tab" data-tab="settings">Settings</div>
         </div>
         
@@ -137,13 +139,24 @@
                 <label for="notification-type">Notification Type:</label>
                 <select id="notification-type">
                     <option value="all">Send to All Users</option>
-                    <option value="single">Send to Single Token</option>
+                    <option value="segment">Send to Segment</option>
+                    <option value="player">Send to Single Player</option>
                 </select>
             </div>
             
-            <div class="form-group" id="single-token-group" style="display: none;">
-                <label for="single-token">Device Token:</label>
-                <input type="text" id="single-token" placeholder="Enter device token">
+            <div class="form-group" id="segment-group" style="display: none;">
+                <label for="segment-name">Segment Name:</label>
+                <input type="text" id="segment-name" placeholder="Enter segment name">
+            </div>
+            
+            <div class="form-group" id="player-id-group" style="display: none;">
+                <label for="player-id">Player ID:</label>
+                <input type="text" id="player-id" placeholder="Enter OneSignal player ID">
+            </div>
+            
+            <div class="form-group">
+                <label for="notification-url">URL (Optional):</label>
+                <input type="text" id="notification-url" placeholder="Enter URL to open when clicked" value="https://6630180rem.github.io/Pick5/">
             </div>
             
             <button id="send-notification">Send Notification</button>
@@ -151,21 +164,21 @@
             <div id="status" class="status" style="display: none;"></div>
         </div>
         
-        <div class="tab-content" id="tokens-tab">
-            <button id="load-tokens">Load Registered Tokens</button>
-            <div class="token-list" id="token-list"></div>
+        <div class="tab-content" id="segments-tab">
+            <button id="load-segments">Load Segments</button>
+            <div class="token-list" id="segment-list"></div>
         </div>
         
         <div class="tab-content" id="settings-tab">
             <div class="auth-container">
                 <div class="form-group">
-                    <label for="firebase-api-key">Firebase API Key:</label>
-                    <input type="text" id="firebase-api-key" placeholder="Enter Firebase API Key" value="AIzaSyB5r_KL2eKVFd66VQU_5pznKrVHa9xzCfc">
+                    <label for="onesignal-app-id">OneSignal App ID:</label>
+                    <input type="text" id="onesignal-app-id" placeholder="Enter OneSignal App ID">
                 </div>
                 
                 <div class="form-group">
-                    <label for="firebase-project-id">Firebase Project ID:</label>
-                    <input type="text" id="firebase-project-id" placeholder="Enter Firebase Project ID" value="joespick5push">
+                    <label for="onesignal-rest-api-key">OneSignal REST API Key:</label>
+                    <input type="text" id="onesignal-rest-api-key" placeholder="Enter OneSignal REST API Key">
                 </div>
                 
                 <div class="form-group">
@@ -177,91 +190,110 @@
             </div>
         </div>
     </div>
-
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     
     <script>
-        // Firebase configuration
-        let firebaseConfig = {
-            apiKey: "AIzaSyB5r_KL2eKVFd66VQU_5pznKrVHa9xzCfc",
-            authDomain: "joespick5push.firebaseapp.com",
-            projectId: "joespick5push",
-            storageBucket: "joespick5push.firebasestorage.app",
-            messagingSenderId: "783669343677",
-            appId: "1:783669343677:web:c1f72d2a2a58b0349a4ed4"
-        };
-        
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
+        // Initialize OneSignal
+        function initializeOneSignal() {
+            const appId = localStorage.getItem('onesignalAppId');
+            if (!appId) return;
+            
+            window.OneSignal = window.OneSignal || [];
+            OneSignal.push(function() {
+                OneSignal.init({
+                    appId: appId,
+                });
+            });
+        }
         
         // Load settings from localStorage
         function loadSettings() {
-            const apiKey = localStorage.getItem('firebaseApiKey');
-            const projectId = localStorage.getItem('firebaseProjectId');
+            const appId = localStorage.getItem('onesignalAppId');
+            const apiKey = localStorage.getItem('onesignalRestApiKey');
             const adminPassword = localStorage.getItem('adminPassword');
             
-            if (apiKey) document.getElementById('firebase-api-key').value = apiKey;
-            if (projectId) document.getElementById('firebase-project-id').value = projectId;
+            if (appId) document.getElementById('onesignal-app-id').value = appId;
+            if (apiKey) document.getElementById('onesignal-rest-api-key').value = apiKey;
             if (adminPassword) document.getElementById('admin-password').value = adminPassword;
+            
+            // Initialize OneSignal after settings are loaded
+            initializeOneSignal();
         }
         
         // Save settings to localStorage
         document.getElementById('save-settings').addEventListener('click', function() {
-            const apiKey = document.getElementById('firebase-api-key').value;
-            const projectId = document.getElementById('firebase-project-id').value;
+            const appId = document.getElementById('onesignal-app-id').value;
+            const apiKey = document.getElementById('onesignal-rest-api-key').value;
             const adminPassword = document.getElementById('admin-password').value;
             
-            localStorage.setItem('firebaseApiKey', apiKey);
-            localStorage.setItem('firebaseProjectId', projectId);
+            localStorage.setItem('onesignalAppId', appId);
+            localStorage.setItem('onesignalRestApiKey', apiKey);
             localStorage.setItem('adminPassword', adminPassword);
             
             showStatus('Settings saved successfully!', 'success');
+            
+            // Re-initialize OneSignal with new app ID
+            initializeOneSignal();
         });
         
-        // Load tokens from Firestore
-        document.getElementById('load-tokens').addEventListener('click', async function() {
-            const tokenList = document.getElementById('token-list');
-            tokenList.innerHTML = 'Loading tokens...';
+        // Load segments from OneSignal
+        document.getElementById('load-segments').addEventListener('click', async function() {
+            const segmentList = document.getElementById('segment-list');
+            segmentList.innerHTML = 'Loading segments...';
+            
+            const appId = localStorage.getItem('onesignalAppId');
+            const apiKey = localStorage.getItem('onesignalRestApiKey');
+            
+            if (!appId || !apiKey) {
+                segmentList.innerHTML = 'Please set your OneSignal App ID and REST API Key in Settings tab.';
+                return;
+            }
             
             try {
-                const snapshot = await db.collection('fcmTokens').get();
+                const response = await fetch(`https://onesignal.com/api/v1/apps/${appId}/segments`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Basic ${apiKey}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
                 
-                if (snapshot.empty) {
-                    tokenList.innerHTML = 'No tokens found.';
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.errors && data.errors.length > 0 ? data.errors[0] : 'Failed to load segments');
+                }
+                
+                if (!data.segments || data.segments.length === 0) {
+                    segmentList.innerHTML = 'No segments found.';
                     return;
                 }
                 
-                tokenList.innerHTML = '';
-                snapshot.forEach(doc => {
-                    const tokenData = doc.data();
-                    const tokenItem = document.createElement('div');
-                    tokenItem.className = 'token-item';
-                    tokenItem.innerHTML = `
-                        <div><strong>Token:</strong> ${tokenData.token}</div>
-                        <div><strong>Device:</strong> ${tokenData.device?.platform || 'Unknown'}</div>
-                        <div><strong>Last Active:</strong> ${tokenData.lastActive ? new Date(tokenData.lastActive.toDate()).toLocaleString() : 'Unknown'}</div>
-                        <button class="send-to-token" data-token="${tokenData.token}">Send Test</button>
+                segmentList.innerHTML = '';
+                data.segments.forEach(segment => {
+                    const segmentItem = document.createElement('div');
+                    segmentItem.className = 'token-item';
+                    segmentItem.innerHTML = `
+                        <div><strong>Name:</strong> ${segment.name}</div>
+                        <div><strong>ID:</strong> ${segment.id}</div>
+                        <div><strong>Count:</strong> ${segment.count || 'Unknown'}</div>
+                        <button class="send-to-segment" data-segment="${segment.name}">Send Test</button>
                     `;
-                    tokenList.appendChild(tokenItem);
+                    segmentList.appendChild(segmentItem);
                 });
                 
                 // Add event listeners to the "Send Test" buttons
-                document.querySelectorAll('.send-to-token').forEach(button => {
+                document.querySelectorAll('.send-to-segment').forEach(button => {
                     button.addEventListener('click', function() {
-                        const token = this.getAttribute('data-token');
-                        document.getElementById('notification-type').value = 'single';
-                        document.getElementById('single-token').value = token;
+                        const segment = this.getAttribute('data-segment');
+                        document.getElementById('notification-type').value = 'segment';
+                        document.getElementById('segment-name').value = segment;
                         document.querySelector('[data-tab="send"]').click();
                     });
                 });
                 
             } catch (error) {
-                console.error('Error loading tokens:', error);
-                tokenList.innerHTML = `Error: ${error.message}`;
+                console.error('Error loading segments:', error);
+                segmentList.innerHTML = `Error: ${error.message}`;
             }
         });
         
@@ -280,10 +312,19 @@
             });
         });
         
-        // Show/hide single token input based on notification type
+        // Show/hide notification target inputs based on notification type
         document.getElementById('notification-type').addEventListener('change', function() {
-            const singleTokenGroup = document.getElementById('single-token-group');
-            singleTokenGroup.style.display = this.value === 'single' ? 'block' : 'none';
+            const segmentGroup = document.getElementById('segment-group');
+            const playerIdGroup = document.getElementById('player-id-group');
+            
+            segmentGroup.style.display = 'none';
+            playerIdGroup.style.display = 'none';
+            
+            if (this.value === 'segment') {
+                segmentGroup.style.display = 'block';
+            } else if (this.value === 'player') {
+                playerIdGroup.style.display = 'block';
+            }
         });
         
         // Function to show status message
@@ -299,10 +340,11 @@
             }, 5000);
         }
         
-        // Send notification
+        // Send notification via OneSignal API
         document.getElementById('send-notification').addEventListener('click', async function() {
             const title = document.getElementById('notification-title').value;
             const body = document.getElementById('notification-body').value;
+            const url = document.getElementById('notification-url').value;
             const notificationType = document.getElementById('notification-type').value;
             
             if (!title || !body) {
@@ -310,78 +352,59 @@
                 return;
             }
             
+            const appId = localStorage.getItem('onesignalAppId');
+            const apiKey = localStorage.getItem('onesignalRestApiKey');
+            
+            if (!appId || !apiKey) {
+                showStatus('Please set your OneSignal App ID and REST API Key in Settings tab', 'error');
+                return;
+            }
+            
             try {
-                let tokens = [];
+                // Build notification payload
+                const payload = {
+                    app_id: appId,
+                    headings: { en: title },
+                    contents: { en: body },
+                    url: url
+                };
                 
+                // Set target audience based on notification type
                 if (notificationType === 'all') {
-                    // Get all tokens from Firestore
-                    const snapshot = await db.collection('fcmTokens').get();
-                    tokens = snapshot.docs.map(doc => doc.data().token);
-                } else {
-                    // Get single token from input
-                    const singleToken = document.getElementById('single-token').value;
-                    if (!singleToken) {
-                        showStatus('Please enter a device token', 'error');
+                    payload.included_segments = ['All'];
+                } else if (notificationType === 'segment') {
+                    const segmentName = document.getElementById('segment-name').value;
+                    if (!segmentName) {
+                        showStatus('Please enter a segment name', 'error');
                         return;
                     }
-                    tokens = [singleToken];
+                    payload.included_segments = [segmentName];
+                } else if (notificationType === 'player') {
+                    const playerId = document.getElementById('player-id').value;
+                    if (!playerId) {
+                        showStatus('Please enter a player ID', 'error');
+                        return;
+                    }
+                    payload.include_player_ids = [playerId];
                 }
                 
-                if (tokens.length === 0) {
-                    showStatus('No tokens found to send notification', 'error');
-                    return;
-                }
-                
-                // Send notification using Firebase Cloud Messaging REST API
-                const apiKey = document.getElementById('firebase-api-key').value;
-                const projectId = document.getElementById('firebase-project-id').value;
-                
-                // Use FCM HTTP v1 API
-                const fcmEndpoint = `https://fcm.googleapis.com/v1/projects/${projectId}/messages:send`;
-                
-                // Get access token (this is a simplified version, you'll need to implement proper authentication)
-                const response = await fetch('https://www.googleapis.com/oauth2/v4/token', {
+                // Send notification using OneSignal REST API
+                const response = await fetch('https://onesignal.com/api/v1/notifications', {
                     method: 'POST',
                     headers: {
+                        'Authorization': `Basic ${apiKey}`,
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({
-                        grant_type: 'refresh_token',
-                        client_id: 'your-client-id',
-                        client_secret: 'your-client-secret',
-                        refresh_token: 'your-refresh-token'
-                    })
+                    body: JSON.stringify(payload)
                 });
                 
                 const data = await response.json();
-                const accessToken = data.access_token;
                 
-                // Send notification to each token
-                for (const token of tokens) {
-                    await fetch(fcmEndpoint, {
-                        method: 'POST',
-                        headers: {
-                            'Authorization': `Bearer ${accessToken}`,
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            message: {
-                                token: token,
-                                notification: {
-                                    title: title,
-                                    body: body
-                                },
-                                webpush: {
-                                    fcm_options: {
-                                        link: 'https://6630180rem.github.io/Pick5/'
-                                    }
-                                }
-                            }
-                        })
-                    });
+                if (!response.ok) {
+                    throw new Error(data.errors && data.errors.length > 0 ? data.errors[0] : 'Failed to send notification');
                 }
                 
-                showStatus(`Notification sent to ${tokens.length} device(s)`, 'success');
+                showStatus(`Notification sent successfully! ID: ${data.id}`, 'success');
                 
             } catch (error) {
                 console.error('Error sending notification:', error);
@@ -389,8 +412,40 @@
             }
         });
         
-        // Load settings on page load
-        document.addEventListener('DOMContentLoaded', loadSettings);
+        // Function to load and display player IDs (for the single player notification)
+        async function loadPlayerIds() {
+            const appId = localStorage.getItem('onesignalAppId');
+            const apiKey = localStorage.getItem('onesignalRestApiKey');
+            
+            if (!appId || !apiKey) {
+                return;
+            }
+            
+            try {
+                // In a real application, you would need to implement a way to fetch player IDs
+                // OneSignal doesn't have a direct API to fetch all player IDs
+                // This would typically require your backend to store player IDs when they register
+                console.log('You would need to implement a backend solution to store and fetch player IDs');
+            } catch (error) {
+                console.error('Error loading player IDs:', error);
+            }
+        }
+        
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSettings();
+            
+            // Handle password protection
+            const adminPassword = localStorage.getItem('adminPassword');
+            if (adminPassword && adminPassword.length > 0) {
+                const enteredPassword = prompt('Enter admin password:');
+                if (enteredPassword !== adminPassword) {
+                    alert('Incorrect password. Access denied.');
+                    document.body.innerHTML = '<h1>Access Denied</h1>';
+                    return;
+                }
+            }
+        });
     </script>
 </body>
 </html>
