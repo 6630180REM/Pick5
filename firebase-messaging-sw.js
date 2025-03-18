@@ -23,14 +23,14 @@ messaging.onBackgroundMessage(function(payload) {
   // Check if the notification has data or notification property
   let notificationTitle = 'Joe\'s Pick 5';
   let notificationOptions = {
-    body: 'New update available!',
+    data: {
+      url: 'https://6630180rem.github.io/Pick5/',
+      source: 'joespick5',
+      body: 'New update available!',
     icon: '/Pick5Logo.png',
     badge: '/Pick5Logo.png',
     tag: 'joe-pick5-notification',
-    renotify: true,
-    data: {
-      url: 'https://6630180rem.github.io/Pick5/',
-      source: 'joespick5'
+    renotify: true
     }
   };
 
