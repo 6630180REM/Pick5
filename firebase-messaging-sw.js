@@ -8,7 +8,8 @@ const firebaseConfig = {
   projectId: "joespick5push",
   storageBucket: "joespick5push.firebasestorage.app",
   messagingSenderId: "783669343677",
-  appId: "1:783669343677:web:c1f72d2a2a58b0349a4ed4"
+  appId: "1:783669343677:web:595231becb8496e59a4ed4",
+  measurementId: "G-39P58EZH82"
 };
 
 // Initialize Firebase
