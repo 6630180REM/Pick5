@@ -20,33 +20,26 @@ const messaging = firebase.messaging();
 messaging.onBackgroundMessage(function(payload) {
     console.log('Received background message:', payload);
 
-    // // Check if the payload has data
-    // if (payload.data) {
-    //     const notificationTitle = payload.data.title || 'Joe\'s Pick 5';
-    //     const notificationOptions = {
-    //         body: payload.data.body || 'New update available!',
-    //         icon: '/Pick5Logo.png',
-    //         badge: '/Pick5Logo.png',
-    //         tag: 'joe-pick5-notification',
-    //         renotify: true,
-    //         data: {
-    //             url: payload.data.url || 'https://6630180rem.github.io/Pick5/',
-    //             source: 'joespick5'
-    //         }
-    //     };
+    // Check if the payload has data
+    if (payload.data) {
+        const notificationTitle = payload.data.title || 'Joe\'s Pick 5';
+        const notificationOptions = {
+            body: payload.data.body || 'New update available!',
+            icon: '/Pick5Logo.png',
+            badge: '/Pick5Logo.png',
+            tag: 'joe-pick5-notification',
+            renotify: true,
+            data: {
+                url: payload.data.url || 'https://6630180rem.github.io/Pick5/',
+                source: 'joespick5'
+            }
+        };
 
-    //     // return self.registration.showNotification(notificationTitle, notificationOptions);
-    // } else {
-    //     console.log("payload did not contain data object");
-    // }
-    {
-    "data": {
-        "title": payload.data.title || 'Joe\'s Pick 5',
-        "icon": '/Pick5Logo.png',
-        "body": payload.data.body || 'New update available!',
-        "sound" : "default"
+        // return self.registration.showNotification(notificationTitle, notificationOptions);
+    } else {
+        console.log("payload did not contain data object");
     }
-} 
+
 });
 
 // Handle notification click
