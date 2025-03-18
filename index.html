@@ -526,7 +526,7 @@
 
                 messaging.onMessage((payload) => {
                     console.log('Message received in foreground:', payload);
-                    if (payload.notification && payload.data.messageType === "foreground"){
+                    // if (payload.notification && payload.data.messageType === "foreground"){
                     const notificationDiv = document.createElement('div');
                     notificationDiv.style.cssText = `
                         position: fixed;
@@ -563,7 +563,7 @@
                         notificationDiv.style.animation = 'slide-out 0.3s ease-in';
                         setTimeout(() => notificationDiv.remove(), 3000);
                     }, 5000);
-                    }
+                    // }
                 });
 
                 // Check and show notifications based on user state
