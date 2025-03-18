@@ -669,19 +669,23 @@ function resetNotifications() {
         }
     });
 
-    // Delete token from Firestore
-    messaging.getToken().then(token => { // ✅ No more "messaging is not defined" error
-        if (token) {
-            db.collection('devices').where('deviceId', '==', localStorage.getItem('deviceId'))
-                .get().then(snapshot => {
-                    snapshot.forEach(doc => {
-                        doc.ref.delete().then(() => console.log('Token deleted from Firestore'));
+    // ✅ Ensure messaging is defined before trying to get token
+    if (messaging) {
+        messaging.getToken().then(token => {
+            if (token) {
+                db.collection('devices').where('deviceId', '==', localStorage.getItem('deviceId'))
+                    .get().then(snapshot => {
+                        snapshot.forEach(doc => {
+                            doc.ref.delete().then(() => console.log('Token deleted from Firestore'));
+                        });
                     });
-                });
-        }
-    }).catch(err => console.error('Error deleting token:', err));
+            }
+        }).catch(err => console.error('Error deleting token:', err));
+    } else {
+        console.warn('Messaging is not yet initialized.');
+    }
 
-    // Reinitialize after short delay
+    // ✅ Reinitialize after short delay
     setTimeout(() => {
         console.log('Reinitializing Firebase and notifications...');
         setupFirebaseAndNotifications();
