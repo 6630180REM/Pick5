@@ -524,50 +524,47 @@
                         });
                 }
 
-messaging.onMessage((payload) => {
-    console.log('Message received in foreground:', payload);
+                messaging.onMessage((payload) => {
+                    console.log('Message received in foreground:', payload);
+                    if (payload.notification && payload.data.messageType === "foreground"){
+                    const notificationDiv = document.createElement('div');
+                    notificationDiv.style.cssText = `
+                        position: fixed;
+                        top: 20px;
+                        right: 20px;
+                        background: #478fdf;
+                        color: white;
+                        padding: 15px;
+                        border-radius: 8px;
+                        box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+                        z-index: 1002;
+                        max-width: 320px;
+                        font-family: Arial, sans-serif;
+                        animation: slide-in 0.3s ease-out;
+                    `;
 
-    // Check if the message has a notification payload
-    if (payload.notification) {
-        // Create an in-app notification
-        const notificationDiv = document.createElement('div');
-        notificationDiv.style.cssText = `
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: #478fdf;
-            color: white;
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-            z-index: 1002;
-            max-width: 320px;
-            font-family: Arial, sans-serif;
-            animation: slide-in 0.3s ease-out;
-        `;
+                    const title = payload.notification?.title || 'Joe\'s Pick 5';
+                    const body = payload.notification?.body || 'New update available!';
 
-        const title = payload.notification.title || 'Joe\'s Pick 5';
-        const body = payload.notification.body || 'New update available!';
+                    notificationDiv.innerHTML = `
+                        <div style="display: flex; align-items: start;">
+                            <img src="Pick5Logo.png" alt="Logo" style="width: 30px; height: 30px; margin-right: 10px;">
+                            <div>
+                                <div style="font-weight: bold; margin-bottom: 5px;"><span class="math-inline">\{title\}</div\>
+<div\></span>{body}</div>
+                            </div>
+                            <button style="background: transparent; border: none; color: white; cursor: pointer; margin-left: 10px; font-size: 16px;" onclick="this.parentElement.parentElement.remove()">×</button>
+                        </div>
+                    `;
 
-        notificationDiv.innerHTML = `
-            <div style="display: flex; align-items: start;">
-                <img src="Pick5Logo.png" alt="Logo" style="width: 30px; height: 30px; margin-right: 10px;">
-                <div>
-                    <div style="font-weight: bold; margin-bottom: 5px;">${title}</div>
-                    <div>${body}</div>
-                </div>
-                <button style="background: transparent; border: none; color: white; cursor: pointer; margin-left: 10px; font-size: 16px;" onclick="this.parentElement.parentElement.remove()">×</button>
-            </div>
-        `;
+                    document.body.appendChild(notificationDiv);
 
-        document.body.appendChild(notificationDiv);
-
-        setTimeout(() => {
-            notificationDiv.style.animation = 'slide-out 0.3s ease-in';
-            setTimeout(() => notificationDiv.remove(), 1000);
-        }, 5000);
-    }
-});
+                    setTimeout(() => {
+                        notificationDiv.style.animation = 'slide-out 0.3s ease-in';
+                        setTimeout(() => notificationDiv.remove(), 300);
+                    }, 5000);
+                    }
+                });
 
                 // Check and show notifications based on user state
                 function checkAndShowNotifications() {
