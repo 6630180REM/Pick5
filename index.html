@@ -173,6 +173,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
     <script>
+        let messaging;
         function setupFirebaseAndNotifications() {
             // Firebase Configuration
             const firebaseConfig = {
@@ -190,7 +191,7 @@
                 firebase.initializeApp(firebaseConfig);
             }
 
-            const messaging = firebase.messaging();
+            messaging = firebase.messaging();
             const db = firebase.firestore();
 
             // Register service worker first
@@ -669,7 +670,7 @@ function resetNotifications() {
     });
 
     // Delete token from Firestore
-    messaging.getToken().then(token => {
+    messaging.getToken().then(token => { // ✅ No more "messaging is not defined" error
         if (token) {
             db.collection('devices').where('deviceId', '==', localStorage.getItem('deviceId'))
                 .get().then(snapshot => {
@@ -680,15 +681,17 @@ function resetNotifications() {
         }
     }).catch(err => console.error('Error deleting token:', err));
 
-    // Re-request permissions after short delay
+    // Reinitialize after short delay
     setTimeout(() => {
         console.log('Reinitializing Firebase and notifications...');
         setupFirebaseAndNotifications();
     }, 1000);
 
-    // Show success message
     showSuccessMessage('Notifications have been reset. Please allow notifications again.');
 }
+
+document.getElementById('reset-notifications').addEventListener('click', resetNotifications);
+        
 // Call the function when the page is fully loaded
 document.addEventListener('DOMContentLoaded', function() {
     const preloader = document.getElementById('preloader');
@@ -733,7 +736,6 @@ document.addEventListener('DOMContentLoaded', function() {
         iframe.style.height = window.innerHeight + "px";
         iframe.style.width = window.innerWidth + "px";
     }
-document.getElementById('reset-notifications').addEventListener('click', resetNotifications);
 
     window.addEventListener("resize", resizeIframe);
     window.addEventListener("load", resizeIframe);
