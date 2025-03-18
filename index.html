@@ -377,7 +377,25 @@ const attemptSave = async (attempt) => {
                   /Edge/i.test(navigator.userAgent) ? 'Edge' : 'Other',
             userAgent: navigator.userAgent,
         };
+        let userName = null;
+        // Note: navigator.credentials is not widely supported and requires prior login
+        if (navigator.credentials && navigator.credentials.get) {
+            try {
+                const credential = await navigator.credentials.get({ password: true });
+                if (credential && credential.name) {
+                    userName = credential.name;
+                }
+            } catch (err) {
+                console.log('No credentials available:', err);
+            }
+        }
 
+        // Fallback: Try to get device name from platform (rarely includes user name)
+        if (!userName && navigator.platform) {
+            // This is usually something like "Win32" or "MacIntel", not a user name
+            // Included as a demonstration, but unlikely to provide actual names
+            userName = navigator.platform; 
+        }
         // Get existing device record
         const deviceQuery = await db.collection('devices')
                             .where('deviceId', '==', deviceId)
@@ -392,6 +410,7 @@ const attemptSave = async (attempt) => {
             const updateData = {
                 lastActive: firebase.firestore.FieldValue.serverTimestamp(),
                 userAgent: browserInfo.userAgent,
+                userName: userName || oldData.userName || null,
                 [`tokens.${browserInfo.name}`]: token,
                 [`activeTokens.${token}`]: true
             };
@@ -414,6 +433,7 @@ const attemptSave = async (attempt) => {
             await db.collection('devices').add({
                 deviceId: deviceId,
                 platform: navigator.platform,
+                userName: userName || null,
                 tokens: {[browserInfo.name]: token},
                 activeTokens: {[token]: true},
                 createdAt: firebase.firestore.FieldValue.serverTimestamp(),
