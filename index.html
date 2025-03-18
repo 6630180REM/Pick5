@@ -203,46 +203,60 @@
             }, 3000);
         }
 
-        // ✅ Reset notifications function
-        function resetNotifications() {
-            console.log('Resetting notifications...');
+// ✅ Reset notifications function
+function resetNotifications() {
+    console.log('Resetting notifications...');
 
-            // Clear stored token and device ID
-            localStorage.removeItem('fcmToken');
-            localStorage.removeItem('deviceId');
+    // Clear stored token and device ID
+    localStorage.removeItem('fcmToken');
+    localStorage.removeItem('deviceId');
 
-            // Unregister service workers
-            navigator.serviceWorker.getRegistrations().then(registrations => {
-                for (let registration of registrations) {
-                    registration.unregister().then(() => console.log('Service worker unregistered'));
-                }
-            });
-
-            // ✅ Ensure messaging is defined before trying to get token
-            if (messaging) {
-                messaging.getToken().then(token => {
-                    if (token) {
-                        db.collection('devices')
-                            .where('deviceId', '==', localStorage.getItem('deviceId'))
-                            .get().then(snapshot => {
-                                snapshot.forEach(doc => {
-                                    doc.ref.delete().then(() => console.log('Token deleted from Firestore'));
-                                });
-                            });
-                    }
-                }).catch(err => console.error('Error deleting token:', err));
-            } else {
-                console.warn('Messaging is not yet initialized.');
-            }
-
-            // ✅ Reinitialize Firebase and notifications
-            setTimeout(() => {
-                console.log('Reinitializing Firebase and notifications...');
-                setupFirebaseAndNotifications();
-            }, 1000);
-
-            showSuccessMessage('Notifications have been reset. Please allow notifications again.');
+    // Unregister service workers
+    navigator.serviceWorker.getRegistrations().then(registrations => {
+        for (let registration of registrations) {
+            registration.unregister().then(() => console.log('Service worker unregistered'));
         }
+    });
+
+    // ✅ Ensure messaging is defined before trying to get token
+    if (messaging) {
+        messaging.getToken().then(token => {
+            if (token) {
+                db.collection('devices')
+                    .where('deviceId', '==', localStorage.getItem('deviceId'))
+                    .get().then(snapshot => {
+                        snapshot.forEach(doc => {
+                            doc.ref.delete().then(() => console.log('Token deleted from Firestore'));
+                        });
+                    });
+            }
+        }).catch(err => console.error('Error deleting token:', err));
+    } else {
+        console.warn('Messaging is not yet initialized.');
+    }
+
+    // ✅ Reinitialize Firebase and notifications
+    setTimeout(() => {
+        console.log('Reinitializing Firebase and notifications...');
+        setupFirebaseAndNotifications();
+    }, 1000);
+
+    // ✅ Check notification permission status
+    if (Notification.permission === 'denied') {
+        showSuccessMessage('You have blocked notifications. Please enable them in your browser settings.');
+    } else if (Notification.permission === 'default') {
+        Notification.requestPermission().then(permission => {
+            if (permission === 'granted') {
+                showSuccessMessage('Notifications allowed! You will now receive alerts.');
+            } else {
+                showSuccessMessage('Notifications blocked. Enable them in browser settings to receive alerts.');
+            }
+        });
+    } else {
+        showSuccessMessage('Notifications have been reset. You will now receive alerts.');
+    }
+}
+
 
         // ✅ Firebase setup and notifications
         function setupFirebaseAndNotifications() {
