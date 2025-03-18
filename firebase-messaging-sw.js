@@ -20,21 +20,38 @@ const messaging = firebase.messaging();
 messaging.onBackgroundMessage(function(payload) {
   console.log('Received background message:', payload);
 
-  if (payload.data) {
-    const notificationTitle = payload.data.title || 'Joe\'s Pick 5';
-    const notificationOptions = {
-      body: payload.data.body || 'New update available!',
-      icon: '/Pick5Logo.png',
-      badge: '/Pick5Logo.png',
-      tag: 'joe-pick5-notification',
-      renotify: true,
-      data: {
-        url: payload.data.url || 'https://6630180rem.github.io/Pick5/'
-      }
-    };
+  // Check if the notification has data or notification property
+  let notificationTitle = 'Joe\'s Pick 5';
+  let notificationOptions = {
+    body: 'New update available!',
+    icon: '/Pick5Logo.png',
+    badge: '/Pick5Logo.png',
+    tag: 'joe-pick5-notification',
+    renotify: true,
+    data: {
+      url: 'https://6630180rem.github.io/Pick5/',
+      source: 'joespick5'
+    }
+  };
 
-    self.registration.showNotification(notificationTitle, notificationOptions);
+  // Handle notification in payload.notification format
+  if (payload.notification) {
+    notificationTitle = payload.notification.title || notificationTitle;
+    notificationOptions.body = payload.notification.body || notificationOptions.body;
   }
+  
+  // Handle notification in payload.data format
+  if (payload.data) {
+    notificationTitle = payload.data.title || notificationTitle;
+    notificationOptions.body = payload.data.body || notificationOptions.body;
+    
+    // Add URL if provided
+    if (payload.data.url) {
+      notificationOptions.data.url = payload.data.url;
+    }
+  }
+
+  return self.registration.showNotification(notificationTitle, notificationOptions);
 });
 
 // Handle notification click
