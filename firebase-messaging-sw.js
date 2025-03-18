@@ -35,7 +35,7 @@ messaging.onBackgroundMessage(function(payload) {
             }
         };
 
-        return self.registration.showNotification(notificationTitle, notificationOptions);
+        // return self.registration.showNotification(notificationTitle, notificationOptions);
     } else {
         console.log("payload did not contain data object");
     }
