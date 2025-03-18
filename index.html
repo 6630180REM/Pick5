@@ -367,100 +367,81 @@
 
                     const deviceId = generateDeviceId();
 
-    const attemptSave = async (attempt) => {
-        try {
-            // Store the current browser info
-            const browserInfo = {
-                name: /Chrome/i.test(navigator.userAgent) ? 'Chrome' : 
-                      /Safari/i.test(navigator.userAgent) ? 'Safari' : 
-                      /Firefox/i.test(navigator.userAgent) ? 'Firefox' : 
-                      /Edge/i.test(navigator.userAgent) ? 'Edge' : 'Other',
-                userAgent: navigator.userAgent,
+const attemptSave = async (attempt) => {
+    try {
+        // Store the current browser info
+        const browserInfo = {
+            name: /Chrome/i.test(navigator.userAgent) ? 'Chrome' : 
+                  /Safari/i.test(navigator.userAgent) ? 'Safari' : 
+                  /Firefox/i.test(navigator.userAgent) ? 'Firefox' : 
+                  /Edge/i.test(navigator.userAgent) ? 'Edge' : 'Other',
+            userAgent: navigator.userAgent,
+        };
+
+        // Get existing device record
+        const deviceQuery = await db.collection('devices')
+                            .where('deviceId', '==', deviceId)
+                            .get();
+
+        if (!deviceQuery.empty) {
+            // Device exists in database
+            const deviceDoc = deviceQuery.docs[0];
+            const oldData = deviceDoc.data();
+
+            // Prepare update data
+            const updateData = {
+                lastActive: firebase.firestore.FieldValue.serverTimestamp(),
+                [`tokens.${browserInfo.name}`]: token,
+                [`activeTokens.${token}`]: true
             };
 
-            // Get existing tokens for this device
-            const deviceTokensQuery = await db.collection('devices')
-                                .where('deviceId', '==', deviceId)
-                                .get();
+            // Update the device record
+            await db.collection('devices').doc(deviceDoc.id).update(updateData);
 
-                            if (!deviceTokensQuery.empty) {
-                                // Device exists in database
-                                const deviceDoc = deviceTokensQuery.docs[0];
+            // Deactivate old token if it exists and is different
+            if (oldData.tokens && 
+                oldData.tokens[browserInfo.name] && 
+                oldData.tokens[browserInfo.name] !== token) {
+                await db.collection('devices').doc(deviceDoc.id).update({
+                    [`activeTokens.${oldData.tokens[browserInfo.name]}`]: false
+                });
+            }
 
-                                // Update the device record
-                                await db.collection('devices').doc(deviceDoc.id).update({
-                                    lastActive: firebase.firestore.FieldValue.serverTimestamp(),
-                                    [`tokens.${browserInfo.name}`]: token,
-                                    [`activeTokens.${token}`]: true
-                                });
+            console.log('Device token updated successfully');
+        } else {
+            // New device, create a record
+            await db.collection('devices').add({
+                deviceId: deviceId,
+                platform: navigator.platform,
+                tokens: {
+                    [browserInfo.name]: token
+                },
+                activeTokens: {
+                    [token]: true
+                },
+                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                lastActive: firebase.firestore.FieldValue.serverTimestamp(),
+                user: userAgent
+            });
+            console.log('New device record created successfully');
+        }
 
-                                // Deactivate old tokens for this browser
-                                const oldData = deviceDoc.data();
-                                if (oldData.tokens && oldData.tokens[browserInfo.name] &&
-                                    oldData.tokens[browserInfo.name] !== token) {
+        // Store token in local storage
+        localStorage.setItem('fcmToken', token);
+        localStorage.setItem('deviceId', deviceId);
 
-                                    // Deactivate the old token
-                                    await db.collection('devices').doc(deviceDoc.id).update({
-                                        [`activeTokens.${oldData.tokens[browserInfo.name]}`]: false
-                                    });
-
-                                    // Remove the old token from the fcmTokens collection
-                                    await db.collection('fcmTokens').doc(oldData.tokens[browserInfo.name]).delete();
-                                }
-                            } else {
-                                // New device, create a record
-                                await db.collection('devices').add({
-                                    deviceId: deviceId,
-                                    platform: navigator.platform,
-                                    tokens: {
-                                        [browserInfo.name]: token
-                                    },
-                                    activeTokens: {
-                                        [token]: true
-                                    },
-                                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                                    lastActive: firebase.firestore.FieldValue.serverTimestamp()
-                                });
-                            }
-
-                            // Update or create the token record
-                            const tokenDoc = await db.collection('fcmTokens').doc(token).get();
-
-                            if (!tokenDoc.exists) {
-                                await db.collection('fcmTokens').doc(token).set({
-                                    token,
-                                    deviceId: deviceId,
-                                    browser: browserInfo.name,
-                                    active: true,
-                                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                                    lastActive: firebase.firestore.FieldValue.serverTimestamp()
-                                });
-                                console.log('Token saved to Firestore successfully');
-                            } else {
-                                await db.collection('fcmTokens').doc(token).update({
-                                    lastActive: firebase.firestore.FieldValue.serverTimestamp(),
-                                    active: true
-                                });
-                                console.log('Token last active timestamp updated successfully');
-                            }
-
-                            // Store token in local storage
-                            localStorage.setItem('fcmToken', token);
-                            localStorage.setItem('deviceId', deviceId);
-
-                        } catch (error) {
-                            console.error(`Attempt ${attempt} failed:`, error.message);
-                            if (attempt < retries) {
-                                console.log(`Retrying... (<span class="math-inline">\{attempt \+ 1\}/</span>{retries})`);
-                                await new Promise(resolve => setTimeout(resolve, 1000));
-                                await attemptSave(attempt + 1);
-                            } else {
-                                console.error('Max retries reached. Token save failed.');
-                            }
-                        }
-                    };
-
-                    await attemptSave(1);
+    } catch (error) {
+        console.error(`Attempt ${attempt} failed:`, error.message);
+        if (attempt < retries) {
+            console.log(`Retrying... (${attempt + 1}/${retries})`);
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            await attemptSave(attempt + 1);
+        } else {
+            console.error('Max retries reached. Device save failed.');
+        }
+    }
+};
+                  await attemptSave(1);
                 }
 
                 function clearDuplicateTokens() {
