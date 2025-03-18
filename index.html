@@ -1,376 +1,370 @@
 <!DOCTYPE html>
-  <html lang="en">
-  <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-      <meta name="apple-mobile-web-app-capable" content="yes">
-      <meta name="mobile-web-app-capable" content="yes">
-      <meta name="apple-mobile-web-app-title" content="Joe's Pick 5">
-      <meta name="application-name" content="Joe's Pick 5">
-      <meta name="theme-color" content="#333">
-      <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
- 
-      <!-- Standard favicon -->
-      <link rel="icon" type="image/png" sizes="32x32" href="Pick5Logo.png">
-      <link rel="icon" type="image/png" sizes="16x16" href="Pick5Logo.png">
- 
-      <!-- iOS icons -->
-      <link rel="apple-touch-icon" href="Pick5Logo.png">
-      <link rel="apple-touch-icon" sizes="152x152" href="Pick5Logo.png">
-      <link rel="apple-touch-icon" sizes="180x180" href="Pick5Logo.png">
-      <link rel="apple-touch-icon" sizes="167x167" href="Pick5Logo.png">
- 
-      <!-- Android icons -->
-      <link rel="shortcut icon" href="Pick5Logo.png">
- 
-      <!-- Web app manifest -->
-      <link rel="manifest" href="manifest.json">
- 
-      <title>Joe's Pick 5</title>
-      <style>
-          html, body {
-              background-color: #333 !important;
-              margin: 0;
-              padding: 0;
-              overflow: hidden;
-              position: fixed;
-              top: 0;
-              left: 0;
-              right: 0;
-              bottom: 0;
-              width: 100%;
-              height: 100%;
-              font-family: Arial, sans-serif;
-              overscroll-behavior: none;
-          }
-          * {
-              -webkit-tap-highlight-color: transparent;
-              -webkit-touch-callout: none;
-              -webkit-user-select: none;
-              -khtml-user-select: none;
-              -moz-user-select: none;
-              -ms-user-select: none;
-              user-select: none;
-              -webkit-text-size-adjust: none;
-              text-size-adjust: none;
-          }
-          input, textarea {
-              font-size: 16px !important;
-          }
-          iframe {
-              width: 100%;
-              height: 100%;
-              border: none;
-              display: block;
-              overflow: auto;
-              position: absolute;
-              top: 0;
-              left: 0;
-              right: 0;
-              bottom: 0;
-              background-color: #333;
-          }
-          #install-banner {
-              display: none;
-              position: fixed;
-              bottom: 0;
-              left: 0;
-              right: 0;
-              background-color: #333;
-              color: white;
-              text-align: center;
-              padding: 10px;
-              box-shadow: 0 -2px 5px rgba(0,0,0,0.2);
-              z-index: 1000;
-          }
-          #install-banner button {
-              background-color: #4CAF50;
-              border: none;
-              color: white;
-              padding: 8px 16px;
-              text-align: center;
-              text-decoration: none;
-              display: inline-block;
-              font-size: 16px;
-              margin: 4px 2px;
-              cursor: pointer;
-              border-radius: 4px;
-          }
-          #preloader {
-              position: fixed;
-              top: 0;
-              left: 0;
-              width: 100%;
-              height: 100%;
-              background-color: #333;
-              display: flex;
-              justify-content: center;
-              align-items: center;
-              z-index: 9999;
-              overflow: hidden;
-              background: linear-gradient(to top, #333 3%, rgba(51, 51, 51, 0.8) 5%, rgba(51, 51, 51, 0) 7%, rgba(52, 51, 51, 0) 50%, rgba(51, 51, 51, 0.8) 90%, #333 99%), 
-                          url(https://img.freepik.com/premium-photo/3d-rendering-empty-american-football-field-with-stadium_493806-8391.jpg?semt=ais_hybrid);
-              color: white;
-              padding: 0px;
-              background-attachment: fixed;
-              background-repeat: round;
-              background-size: cover;
-          }
-          #preloader-text {
-              font-size: 7rem;
-              font-weight: bold;
-              color: transparent;
-              position: relative;
-              text-align: center;
-              -webkit-text-stroke: 7px #478fdf;
-              line-height: .9;
-          }
-          #preloader-text::before {
-              content: "JOE'S\A PICK 5";
-              white-space: pre;
-              position: absolute;
-              top: 0;
-              left: 0;
-              width: 100%;
-              height: 0;
-              overflow: hidden;
-              color: #478fdf;
-              border-bottom: 3px solid white;
-              animation: fill-text-bottom-up 3s linear forwards;
-              padding: 0px;
-              -webkit-text-stroke: 7px #478fdf;
-          }
-          @keyframes fill-text-bottom-up {
-              0% {height: 0;}
-              100% {height: 100%;}
-          }
-      </style>
-  </head>
-  <body>
-      <!-- Preloader -->
-      <div id="preloader">
-          <div id="preloader-text">JOE'S<br>PICK 5</div>
-      </div>
- 
-      <div id="install-banner">
-          <p>Add to Home Screen for the best experience</p>
-          <button id="install-button">Install</button>
-          <button id="dismiss-button">Dismiss</button>
-      </div>
- 
-      <iframe frameborder="0" scrolling="yes" allowfullscreen="yes" src="https://script.google.com/macros/s/AKfycbwuZM7KGKnS7jnpM2YN9W_AgTMqA0qJGw99K3MIUNxzI1tnh3YK76AhgeCfh2Wc7pTd/exec"></iframe>
- 
-      <!-- Firebase SDK -->
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Joe's Pick 5">
+    <meta name="application-name" content="Joe's Pick 5">
+    <meta name="theme-color" content="#333">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
-<script>
-function setupFirebaseAndNotifications() {
-    // Firebase Configuration
-    const firebaseConfig = {
-        apiKey: "AIzaSyB5r_KL2eKVFd66VQU_5pznKrVHa9xzCfc",
-        authDomain: "joespick5push.firebaseapp.com",
-        projectId: "joespick5push",
-        storageBucket: "joespick5push.firebasestorage.app",
-        messagingSenderId: "783669343677",
-        appId: "1:783669343677:web:c1f72d2a2a58b0349a4ed4"
-    };
+    <link rel="icon" type="image/png" sizes="32x32" href="Pick5Logo.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="Pick5Logo.png">
 
-    // Initialize Firebase (with check to prevent duplicate initialization)
-    if (!firebase.apps || !firebase.apps.length) {
-        firebase.initializeApp(firebaseConfig);
-    }
-    
-    const messaging = firebase.messaging();
-    const db = firebase.firestore();
+    <link rel="apple-touch-icon" href="Pick5Logo.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="Pick5Logo.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="Pick5Logo.png">
+    <link rel="apple-touch-icon" sizes="167x167" href="Pick5Logo.png">
 
-    // Register service worker first
-    if ('serviceWorker' in navigator) {
-        const swPath = window.location.pathname.includes('/Pick5/') 
-            ? '/Pick5/firebase-messaging-sw.js' 
-            : './firebase-messaging-sw.js';
+    <link rel="shortcut icon" href="Pick5Logo.png">
 
-        console.log('Attempting to register service worker at:', swPath);
+    <link rel="manifest" href="manifest.json">
 
-        navigator.serviceWorker.register(swPath)
-            .then(registration => {
-                console.log('Service Worker registered with scope:', registration.scope);
-                initializeNotifications(registration);
-            })
-            .catch(error => {
-                console.error('Service Worker registration failed:', error.message);
-            });
-    } else {
-        console.log('Service workers not supported');
-    }
+    <title>Joe's Pick 5</title>
+    <style>
+        html, body {
+            background-color: #333 !important;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            width: 100%;
+            height: 100%;
+            font-family: Arial, sans-serif;
+            overscroll-behavior: none;
+        }
+        * {
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -webkit-text-size-adjust: none;
+            text-size-adjust: none;
+        }
+        input, textarea {
+            font-size: 16px !important;
+        }
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block;
+            overflow: auto;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #333;
+        }
+        #install-banner {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            box-shadow: 0 -2px 5px rgba(0,0,0,0.2);
+            z-index: 1000;
+        }
+        #install-banner button {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        #preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            overflow: hidden;
+            background: linear-gradient(to top, #333 3%, rgba(51, 51, 51, 0.8) 5%, rgba(51, 51, 51, 0) 7%, rgba(52, 51, 51, 0) 50%, rgba(51, 51, 51, 0.8) 90%, #333 99%),
+                        url(https://img.freepik.com/premium-photo/3d-rendering-empty-american-football-field-with-stadium_493806-8391.jpg?semt=ais_hybrid);
+            color: white;
+            padding: 0px;
+            background-attachment: fixed;
+            background-repeat: round;
+            background-size: cover;
+        }
+        #preloader-text {
+            font-size: 7rem;
+            font-weight: bold;
+            color: transparent;
+            position: relative;
+            text-align: center;
+            -webkit-text-stroke: 7px #478fdf;
+            line-height: .9;
+        }
+        #preloader-text::before {
+            content: "JOE'S\A PICK 5";
+            white-space: pre;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 0;
+            overflow: hidden;
+            color: #478fdf;
+            border-bottom: 3px solid white;
+            animation: fill-text-bottom-up 3s linear forwards;
+            padding: 0px;
+            -webkit-text-stroke: 7px #478fdf;
+        }
+        @keyframes fill-text-bottom-up {
+            0% {height: 0;}
+            100% {height: 100%;}
+        }
+    </style>
+</head>
+<body>
+    <div id="preloader">
+        <div id="preloader-text">JOE'S<br>PICK 5</div>
+    </div>
 
-    // Initialize notifications after service worker is registered
-    function initializeNotifications(registration) {
-        // Set up token refresh listener
-        navigator.serviceWorker.addEventListener('message', event => {
-            if (event.data && event.data.type === 'tokenRefresh') {
-                console.log('Token refresh detected');
-                refreshToken();
+    <div id="install-banner">
+        <p>Add to Home Screen for the best experience</p>
+        <button id="install-button">Install</button>
+        <button id="dismiss-button">Dismiss</button>
+    </div>
+
+    <iframe frameborder="0" scrolling="yes" allowfullscreen="yes" src="https://script.google.com/macros/s/AKfycbwuZM7KGKnS7jnpM2YN9W_AgTMqA0qJGw99K3MIUNxzI1tnh3YK76AhgeCfh2Wc7pTd/exec"></iframe>
+
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+    <script>
+        function setupFirebaseAndNotifications() {
+            // Firebase Configuration
+            const firebaseConfig = {
+                apiKey: "AIzaSyB5r_KL2eKVFd66VQU_5pznKrVHa9xzCfc",
+                authDomain: "joespick5push.firebaseapp.com",
+                projectId: "joespick5push",
+                storageBucket: "joespick5push.firebasestorage.app",
+                messagingSenderId: "783669343677",
+                appId: "1:783669343677:web:c1f72d2a2a58b0349a4ed4"
+            };
+
+            // Initialize Firebase (with check to prevent duplicate initialization)
+            if (!firebase.apps || !firebase.apps.length) {
+                firebase.initializeApp(firebaseConfig);
             }
-        });
 
-        // Function to request permission and get token
-        function requestPermission() {
-            return new Promise((resolve, reject) => {
-                Notification.requestPermission()
-                    .then(permission => {
-                        if (permission === 'granted') {
-                            console.log('Notification permission granted.');
-                            messaging.getToken({
-                                vapidKey: 'BOM3KFfemC5lGnsF28N-_UGA7H9esoOm5gp0_Eg45HMqaMqviLx_bcAonVaZe-c0GwSFwfwe7-fJVP1n8h1iAAU',
-                                serviceWorkerRegistration: registration
-                            })
-                            .then(token => {
-                                console.log('Device token:', token);
-                                saveTokenToFirestore(token);
-                                resolve(token);
+            const messaging = firebase.messaging();
+            const db = firebase.firestore();
+
+            // Register service worker first
+            if ('serviceWorker' in navigator) {
+                const swPath = window.location.pathname.includes('/Pick5/')
+                    ? '/Pick5/firebase-messaging-sw.js'
+                    : './firebase-messaging-sw.js';
+
+                console.log('Attempting to register service worker at:', swPath);
+
+                navigator.serviceWorker.register(swPath)
+                    .then(registration => {
+                        console.log('Service Worker registered with scope:', registration.scope);
+                        initializeNotifications(registration);
+                    })
+                    .catch(error => {
+                        console.error('Service Worker registration failed:', error.message);
+                    });
+            } else {
+                console.log('Service workers not supported');
+            }
+
+            // Initialize notifications after service worker is registered
+            function initializeNotifications(registration) {
+                // Set up token refresh listener
+                navigator.serviceWorker.addEventListener('message', event => {
+                    if (event.data && event.data.type === 'tokenRefresh') {
+                        console.log('Token refresh detected');
+                        refreshToken();
+                    }
+                });
+
+                // Function to request permission and get token
+                function requestPermission() {
+                    return new Promise((resolve, reject) => {
+                        Notification.requestPermission()
+                            .then(permission => {
+                                if (permission === 'granted') {
+                                    console.log('Notification permission granted.');
+                                    messaging.getToken({
+                                        vapidKey: 'BOM3KFfemC5lGnsF28N-_UGA7H9esoOm5gp0_Eg45HMqaMqviLx_bcAonVaZe-c0GwSFwfwe7-fJVP1n8h1iAAU',
+                                        serviceWorkerRegistration: registration
+                                    })
+                                    .then(token => {
+                                        console.log('Device token:', token);
+                                        saveTokenToFirestore(token);
+                                        resolve(token);
+                                    })
+                                    .catch(error => {
+                                        console.error('Error getting token:', error);
+                                        reject(error);
+                                    });
+                                } else {
+                                    console.log('Notification permission denied.');
+                                    localStorage.setItem('notificationPermissionDenied', 'true');
+                                    reject(new Error('Permission denied'));
+                                }
                             })
                             .catch(error => {
-                                console.error('Error getting token:', error);
+                                console.error('Error requesting permission:', error);
                                 reject(error);
                             });
-                        } else {
-                            console.log('Notification permission denied.');
-                            localStorage.setItem('notificationPermissionDenied', 'true');
-                            reject(new Error('Permission denied'));
+                    });
+                }
+
+                // Function to refresh token
+                function refreshToken() {
+                    messaging.getToken({
+                        vapidKey: 'BOM3KFfemC5lGnsF28N-_UGA7H9esoOm5gp0_Eg45HMqaMqviLx_bcAonVaZe-c0GwSFwfwe7-fJVP1n8h1iAAU',
+                        serviceWorkerRegistration: registration
+                    }).then(refreshedToken => {
+                        console.log('Token refreshed:', refreshedToken);
+                        saveTokenToFirestore(refreshedToken);
+                    }).catch(err => {
+                        console.error('Unable to refresh token:', err);
+                    });
+                }
+
+                // Show notification prompt
+                function createNotificationPrompt() {
+                    // Check if a prompt is already showing
+                    if (document.getElementById('notification-prompt')) {
+                        return;
+                    }
+
+                    const promptDiv = document.createElement('div');
+                    promptDiv.id = 'notification-prompt';
+                    promptDiv.style.cssText = `
+                        position: fixed;
+                        bottom: 50%;
+                        left: 50%;
+                        transform: translate(-50%, 50%);
+                        background: rgba(0, 0, 0, 0.85);
+                        color: white;
+                        padding: 20px 15px;
+                        border-radius: 10px;
+                        box-shadow: 0 10px 13px rgba(0, 0, 0, 0.9);
+                        text-align: center;
+                        z-index: 1001;
+                        font-family: Arial, sans-serif;
+                        max-width: 90%;
+                        width: max-content;
+                        border: 2px solid #478fdf;
+                        animation: fade-in 0.5s ease-in-out;
+                    `;
+
+                    promptDiv.innerHTML = `
+                        <p style="margin: 0 0 15px 0; font-size: 18px; font-weight: 700;">Get notified when Picks and Entry Form are available</p>
+                        <div style="display: flex; justify-content: space-between; gap: 10px;">
+                            <button id="enable-notifications" style="background-color: #478fdf; color: white; border: none; padding: 10px 18px; border-radius: 4px; font-weight: bold; cursor: pointer; flex: 1;">Allow</button>
+                            <button id="decline-notifications" style="background-color: transparent; color: white; border: 1px solid white; padding: 10px 18px; border-radius: 4px; cursor: pointer; flex: 1;">Not Now</button>
+                        </div>
+                    `;
+
+                    document.body.appendChild(promptDiv);
+
+                    document.getElementById('enable-notifications').addEventListener('click', () => {
+                        promptDiv.remove();
+                        requestPermission()
+                            .then(() => {
+                                showSuccessMessage('Notifications enabled successfully!');
+                            })
+                            .catch(error => {
+                                console.error('Error enabling notifications:', error);
+                            });
+                    });
+
+                    document.getElementById('decline-notifications').addEventListener('click', () => {
+                        promptDiv.remove();
+                        localStorage.setItem('notificationPromptDismissed', Date.now());
+                    });
+                }
+
+                // Show success message
+                function showSuccessMessage(message) {
+                    const successDiv = document.createElement('div');
+                    successDiv.style.cssText = `
+                        position: fixed;
+                        top: 20px;
+                        left: 50%;
+                        transform: translateX(-50%);
+                        background: #478fdf;
+                        color: white;
+                        padding: 12px 20px;
+                        border-radius: 5px;
+                        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+                        z-index: 1002;
+                        font-family: Arial, sans-serif;
+                        animation: fade-in 0.3s ease-in-out;
+                    `;
+                    successDiv.textContent = message;
+                    document.body.appendChild(successDiv);
+                    setTimeout(() => {
+                        successDiv.style.animation = 'fade-out 0.3s ease-in-out';
+                        setTimeout(() => successDiv.remove(), 300);
+                    }, 3000);
+                }
+
+                // Save token to Firestore
+                async function saveTokenToFirestore(token, retries = 3) {
+                    if (!token) {
+                        console.error('No token provided to saveTokenToFirestore');
+                        return;
+                    }
+
+                    // Generate a device identifier that's unique to this device
+                    // This helps identify the same physical device across different browsers
+                    const generateDeviceId = () => {
+                        // Create a somewhat unique ID based on device characteristics
+                        const deviceData = [
+                            navigator.userAgent,
+                            navigator.language,
+                            screen.width,
+                            screen.height,
+                            new Date().getTimezoneOffset()
+                        ].join('|');
+
+                        // Create a hash of the device data
+                        let hash = 0;
+                        for (let i = 0; i < deviceData.length; i++) {
+                            const char = deviceData.charCodeAt(i);
+                            hash = ((hash << 5) - hash) + char;
+                            hash = hash & hash; // Convert to 32bit integer
                         }
-                    })
-                    .catch(error => {
-                        console.error('Error requesting permission:', error);
-                        reject(error);
-                    });
-            });
-        }
+                        return 'device_' + Math.abs(hash);
+                    };
 
-        // Function to refresh token
-        function refreshToken() {
-            messaging.getToken({
-                vapidKey: 'BOM3KFfemC5lGnsF28N-_UGA7H9esoOm5gp0_Eg45HMqaMqviLx_bcAonVaZe-c0GwSFwfwe7-fJVP1n8h1iAAU',
-                serviceWorkerRegistration: registration
-            }).then(refreshedToken => {
-                console.log('Token refreshed:', refreshedToken);
-                saveTokenToFirestore(refreshedToken);
-            }).catch(err => {
-                console.error('Unable to refresh token:', err);
-            });
-        }
-
-        // Show notification prompt
-        function createNotificationPrompt() {
-            // Check if a prompt is already showing
-            if (document.getElementById('notification-prompt')) {
-                return;
-            }
-
-            const promptDiv = document.createElement('div');
-            promptDiv.id = 'notification-prompt';
-            promptDiv.style.cssText = `
-                position: fixed;
-                bottom: 50%;
-                left: 50%;
-                transform: translate(-50%, 50%);
-                background: rgba(0, 0, 0, 0.85);
-                color: white;
-                padding: 20px 15px;
-                border-radius: 10px;
-                box-shadow: 0 10px 13px rgba(0, 0, 0, 0.9);
-                text-align: center;
-                z-index: 1001;
-                font-family: Arial, sans-serif;
-                max-width: 90%;
-                width: max-content;
-                border: 2px solid #478fdf;
-                animation: fade-in 0.5s ease-in-out;
-            `;
-
-            promptDiv.innerHTML = `
-                <p style="margin: 0 0 15px 0; font-size: 18px; font-weight: 700;">Get notified when Picks and Entry Form are available</p>
-                <div style="display: flex; justify-content: space-between; gap: 10px;">
-                    <button id="enable-notifications" style="background-color: #478fdf; color: white; border: none; padding: 10px 18px; border-radius: 4px; font-weight: bold; cursor: pointer; flex: 1;">Allow</button>
-                    <button id="decline-notifications" style="background-color: transparent; color: white; border: 1px solid white; padding: 10px 18px; border-radius: 4px; cursor: pointer; flex: 1;">Not Now</button>
-                </div>
-            `;
-
-            document.body.appendChild(promptDiv);
-
-            document.getElementById('enable-notifications').addEventListener('click', () => {
-                promptDiv.remove();
-                requestPermission()
-                    .then(() => {
-                        showSuccessMessage('Notifications enabled successfully!');
-                    })
-                    .catch(error => {
-                        console.error('Error enabling notifications:', error);
-                    });
-            });
-
-            document.getElementById('decline-notifications').addEventListener('click', () => {
-                promptDiv.remove();
-                localStorage.setItem('notificationPromptDismissed', Date.now());
-            });
-        }
-
-        // Show success message
-        function showSuccessMessage(message) {
-            const successDiv = document.createElement('div');
-            successDiv.style.cssText = `
-                position: fixed;
-                top: 20px;
-                left: 50%;
-                transform: translateX(-50%);
-                background: #478fdf;
-                color: white;
-                padding: 12px 20px;
-                border-radius: 5px;
-                box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-                z-index: 1002;
-                font-family: Arial, sans-serif;
-                animation: fade-in 0.3s ease-in-out;
-            `;
-            successDiv.textContent = message;
-            document.body.appendChild(successDiv);
-            setTimeout(() => {
-                successDiv.style.animation = 'fade-out 0.3s ease-in-out';
-                setTimeout(() => successDiv.remove(), 300);
-            }, 3000);
-        }
-
-        // Save token to Firestore
-        async function saveTokenToFirestore(token, retries = 3) {
-    if (!token) {
-        console.error('No token provided to saveTokenToFirestore');
-        return;
-    }
-
-    // Generate a device identifier that's unique to this device
-    // This helps identify the same physical device across different browsers
-    const generateDeviceId = () => {
-        // Create a somewhat unique ID based on device characteristics
-        const deviceData = [
-            navigator.userAgent,
-            navigator.language,
-            screen.width,
-            screen.height,
-            new Date().getTimezoneOffset()
-        ].join('|');
-        
-        // Create a hash of the device data
-        let hash = 0;
-        for (let i = 0; i < deviceData.length; i++) {
-            const char = deviceData.charCodeAt(i);
-            hash = ((hash << 5) - hash) + char;
-            hash = hash & hash; // Convert to 32bit integer
-        }
-        return 'device_' + Math.abs(hash);
-    };
-
-    const deviceId = generateDeviceId();
+                    const deviceId = generateDeviceId();
     
     const attemptSave = async (attempt) => {
         try {
@@ -385,287 +379,225 @@ function setupFirebaseAndNotifications() {
             
             // Get existing tokens for this device
             const deviceTokensQuery = await db.collection('devices')
-                .where('deviceId', '==', deviceId)
-                .get();
-            
-            if (!deviceTokensQuery.empty) {
-                // Device exists in database
-                const deviceDoc = deviceTokensQuery.docs[0];
-                
-                // Update the device record
-                await db.collection('devices').doc(deviceDoc.id).update({
-                    lastActive: firebase.firestore.FieldValue.serverTimestamp(),
-                    [`tokens.${browserInfo.name}`]: token,
-                    [`activeTokens.${token}`]: true
-                });
-                
-                // Deactivate old tokens for this browser
-                const oldData = deviceDoc.data();
-                if (oldData.tokens && oldData.tokens[browserInfo.name] && 
-                    oldData.tokens[browserInfo.name] !== token) {
-                    
-                    // Deactivate the old token
-                    await db.collection('devices').doc(deviceDoc.id).update({
-                        [`activeTokens.${oldData.tokens[browserInfo.name]}`]: false
-                    });
-                    
-                    // Remove the old token from the fcmTokens collection
-                    await db.collection('fcmTokens').doc(oldData.tokens[browserInfo.name]).delete();
+                                .where('deviceId', '==', deviceId)
+                                .get();
+
+                            if (!deviceTokensQuery.empty) {
+                                // Device exists in database
+                                const deviceDoc = deviceTokensQuery.docs[0];
+
+                                // Update the device record
+                                await db.collection('devices').doc(deviceDoc.id).update({
+                                    lastActive: firebase.firestore.FieldValue.serverTimestamp(),
+                                    [`tokens.${browserInfo.name}`]: token,
+                                    [`activeTokens.${token}`]: true
+                                });
+
+                                // Deactivate old tokens for this browser
+                                const oldData = deviceDoc.data();
+                                if (oldData.tokens && oldData.tokens[browserInfo.name] &&
+                                    oldData.tokens[browserInfo.name] !== token) {
+
+                                    // Deactivate the old token
+                                    await db.collection('devices').doc(deviceDoc.id).update({
+                                        [`activeTokens.${oldData.tokens[browserInfo.name]}`]: false
+                                    });
+
+                                    // Remove the old token from the fcmTokens collection
+                                    await db.collection('fcmTokens').doc(oldData.tokens[browserInfo.name]).delete();
+                                }
+                            } else {
+                                // New device, create a record
+                                await db.collection('devices').add({
+                                    deviceId: deviceId,
+                                    platform: navigator.platform,
+                                    tokens: {
+                                        [browserInfo.name]: token
+                                    },
+                                    activeTokens: {
+                                        [token]: true
+                                    },
+                                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                                    lastActive: firebase.firestore.FieldValue.serverTimestamp()
+                                });
+                            }
+
+                            // Update or create the token record
+                            const tokenDoc = await db.collection('fcmTokens').doc(token).get();
+
+                            if (!tokenDoc.exists) {
+                                await db.collection('fcmTokens').doc(token).set({
+                                    token,
+                                    deviceId: deviceId,
+                                    browser: browserInfo.name,
+                                    active: true,
+                                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                                    lastActive: firebase.firestore.FieldValue.serverTimestamp()
+                                });
+                                console.log('Token saved to Firestore successfully');
+                            } else {
+                                await db.collection('fcmTokens').doc(token).update({
+                                    lastActive: firebase.firestore.FieldValue.serverTimestamp(),
+                                    active: true
+                                });
+                                console.log('Token last active timestamp updated successfully');
+                            }
+
+                            // Store token in local storage
+                            localStorage.setItem('fcmToken', token);
+                            localStorage.setItem('deviceId', deviceId);
+
+                        } catch (error) {
+                            console.error(`Attempt ${attempt} failed:`, error.message);
+                            if (attempt < retries) {
+                                console.log(`Retrying... (<span class="math-inline">\{attempt \+ 1\}/</span>{retries})`);
+                                await new Promise(resolve => setTimeout(resolve, 1000));
+                                await attemptSave(attempt + 1);
+                            } else {
+                                console.error('Max retries reached. Token save failed.');
+                            }
+                        }
+                    };
+
+                    await attemptSave(1);
                 }
-            } else {
-                // New device, create a record
-                await db.collection('devices').add({
-                    deviceId: deviceId,
-                    platform: navigator.platform,
-                    tokens: {
-                        [browserInfo.name]: token
-                    },
-                    activeTokens: {
-                        [token]: true
-                    },
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                    lastActive: firebase.firestore.FieldValue.serverTimestamp()
-                });
-            }
-            
-            // Update or create the token record
-            const tokenDoc = await db.collection('fcmTokens').doc(token).get();
-            
-            if (!tokenDoc.exists) {
-                await db.collection('fcmTokens').doc(token).set({
-                    token,
-                    deviceId: deviceId,
-                    browser: browserInfo.name,
-                    active: true,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                    lastActive: firebase.firestore.FieldValue.serverTimestamp()
-                });
-                console.log('Token saved to Firestore successfully');
-            } else {
-                await db.collection('fcmTokens').doc(token).update({
-                    lastActive: firebase.firestore.FieldValue.serverTimestamp(),
-                    active: true
-                });
-                console.log('Token last active timestamp updated successfully');
-            }
-            
-            // Store token in local storage
-            localStorage.setItem('fcmToken', token);
-            localStorage.setItem('deviceId', deviceId);
-            
-        } catch (error) {
-            console.error(`Attempt ${attempt} failed:`, error.message);
-            if (attempt < retries) {
-                console.log(`Retrying... (${attempt + 1}/${retries})`);
-                await new Promise(resolve => setTimeout(resolve, 1000));
-                await attemptSave(attempt + 1);
-            } else {
-                console.error('Max retries reached. Token save failed.');
-            }
-        }
-    };
 
-    await attemptSave(1);
-}
+                function clearDuplicateTokens() {
+                    const deviceId = localStorage.getItem('deviceId');
+                    const currentToken = localStorage.getItem('fcmToken');
 
-      const functions = require('firebase-functions');
-const admin = require('firebase-admin');
-admin.initializeApp();
+                    if (!deviceId || !currentToken) {
+                        console.error('Missing device information');
+                        return;
+                    }
 
-// Run this function periodically (e.g., once a day)
-exports.cleanupInactiveTokens = functions.pubsub.schedule('every 24 hours').onRun(async (context) => {
-    const db = admin.firestore();
-    const messaging = admin.messaging();
-    
-    try {
-        // Get all tokens
-        const tokensSnapshot = await db.collection('fcmTokens').get();
-        
-        for (const doc of tokensSnapshot.docs) {
-            const tokenData = doc.data();
-            const token = tokenData.token;
-            
-            // Check if token is valid
-            try {
-                // This will throw an error if the token is invalid
-                await messaging.send({
-                    token: token,
-                    data: { test: 'true' },
-                }, { dry_run: true });
-                
-                // Token is valid, update last checked timestamp
-                await db.collection('fcmTokens').doc(doc.id).update({
-                    lastChecked: admin.firestore.FieldValue.serverTimestamp()
-                });
-            } catch (error) {
-                if (error.code === 'messaging/invalid-registration-token' || 
-                    error.code === 'messaging/registration-token-not-registered') {
-                    
-                    console.log(`Removing invalid token: ${token}`);
-                    
-                    // Token is invalid, remove it
-                    await db.collection('fcmTokens').doc(doc.id).delete();
-                    
-                    // Also remove from device records
-                    const deviceDocs = await db.collection('devices')
-                        .where(`activeTokens.${token}`, '==', true)
-                        .get();
-                    
-                    for (const deviceDoc of deviceDocs.docs) {
-                        // Remove this token from activeTokens
-                        await db.collection('devices').doc(deviceDoc.id).update({
-                            [`activeTokens.${token}`]: admin.firestore.FieldValue.delete()
+                    db.collection('devices')
+                        .where('deviceId', '==', deviceId)
+                        .get()
+                        .then(snapshot => {
+                            if (snapshot.empty) {
+                                console.log('No device found with this ID');
+                                return;
+                            }
+
+                            const deviceDoc = snapshot.docs[0];
+                            const data = deviceDoc.data();
+                            const tokensToRemove = [];
+
+                            // Keep only the current token active
+                            if (data.activeTokens) {
+                                for (const token in data.activeTokens) {
+                                    if (token !== currentToken && data.activeTokens[token] === true) {
+                                        tokensToRemove.push(token);
+                                    }
+                                }
+                            }
+
+                            // Create a batch for efficient updates
+                            const batch = db.batch();
+
+                            // Update the device document
+                            const deviceRef = db.collection('devices').doc(deviceDoc.id);
+                            const updates = { lastActive: firebase.firestore.FieldValue.serverTimestamp() };
+
+                            // Mark all other tokens as inactive
+                            tokensToRemove.forEach(token => {
+                                updates[`activeTokens.${token}`] = false;
+
+                                // Also update or delete the token documents
+                                const tokenRef = db.collection('fcmTokens').doc(token);
+                                batch.delete(tokenRef);
+                            });
+
+                            batch.update(deviceRef, updates);
+
+                            return batch.commit();
+                        })
+                        .then(() => {
+                            console.log('Successfully cleaned up duplicate tokens');
+                            // Show success message to user
+                            alert('Successfully cleared duplicate notifications. You should now receive only one notification per message.');
+                        })
+                        .catch(error => {
+                            console.error('Error cleaning up tokens:', error);
                         });
-                    }
-                } else {
-                    console.error(`Error checking token ${token}:`, error);
                 }
-            }
-        }
-        
-        console.log('Token cleanup completed successfully');
-        return null;
-    } catch (error) {
-        console.error('Error in token cleanup:', error);
-        return null;
-    }
-});
-      function clearDuplicateTokens() {
-    const deviceId = localStorage.getItem('deviceId');
-    const currentToken = localStorage.getItem('fcmToken');
-    
-    if (!deviceId || !currentToken) {
-        console.error('Missing device information');
-        return;
-    }
-    
-    db.collection('devices')
-        .where('deviceId', '==', deviceId)
-        .get()
-        .then(snapshot => {
-            if (snapshot.empty) {
-                console.log('No device found with this ID');
-                return;
-            }
-            
-            const deviceDoc = snapshot.docs[0];
-            const data = deviceDoc.data();
-            const tokensToRemove = [];
-            
-            // Keep only the current token active
-            if (data.activeTokens) {
-                for (const token in data.activeTokens) {
-                    if (token !== currentToken && data.activeTokens[token] === true) {
-                        tokensToRemove.push(token);
-                    }
-                }
-            }
-            
-            // Create a batch for efficient updates
-            const batch = db.batch();
-            
-            // Update the device document
-            const deviceRef = db.collection('devices').doc(deviceDoc.id);
-            const updates = { lastActive: firebase.firestore.FieldValue.serverTimestamp() };
-            
-            // Mark all other tokens as inactive
-            tokensToRemove.forEach(token => {
-                updates[`activeTokens.${token}`] = false;
-                
-                // Also update or delete the token documents
-                const tokenRef = db.collection('fcmTokens').doc(token);
-                batch.delete(tokenRef);
-            });
-            
-            batch.update(deviceRef, updates);
-            
-            return batch.commit();
-        })
-        .then(() => {
-            console.log('Successfully cleaned up duplicate tokens');
-            // Show success message to user
-            alert('Successfully cleared duplicate notifications. You should now receive only one notification per message.');
-        })
-        .catch(error => {
-            console.error('Error cleaning up tokens:', error);
-        });
-}
 
-        // Handle foreground messages
-        messaging.onMessage((payload) => {
-            console.log('Message received in foreground:', payload);
-            const notificationDiv = document.createElement('div');
-            notificationDiv.style.cssText = `
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                background: #478fdf;
-                color: white;
-                padding: 15px;
-                border-radius: 8px;
-                box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-                z-index: 1002;
-                max-width: 320px;
-                font-family: Arial, sans-serif;
-                animation: slide-in 0.3s ease-out;
-            `;
-            
-            const title = payload.notification?.title || 'Joe\'s Pick 5';
-            const body = payload.notification?.body || 'New update available!';
-            
-            notificationDiv.innerHTML = `
-                <div style="display: flex; align-items: start;">
-                    <img src="Pick5Logo.png" alt="Logo" style="width: 30px; height: 30px; margin-right: 10px;">
-                    <div>
-                        <div style="font-weight: bold; margin-bottom: 5px;">${title}</div>
-                        <div>${body}</div>
-                    </div>
-                    <button style="background: transparent; border: none; color: white; cursor: pointer; margin-left: 10px; font-size: 16px;" onclick="this.parentElement.parentElement.remove()">×</button>
-                </div>
-            `;
-            
-            document.body.appendChild(notificationDiv);
-            
-            setTimeout(() => {
-                notificationDiv.style.animation = 'slide-out 0.3s ease-in';
-                setTimeout(() => notificationDiv.remove(), 300);
-            }, 5000);
-        });
+                // Handle foreground messages
+                messaging.onMessage((payload) => {
+                    console.log('Message received in foreground:', payload);
+                    const notificationDiv = document.createElement('div');
+                    notificationDiv.style.cssText = `
+                        position: fixed;
+                        top: 20px;
+                        right: 20px;
+                        background: #478fdf;
+                        color: white;
+                        padding: 15px;
+                        border-radius: 8px;
+                        box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+                        z-index: 1002;
+                        max-width: 320px;
+                        font-family: Arial, sans-serif;
+                        animation: slide-in 0.3s ease-out;
+                    `;
 
-        // Check and show notifications based on user state
-        function checkAndShowNotifications() {
-            // Check if the user has a stored token
-            const storedToken = localStorage.getItem('fcmToken');
-            
-            if (storedToken) {
-                // User already has a token, verify it's still valid
-                messaging.getToken().then(currentToken => {
-                    if (currentToken !== storedToken) {
-                        // Token has changed, update it
-                        saveTokenToFirestore(currentToken);
-                    }
-                }).catch(error => {
-                    console.error('Error checking token:', error);
-                    // Token might be invalid, request permission again
-                    promptForPermission();
+                    const title = payload.notification?.title || 'Joe\'s Pick 5';
+                    const body = payload.notification?.body || 'New update available!';
+
+                    notificationDiv.innerHTML = `
+                        <div style="display: flex; align-items: start;">
+                            <img src="Pick5Logo.png" alt="Logo" style="width: 30px; height: 30px; margin-right: 10px;">
+                            <div>
+                                <div style="font-weight: bold; margin-bottom: 5px;"><span class="math-inline">\{title\}</div\>
+<div\></span>{body}</div>
+                            </div>
+                            <button style="background: transparent; border: none; color: white; cursor: pointer; margin-left: 10px; font-size: 16px;" onclick="this.parentElement.parentElement.remove()">×</button>
+                        </div>
+                    `;
+
+                    document.body.appendChild(notificationDiv);
+
+                    setTimeout(() => {
+                        notificationDiv.style.animation = 'slide-out 0.3s ease-in';
+                        setTimeout(() => notificationDiv.remove(), 300);
+                    }, 5000);
                 });
-            } else {
-                // No token found, check permission status
-                promptForPermission();
-            }
-        }
 
-        function promptForPermission() {
-            if (Notification.permission === 'granted') {
-                // Permission already granted, get token
-                refreshToken();
-            } else if (Notification.permission === 'denied') {
-                // Permission explicitly denied
-                console.log('Notifications already denied');
-            } else {
-                // Permission not decided yet
-                const lastDismissed = localStorage.getItem('notificationPromptDismissed');
-                const ONE_WEEK = 7 * 24 * 60 * 60 * 1000;
+                // Check and show notifications based on user state
+                function checkAndShowNotifications() {
+                    // Check if the user has a stored token
+                    const storedToken = localStorage.getItem('fcmToken');
+
+                    if (storedToken) {
+                        // User already has a token, verify it's still valid
+                        messaging.getToken().then(currentToken => {
+                            if (currentToken !== storedToken) {
+                                // Token has changed, update it
+                                saveTokenToFirestore(currentToken);
+                            }
+                        }).catch(error => {
+                            console.error('Error checking token:', error);
+                            // Token might be invalid, request permission again
+                            promptForPermission();
+                        });
+                    } else {
+                        // No token found, check permission status
+                        promptForPermission();
+                    }
+                }
+
+                function promptForPermission() {
+                    if (Notification.permission === 'granted') {
+                        // Permission already granted, get token
+                        refreshToken();
+                    } else if (Notification.permission === 'denied') {
+                        // Permission explicitly denied
+                        console.log('Notifications already denied');
+                    } else {
+                        // Permission not decided yet
+                        const lastDismissed = localStorage.getItem('notificationPromptDismissed');
+                        const ONE_WEEK = 7 * 24 * 60 * 60 * 1000;
 
                 if (!lastDismissed || (Date.now() - parseInt(lastDismissed)) > ONE_WEEK) {
                     // Show prompt after user interaction
