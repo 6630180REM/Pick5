@@ -391,6 +391,7 @@ const attemptSave = async (attempt) => {
             // Prepare update data
             const updateData = {
                 lastActive: firebase.firestore.FieldValue.serverTimestamp(),
+                userAgent: browserInfo.userAgent,
                 [`tokens.${browserInfo.name}`]: token,
                 [`activeTokens.${token}`]: true
             };
@@ -413,15 +414,11 @@ const attemptSave = async (attempt) => {
             await db.collection('devices').add({
                 deviceId: deviceId,
                 platform: navigator.platform,
-                tokens: {
-                    [browserInfo.name]: token
-                },
-                activeTokens: {
-                    [token]: true
-                },
+                tokens: {[browserInfo.name]: token},
+                activeTokens: {[token]: true},
                 createdAt: firebase.firestore.FieldValue.serverTimestamp(),
                 lastActive: firebase.firestore.FieldValue.serverTimestamp(),
-                user: userAgent
+                userAgent: browserInfo.userAgent
             });
             console.log('New device record created successfully');
         }
