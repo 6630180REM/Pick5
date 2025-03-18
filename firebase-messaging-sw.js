@@ -16,30 +16,39 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const messaging = firebase.messaging();
 
-// Handle background messages
 messaging.onBackgroundMessage(function(payload) {
     console.log('Received background message:', payload);
 
-    // Check if the payload has data
     if (payload.data) {
+        // Extract data or set defaults
         const notificationTitle = payload.data.title || 'Joe\'s Pick 5';
-        const notificationOptions = {
-            body: payload.data.body || 'New update available!',
-            icon: '/Pick5Logo.png',
-            badge: '/Pick5Logo.png',
-            tag: 'joe-pick5-notification',
-            renotify: true,
-            data: {
-                url: payload.data.url || 'https://6630180rem.github.io/Pick5/',
-                source: 'joespick5'
-            }
-        };
+        const body = payload.data.body || 'New update available!';
+        const icon = payload.data.icon || '/Pick5Logo.png';
 
-        // return self.registration.showNotification(notificationTitle, notificationOptions);
+        // Your data processing logic goes here.
+        console.log("Received data:", payload.data);
+
+        // Example: Sending a message to the active client (if available)
+        self.clients.matchAll({ type: 'window' }).then(clients => {
+            if (clients && clients.length > 0) {
+                clients.forEach(client => {
+                    client.postMessage({
+                        type: 'data-message', // Custom type to identify data messages
+                        payload: {
+                            title: notificationTitle,
+                            body: body,
+                            icon: icon,
+                            data: payload.data // Include the original data as well
+                        }
+                    });
+                });
+            }
+        });
+
+        // Add your specific data handling based on payload.data here.
     } else {
         console.log("payload did not contain data object");
     }
-
 });
 
 // Handle notification click
