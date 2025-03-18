@@ -174,188 +174,199 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
-       <script>
-        let messaging;
-        let db;
+<script>
+    let messaging;
+    let db;
 
-        // ✅ Show success message after reset
-        function showSuccessMessage(message) {
-            const successDiv = document.createElement('div');
-            successDiv.style.cssText = `
-                position: fixed;
-                top: 20px;
-                left: 50%;
-                transform: translateX(-50%);
-                background: #478fdf;
-                color: white;
-                padding: 12px 20px;
-                border-radius: 5px;
-                box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-                z-index: 1002;
-                font-family: Arial, sans-serif;
-                animation: fade-in 0.3s ease-in-out;
-            `;
-            successDiv.textContent = message;
-            document.body.appendChild(successDiv);
-            setTimeout(() => {
-                successDiv.style.animation = 'fade-out 0.3s ease-in-out';
-                setTimeout(() => successDiv.remove(), 300);
-            }, 3000);
+    // Firebase Configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyB5r_KL2eKVFd66VQU_5pznKrVHa9xzCfc",
+        authDomain: "joespick5push.firebaseapp.com",
+        projectId: "joespick5push",
+        storageBucket: "joespick5push.firebasestorage.app",
+        messagingSenderId: "783669343677",
+        appId: "1:783669343677:web:d3a43a1a58b920ba9a4ed4",
+        measurementId: "G-HNPLN4XZ44"
+    };
+
+    function setupFirebaseAndNotifications() {
+        // Initialize Firebase (with check to prevent duplicate initialization)
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
         }
 
-// ✅ Reset notifications function
-function resetNotifications() {
-    console.log('Resetting notifications...');
+        messaging = firebase.messaging();
+        db = firebase.firestore();
 
-    // Clear stored token and device ID
-    localStorage.removeItem('fcmToken');
-    localStorage.removeItem('deviceId');
+        // Register service worker first
+        if ('serviceWorker' in navigator) {
+            const swPath = window.location.pathname.includes('/Pick5/')
+                ? '/Pick5/firebase-messaging-sw.js'
+                : './firebase-messaging-sw.js';
 
-    // Unregister service workers
-    navigator.serviceWorker.getRegistrations().then(registrations => {
-        for (let registration of registrations) {
-            registration.unregister().then(() => console.log('Service worker unregistered'));
+            console.log('Attempting to register service worker at:', swPath);
+
+            navigator.serviceWorker.register(swPath)
+                .then(registration => {
+                    console.log('Service Worker registered with scope:', registration.scope);
+                    initializeNotifications(registration);
+                })
+                .catch(error => {
+                    console.error('Service Worker registration failed:', error.message);
+                });
+        } else {
+            console.log('Service workers not supported');
         }
-    });
-
-    // ✅ Ensure messaging is defined before trying to get token
-    if (messaging) {
-        messaging.getToken().then(token => {
-            if (token) {
-                db.collection('devices')
-                    .where('deviceId', '==', localStorage.getItem('deviceId'))
-                    .get().then(snapshot => {
-                        snapshot.forEach(doc => {
-                            doc.ref.delete().then(() => console.log('Token deleted from Firestore'));
-                        });
-                    });
-            }
-        }).catch(err => console.error('Error deleting token:', err));
-    } else {
-        console.warn('Messaging is not yet initialized.');
     }
 
-    // ✅ Reinitialize Firebase and notifications
-    setTimeout(() => {
-        console.log('Reinitializing Firebase and notifications...');
-        setupFirebaseAndNotifications();
-    }, 1000);
-
-    // ✅ Check notification permission status
-    if (Notification.permission === 'denied') {
-        showSuccessMessage('You have blocked notifications. Please enable them in your browser settings.');
-    } else if (Notification.permission === 'default') {
-        Notification.requestPermission().then(permission => {
-            if (permission === 'granted') {
-                showSuccessMessage('Notifications allowed! You will now receive alerts.');
-            } else {
-                showSuccessMessage('Notifications blocked. Enable them in browser settings to receive alerts.');
+    function initializeNotifications(registration) {
+        navigator.serviceWorker.addEventListener('message', event => {
+            if (event.data && event.data.type === 'tokenRefresh') {
+                console.log('Token refresh detected');
+                refreshToken(registration);
             }
         });
-    } else {
-        showSuccessMessage('Notifications have been reset. You will now receive alerts.');
-    }
-}
 
-
-        // ✅ Firebase setup and notifications
-        function setupFirebaseAndNotifications() {
-            const firebaseConfig = {
-                apiKey: "AIzaSyB5r_KL2eKVFd66VQU_5pznKrVHa9xzCfc",
-                authDomain: "joespick5push.firebaseapp.com",
-                projectId: "joespick5push",
-                storageBucket: "joespick5push.appspot.com",
-                messagingSenderId: "783669343677",
-                appId: "1:783669343677:web:d3a43a1a58b920ba9a4ed4",
-                measurementId: "G-HNPLN4XZ44"
-            };
-
-            if (!firebase.apps.length) {
-                firebase.initializeApp(firebaseConfig);
-            }
-
-            messaging = firebase.messaging();
-            db = firebase.firestore();
-
-            if ('serviceWorker' in navigator) {
-                const swPath = window.location.pathname.includes('/Pick5/')
-                    ? '/Pick5/firebase-messaging-sw.js'
-                    : './firebase-messaging-sw.js';
-
-                navigator.serviceWorker.register(swPath)
-                    .then(registration => {
-                        console.log('Service Worker registered with scope:', registration.scope);
-
-                        Notification.requestPermission().then(permission => {
-                            if (permission === 'granted') {
-                                messaging.getToken({
-                                    vapidKey: 'BOM3KFfemC5lGnsF28N-_UGA7H9esoOm5gp0_Eg45HMqaMqviLx_bcAonVaZe-c0GwSFwfwe7-fJVP1n8h1iAAU',
-                                    serviceWorkerRegistration: registration
-                                }).then(token => {
-                                    console.log('Device token:', token);
-                                    localStorage.setItem('fcmToken', token);
-                                }).catch(error => {
-                                    console.error('Error getting token:', error);
-                                });
-                            }
+        function requestPermission() {
+            Notification.requestPermission()
+                .then(permission => {
+                    if (permission === 'granted') {
+                        console.log('Notification permission granted.');
+                        messaging.getToken({
+                            vapidKey: 'BOM3KFfemC5lGnsF28N-_UGA7H9esoOm5gp0_Eg45HMqaMqviLx_bcAonVaZe-c0GwSFwfwe7-fJVP1n8h1iAAU',
+                            serviceWorkerRegistration: registration
+                        }).then(token => {
+                            console.log('Device token:', token);
+                            saveTokenToFirestore(token);
+                            showSuccessMessage('Notifications enabled successfully!');
+                        }).catch(error => {
+                            console.error('Error getting token:', error);
                         });
-                    }).catch(error => {
-                        console.error('Service Worker registration failed:', error.message);
-                    });
-            }
+                    } else {
+                        console.log('Notification permission denied.');
+                        localStorage.setItem('notificationPermissionDenied', 'true');
+                    }
+                }).catch(error => {
+                    console.error('Error requesting permission:', error);
+                });
         }
 
-        // ✅ Initialize Firebase when the page loads
-        document.addEventListener('DOMContentLoaded', () => {
-            const preloader = document.getElementById('preloader');
-            setTimeout(() => {
-                preloader.style.display = 'none';
-                setupFirebaseAndNotifications();
-            }, 5000);
-        });
-
-        // ✅ Reset notifications button
-        document.getElementById('reset-notifications').addEventListener('click', resetNotifications);
-
-        // ✅ PWA Install Prompt
-        let deferredPrompt;
-        const installBanner = document.getElementById('install-banner');
-        const installButton = document.getElementById('install-button');
-        const dismissButton = document.getElementById('dismiss-button');
-
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            installBanner.style.display = 'block';
-        });
-
-        installButton.addEventListener('click', () => {
-            installBanner.style.display = 'none';
-            deferredPrompt.prompt();
-            deferredPrompt.userChoice.then(choiceResult => {
-                if (choiceResult.outcome === 'accepted') {
-                    console.log('User accepted the install prompt');
-                } else {
-                    console.log('User dismissed the install prompt');
-                }
-                deferredPrompt = null;
+        function refreshToken(registration) {
+            messaging.getToken({
+                vapidKey: 'BOM3KFfemC5lGnsF28N-_UGA7H9esoOm5gp0_Eg45HMqaMqviLx_bcAonVaZe-c0GwSFwfwe7-fJVP1n8h1iAAU',
+                serviceWorkerRegistration: registration
+            }).then(refreshedToken => {
+                console.log('Token refreshed:', refreshedToken);
+                saveTokenToFirestore(refreshedToken);
+            }).catch(err => {
+                console.error('Unable to refresh token:', err);
             });
-        });
+        }
+    }
 
-        dismissButton.addEventListener('click', () => {
-            installBanner.style.display = 'none';
-        });
-
-        // ✅ Resize iframe to fit screen size
-        function resizeIframe() {
-            const iframe = document.querySelector("iframe");
-            iframe.style.height = window.innerHeight + "px";
-            iframe.style.width = window.innerWidth + "px";
+    async function saveTokenToFirestore(token) {
+        if (!token) {
+            console.error('No token provided to saveTokenToFirestore');
+            return;
         }
 
-        window.addEventListener("resize", resizeIframe);
-        window.addEventListener("load", resizeIframe);
-    </script>
+        const deviceId = generateDeviceId();
+
+        try {
+            const existingDevice = await db.collection('devices')
+                .where('deviceId', '==', deviceId)
+                .get();
+
+            if (!existingDevice.empty) {
+                const doc = existingDevice.docs[0];
+                await db.collection('devices').doc(doc.id).update({
+                    token: token,
+                    lastActive: firebase.firestore.FieldValue.serverTimestamp(),
+                });
+                console.log('Device token updated in Firestore');
+            } else {
+                await db.collection('devices').add({
+                    deviceId: deviceId,
+                    token: token,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    lastActive: firebase.firestore.FieldValue.serverTimestamp(),
+                });
+                console.log('New device record created in Firestore');
+            }
+
+            localStorage.setItem('fcmToken', token);
+            localStorage.setItem('deviceId', deviceId);
+        } catch (error) {
+            console.error('Error saving token to Firestore:', error);
+        }
+    }
+
+    function generateDeviceId() {
+        const deviceData = [
+            navigator.userAgent,
+            navigator.language,
+            screen.width,
+            screen.height,
+            new Date().getTimezoneOffset()
+        ].join('|');
+
+        let hash = 0;
+        for (let i = 0; i < deviceData.length; i++) {
+            const char = deviceData.charCodeAt(i);
+            hash = ((hash << 5) - hash) + char;
+            hash = hash & hash;
+        }
+        return 'device_' + Math.abs(hash);
+    }
+
+    // ✅ Moved this outside so it can be used globally
+    function showSuccessMessage(message) {
+        const successDiv = document.createElement('div');
+        successDiv.style.cssText = `
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #478fdf;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            z-index: 1002;
+            font-family: Arial, sans-serif;
+            animation: fade-in 0.3s ease-in-out;
+        `;
+        successDiv.textContent = message;
+        document.body.appendChild(successDiv);
+        setTimeout(() => {
+            successDiv.style.animation = 'fade-out 0.3s ease-in-out';
+            setTimeout(() => successDiv.remove(), 300);
+        }, 3000);
+    }
+
+    function resetNotifications() {
+        messaging.deleteToken()
+            .then(() => {
+                console.log('Token deleted');
+                localStorage.removeItem('fcmToken');
+                localStorage.removeItem('deviceId');
+                showSuccessMessage('Notifications reset. Please re-enable them.');
+                setupFirebaseAndNotifications(); // Restart the process
+            })
+            .catch(error => {
+                console.error('Unable to delete token:', error);
+            });
+    }
+
+    // Start setup when the page loads
+    document.addEventListener('DOMContentLoaded', () => {
+        const preloader = document.getElementById('preloader');
+        setTimeout(() => {
+            preloader.style.display = 'none';
+            setupFirebaseAndNotifications();
+        }, 5000);
+    });
+</script>
 
     <!-- ✅ Reset notifications button -->
 <!--     <button id="reset-notifications">Reset Notifications</button> -->
