@@ -103,7 +103,8 @@
             width: 350px;
         }
         @media (max-width: 768px) {
-            width: 275px;
+            .notification {
+            width: -webkit-fill-available;
         }
         }
         #preloader {
@@ -430,7 +431,7 @@ function checkStorageAvailability() {
                     `;
 
                     promptDiv.innerHTML = `
-                        <p class="notification">You'll receive push notifications when Picks and Entry Form are available</p>
+                        <p class="notification">You'll receive notifications when Picks and Entry Form are available</p>
                         <div style="display: flex; justify-content: space-between; gap: 10px;width: 104px;margin: 0 auto;">
                             <button id="enable-notifications" style="background-color: #478fdf; color: white; border: none; padding: 10px 18px; border-radius: 4px; font-weight: bold; cursor: pointer; flex: 1;width: 104px;margin: 0 auto;">Ok</button>
                             <button id="decline-notifications" style="display: none; background-color: transparent; color: white; border: 1px solid white; padding: 10px 18px; border-radius: 4px; cursor: pointer; flex: 1;">Not Now</button>
