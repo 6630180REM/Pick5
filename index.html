@@ -200,43 +200,49 @@ async function resetNotifications() {
     console.log('Resetting notifications...');
 
     try {
+        // Unregister all service workers
         const registrations = await navigator.serviceWorker.getRegistrations();
         for (let registration of registrations) {
             await registration.unregister();
             console.log('Service worker unregistered');
         }
-        await new Promise(resolve => setTimeout(resolve, 1000)); // Delay
+        await new Promise(resolve => setTimeout(resolve, 1000)); // Delay for cleanup
 
         if (messaging) {
             try {
-                const token = await messaging.getToken();
+                const token = await messaging.getToken().catch(err => {
+                    console.log('No current token found:', err);
+                    return null; // Handle case where no token exists
+                });
                 if (token) {
                     await messaging.deleteToken().catch(err => {
                         console.warn('Token deletion failed:', err);
                     });
                     console.log('Token deleted from FCM');
+                } else {
+                    console.log('No token to delete');
+                }
 
-                    const deviceId = localStorage.getItem('deviceId');
-                    if (deviceId) {
-                        const snapshot = await db.collection('devices')
-                            .where('deviceId', '==', deviceId)
-                            .get();
+                const deviceId = localStorage.getItem('deviceId');
+                if (deviceId) {
+                    const snapshot = await db.collection('devices')
+                        .where('deviceId', '==', deviceId)
+                        .get();
 
-                        if (!snapshot.empty) {
-                            const batch = db.batch();
-                            snapshot.forEach(doc => {
-                                const data = doc.data();
-                                const updates = {};
-                                if (data.activeTokens) {
-                                    Object.keys(data.activeTokens).forEach(t => {
-                                        updates[`activeTokens.${t}`] = false;
-                                    });
-                                    batch.update(doc.ref, updates);
-                                }
-                            });
-                            await batch.commit();
-                            console.log('All tokens marked inactive in Firestore');
-                        }
+                    if (!snapshot.empty) {
+                        const batch = db.batch();
+                        snapshot.forEach(doc => {
+                            const data = doc.data();
+                            const updates = {};
+                            if (data.activeTokens) {
+                                Object.keys(data.activeTokens).forEach(t => {
+                                    updates[`activeTokens.${t}`] = false;
+                                });
+                                batch.update(doc.ref, updates);
+                            }
+                        });
+                        await batch.commit();
+                        console.log('All tokens marked inactive in Firestore');
                     }
                 }
             } catch (err) {
@@ -244,12 +250,23 @@ async function resetNotifications() {
             }
         }
 
+        // Clear all notification-related local storage
         localStorage.removeItem('fcmToken');
         localStorage.removeItem('notificationPromptDismissed');
+        localStorage.removeItem('notificationPermissionDenied'); // Clear any permission denial flag
 
+        // Check current permission state and act accordingly
         if (Notification.permission === 'denied') {
             showSuccessMessage('Notifications blocked. Enable in browser settings.');
+        } else if (Notification.permission === 'granted') {
+            // Even if granted, reset everything and force a new prompt
+            showSuccessMessage('Notifications reset. Please reauthorize.');
+            setTimeout(() => {
+                console.log('Forcing reauthorization...');
+                forceNotificationRePrompt();
+            }, 1500);
         } else {
+            // Default state: prompt should appear after reinitialization
             showSuccessMessage('Notifications reset. You’ll be prompted again.');
             setTimeout(() => {
                 console.log('Reinitializing Firebase...');
@@ -262,6 +279,13 @@ async function resetNotifications() {
     }
 }
 
+// Helper function to force a re-prompt
+function forceNotificationRePrompt() {
+    // Reinitialize Firebase and trigger the prompt
+    setupFirebaseAndNotifications();
+}
+
+// Ensure storage check is defined
 function checkStorageAvailability() {
     return !!(navigator.storage && window.indexedDB);
 }
