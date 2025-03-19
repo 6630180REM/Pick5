@@ -186,11 +186,11 @@
             100% {height: 100%;}
         }
 
-        @media (min-width: 1025px) {
+/*         @media (min-width: 1025px) {
     #install-banner, #ios-install-banner {
         display: none !important;
     }
-}
+} */
     </style>
 </head>
 <body>
@@ -811,34 +811,16 @@ function promptForPermission() {
 
         // PWA Install Prompt
         let deferredPrompt;
-        const installBanner = document.getElementById('install-banner');
-        const installButton = document.getElementById('install-button');
-        const dismissButton = document.getElementById('dismiss-button');
 
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            installBanner.style.display = 'block';
-        });
-
-        installButton.addEventListener('click', () => {
-            installBanner.style.display = 'none';
-            deferredPrompt.prompt();
-            deferredPrompt.userChoice.then((choiceResult) => {
-                if (choiceResult.outcome === 'accepted') {
-                    console.log('User accepted the install prompt');
-                } else {
-                    console.log('User dismissed the install prompt');
-                }
-                deferredPrompt = null;
-            });
-        });
-
-        dismissButton.addEventListener('click', () => {
-            installBanner.style.display = 'none';
-        });
-
-
+function isDesktop() {
+    const userAgent = navigator.userAgent.toLowerCase();
+    // Check for common desktop-specific keywords in userAgent
+    const isDesktopUA = /windows nt|macintosh|linux/i.test(userAgent) && !/mobile|android|iphone|ipad|ipod/i.test(userAgent);
+    // Optionally, check screen width (e.g., > 1024px for desktop)
+    const isLargeScreen = window.innerWidth > 1024;
+    return isDesktopUA && isLargeScreen;
+}
+        
 function isAndroid() {
     return /Android/i.test(navigator.userAgent);
 }
@@ -851,14 +833,21 @@ function setupInstallPrompt() {
     const dismissButton = document.getElementById('dismiss-button');
     const iosCloseButton = document.getElementById('ios-install-close');
 
-    // If already installed, hide both banners
+    // If on desktop, hide both banners and exit
+    if (isDesktop()) {
+        installBanner.style.display = 'none';
+        iosInstallBanner.style.display = 'none';
+        return;
+    }
+
+    // If already installed (standalone mode), hide both banners
     if (isStandalone()) {
         installBanner.style.display = 'none';
         iosInstallBanner.style.display = 'none';
         return;
     }
 
-    // Platform-specific handling
+    // Platform-specific handling for non-desktop devices
     if (isIOS()) {
         iosInstallBanner.style.display = 'block'; // Show iOS banner with instructions
 
