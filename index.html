@@ -25,20 +25,17 @@
     <title>Joe's Pick 5</title>
     <style>
         html, body {
-    background-color: black !important;
     margin: 0;
     padding: 0;
     overflow: hidden;
     position: fixed;
     top: 0;
     left: 0;
-    width: 100vw; /* Use viewport width */
-    height: 100vh; /* Use viewport height */
+    width: 100vw;
+    height: 100vh;
+    background-color: black !important;
     font-family: Arial, sans-serif;
-    overscroll-behavior: none;
-    /* Ensure content stays in portrait proportions */
-    max-width: 100vw;
-    max-height: 100vh;
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
 }
 
 iframe {
@@ -50,20 +47,19 @@ iframe {
     top: 0;
     left: 0;
     background-color: black;
-    /* Prevent iframe from resizing beyond portrait bounds */
-    max-width: 100%;
-    max-height: 100%;
+    overflow: hidden; /* Prevent iframe from triggering scroll/rotation */
 }
 
-/* Handle landscape by keeping portrait proportions */
+/* Force portrait layout in landscape */
 @media (orientation: landscape) {
     html, body {
-        width: 100vh; /* Swap width/height to maintain portrait ratio */
+        width: 100vh; /* Use height as width to enforce portrait ratio */
         height: 100vw;
-        transform: rotate(0deg); /* No rotation, keep upright */
-        margin: 0 auto; /* Center it */
+        position: fixed;
+        top: 0;
         left: 50%;
         transform: translateX(-50%);
+        overflow: hidden;
     }
     iframe {
         width: 100%;
@@ -931,39 +927,72 @@ function isStandalone() {
         window.addEventListener("load", resizeIframe);
         
         // Force portrait layout on load and resize
+// Enforce portrait layout
 function enforcePortrait() {
     const isLandscape = window.innerWidth > window.innerHeight;
     const body = document.body;
     const iframe = document.querySelector('iframe');
 
     if (isLandscape) {
-        // In landscape, use height as the width constraint to mimic portrait
-        const portraitWidth = window.innerHeight; // Height becomes width
-        const portraitHeight = window.innerWidth; // Width becomes height
+        const portraitWidth = Math.min(window.innerWidth, window.innerHeight); // Use smaller dimension
         body.style.width = `${portraitWidth}px`;
-        body.style.height = `${portraitHeight}px`;
-        body.style.maxWidth = `${portraitWidth}px`;
-        body.style.maxHeight = `${portraitHeight}px`;
+        body.style.height = '100vh';
+        body.style.left = '50%';
+        body.style.transform = 'translateX(-50%)';
         iframe.style.width = `${portraitWidth}px`;
-        iframe.style.height = `${portraitHeight}px`;
+        iframe.style.height = '100%';
     } else {
-        // In portrait, use normal dimensions
         body.style.width = '100vw';
         body.style.height = '100vh';
+        body.style.left = '0';
+        body.style.transform = 'none';
         iframe.style.width = '100%';
         iframe.style.height = '100%';
     }
 }
 
-// Run on load
-window.addEventListener('load', enforcePortrait);
-// Run on resize or orientation change
+// Check if running in standalone mode
+function isStandalone() {
+    return window.matchMedia('(display-mode: standalone)').matches || 
+           ('standalone' in window.navigator && window.navigator.standalone);
+}
+
+// Try to lock orientation (works in standalone mode on iOS 16.4+)
+function lockOrientation() {
+    if (screen.orientation && screen.orientation.lock && isStandalone()) {
+        screen.orientation.lock('portrait-primary')
+            .then(() => console.log('Locked to portrait'))
+            .catch(err => console.error('Orientation lock failed:', err));
+    } else if (!isStandalone()) {
+        console.log('Orientation lock only works in standalone mode on iOS');
+        // Encourage installation if not standalone
+        encourageStandalone();
+    }
+}
+
+// Encourage PWA installation if not standalone
+function encourageStandalone() {
+    const iosBanner = document.getElementById('ios-install-banner');
+    if (/iPhone|iPad|iPod/i.test(navigator.userAgent) && !isStandalone()) {
+        iosBanner.style.display = 'block'; // Show iOS install prompt
+    }
+}
+
+// Run on load and events
+window.addEventListener('load', () => {
+    enforcePortrait();
+    lockOrientation();
+    encourageStandalone();
+});
 window.addEventListener('resize', enforcePortrait);
-window.addEventListener('orientationchange', enforcePortrait);
+window.addEventListener('orientationchange', () => {
+    enforcePortrait();
+    lockOrientation();
+});
 
 // Replace your existing resizeIframe function
 function resizeIframe() {
-    enforcePortrait(); // Call the new function instead
+    enforcePortrait();
 }
     </script>
 </body>
