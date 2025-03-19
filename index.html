@@ -736,11 +736,11 @@ function promptForPermission() {
                 transform: translateX(-50%);
                 background: #478fdf;
                 color: white;
-                padding: 7px 7px;
+                padding: 5px 5px;
                 border-radius: 5px;
                 box-shadow: 0 2px 5px rgba(0,0,0,0.2);
                 z-index: 1002;
-                font-family: Arial, sans-serif;
+                // font-family: Arial, sans-serif;
                 animation: fade-in 0.3s ease-in-out;
             `;
             successDiv.textContent = message;
@@ -748,7 +748,7 @@ function promptForPermission() {
             setTimeout(() => {
                 successDiv.style.animation = 'fade-out 0.3s ease-in-out';
                 setTimeout(() => successDiv.remove(), 300);
-            }, 3000);
+            }, 7000);
         }
 
         // Call the function when the page is fully loaded
