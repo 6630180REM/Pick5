@@ -177,7 +177,7 @@
 
     <div id="install-banner">
         <p style="margin: 5px;">Add to Home Screen for the best experience</p>
-        <button id="install-button">Install</button>
+        <button id="install-button">Add</button>
         <button id="dismiss-button">Dismiss</button>
     </div>
 
@@ -803,34 +803,87 @@ function promptForPermission() {
         });
 
         // Detect iOS
+<div id="install-banner" style="display: none;">
+    <p style="margin: 5px;">Add to Home Screen for the best experience</p>
+    <button id="install-button">Add</button>
+    <button id="dismiss-button">Dismiss</button>
+</div>
+<div id="ios-install-banner" style="display: none;">
+    <p style="margin: 5px;">Tap the Share icon below, then select "Add to Home Screen"</p>
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAvElEQVR4nO2SMQrCQBBFXwW9gqW9gIJ7BXuL3UN+gP0K9gqaXUIHQcTeoqCJiISJTMzM7MzsTBO4Ae/AKZzAp3iPb8ANnMMVvMUMvMMQeIBrOIJbeIBfOIBHOIJr+IBXeIBneIYX+IJXeIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBneIJn+IJHeIJX+IBம
+
+<!-- Base64 encoded image of the Share icon for iOS -->
+</div>
+
 function isIOS() {
     return /iPhone|iPad|iPod/i.test(navigator.userAgent);
 }
 
-// Show iOS-specific instructions
-function showIOSInstallInstructions() {
-    if (isIOS() && !window.matchMedia('(display-mode: standalone)').matches) {
-        const iosBanner = document.createElement('div');
-        iosBanner.id = 'ios-install-banner';
-        iosBanner.style.cssText = 'position: fixed; bottom: 10px; left: 10px; right: 10px; background: #f0f0f0; padding: 10px; text-align: center;';
-        iosBanner.innerHTML = `
-            <p style="margin: 5px;">For the best experience, tap the Share icon and select "Add to Home Screen".</p>
-            <button onclick="this.parentElement.remove()">Dismiss</button>
-        `;
-        document.body.appendChild(iosBanner);
-    }
+function isAndroid() {
+    return /Android/i.test(navigator.userAgent);
 }
 
-// Run on page load
-document.addEventListener('DOMContentLoaded', () => {
-    showIOSInstallInstructions();
-});
+// Check if app is already installed as standalone
+function isStandalone() {
+    return window.matchMedia('(display-mode: standalone)').matches;
+}
 
-// Existing beforeinstallprompt logic
-window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault();
-    deferredPrompt = e;
-    installBanner.style.display = 'block';
+// Handle install logic
+let deferredPrompt;
+
+function setupInstallPrompt() {
+    const installBanner = document.getElementById('install-banner');
+    const iosInstallBanner = document.getElementById('ios-install-banner');
+    const installButton = document.getElementById('install-button');
+    const dismissButton = document.getElementById('dismiss-button');
+
+    // If already installed, hide banners
+    if (isStandalone()) {
+        installBanner.style.display = 'none';
+        iosInstallBanner.style.display = 'none';
+        return;
+    }
+
+    // Platform-specific handling
+    if (isIOS()) {
+        iosInstallBanner.style.display = 'block';
+    } else if (isAndroid() || !isIOS()) {
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            installBanner.style.display = 'block';
+        });
+    }
+
+    // Install button click for Android/PC
+    installButton.addEventListener('click', () => {
+        if (deferredPrompt) {
+            installBanner.style.display = 'none';
+            deferredPrompt.prompt();
+            deferredPrompt.userChoice.then((choiceResult) => {
+                if (choiceResult.outcome === 'accepted') {
+                    console.log('User accepted the install prompt');
+                } else {
+                    console.log('User dismissed the install prompt');
+                }
+                deferredPrompt = null;
+            });
+        }
+    });
+
+    // Dismiss buttons
+    dismissButton.addEventListener('click', () => {
+        installBanner.style.display = 'none';
+    });
+
+    iosInstallBanner.querySelector('button')?.addEventListener('click', () => {
+        iosInstallBanner.style.display = 'none';
+    });
+}
+
+// Run when page loads
+document.addEventListener('DOMContentLoaded', () => {
+    setupInstallPrompt();
 });
         
 
