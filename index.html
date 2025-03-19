@@ -69,18 +69,20 @@
         #install-banner {
             display: none;
             position: fixed;
-            bottom: 0;
+            margin: 5px;
+            border: 2px solid rgb(71, 143, 223);
+            background: rgba(0, 0, 0, 0.85);
+            bottom: 1px;
             left: 0;
             right: 0;
-            background-color: #333;
             color: white;
             text-align: center;
-            padding: 10px;
-            box-shadow: 0 -2px 5px rgba(0,0,0,0.2);
+            padding: 5px;
+            box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2);
             z-index: 1000;
         }
         #install-banner button {
-            background-color: #4CAF50;
+            background-color: #478fdf;
             border: none;
             color: white;
             padding: 8px 16px;
@@ -161,7 +163,7 @@
     </div>
 
     <div id="install-banner">
-        <p>Add to Home Screen for the best experience</p>
+        <p style="margin: 5px;">Add to Home Screen for the best experience</p>
         <button id="install-button">Install</button>
         <button id="dismiss-button">Dismiss</button>
     </div>
@@ -403,15 +405,15 @@ function checkStorageAvailability() {
                         transform: translate(-50%, 50%);
                         background: rgba(0, 0, 0, 0.85);
                         color: white;
-                        padding: 20px 15px;
+                        padding: 8px 8px;
                         border-radius: 10px;
-                        box-shadow: 0 10px 13px rgba(0, 0, 0, 0.9);
+                        box-shadow: rgba(0, 0, 0, 0.9) 0px 10px 13px;
                         text-align: center;
                         z-index: 1001;
                         font-family: Arial, sans-serif;
                         max-width: 90%;
                         width: max-content;
-                        border: 2px solid #478fdf;
+                        border: 2px solid rgb(71, 143, 223);
                         animation: fade-in 0.5s ease-in-out;
                     `;
 
