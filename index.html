@@ -25,20 +25,51 @@
     <title>Joe's Pick 5</title>
     <style>
         html, body {
-            background-color: black !important;
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            width: 100%;
-            height: 100%;
-            font-family: Arial, sans-serif;
-            overscroll-behavior: none;
-        }
+    background-color: black !important;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw; /* Use viewport width */
+    height: 100vh; /* Use viewport height */
+    font-family: Arial, sans-serif;
+    overscroll-behavior: none;
+    /* Ensure content stays in portrait proportions */
+    max-width: 100vw;
+    max-height: 100vh;
+}
+
+iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: black;
+    /* Prevent iframe from resizing beyond portrait bounds */
+    max-width: 100%;
+    max-height: 100%;
+}
+
+/* Handle landscape by keeping portrait proportions */
+@media (orientation: landscape) {
+    html, body {
+        width: 100vh; /* Swap width/height to maintain portrait ratio */
+        height: 100vw;
+        transform: rotate(0deg); /* No rotation, keep upright */
+        margin: 0 auto; /* Center it */
+        left: 50%;
+        transform: translateX(-50%);
+    }
+    iframe {
+        width: 100%;
+        height: 100%;
+    }
+}
         * {
             -webkit-tap-highlight-color: transparent;
             -webkit-touch-callout: none;
@@ -53,19 +84,7 @@
         input, textarea {
             font-size: 16px !important;
         }
-        iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-            display: block;
-            overflow: auto;
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: black;
-        }
+        
         #install-banner {
             display: none;
             position: fixed;
@@ -911,6 +930,41 @@ function isStandalone() {
         window.addEventListener("resize", resizeIframe);
         window.addEventListener("load", resizeIframe);
         
+        // Force portrait layout on load and resize
+function enforcePortrait() {
+    const isLandscape = window.innerWidth > window.innerHeight;
+    const body = document.body;
+    const iframe = document.querySelector('iframe');
+
+    if (isLandscape) {
+        // In landscape, use height as the width constraint to mimic portrait
+        const portraitWidth = window.innerHeight; // Height becomes width
+        const portraitHeight = window.innerWidth; // Width becomes height
+        body.style.width = `${portraitWidth}px`;
+        body.style.height = `${portraitHeight}px`;
+        body.style.maxWidth = `${portraitWidth}px`;
+        body.style.maxHeight = `${portraitHeight}px`;
+        iframe.style.width = `${portraitWidth}px`;
+        iframe.style.height = `${portraitHeight}px`;
+    } else {
+        // In portrait, use normal dimensions
+        body.style.width = '100vw';
+        body.style.height = '100vh';
+        iframe.style.width = '100%';
+        iframe.style.height = '100%';
+    }
+}
+
+// Run on load
+window.addEventListener('load', enforcePortrait);
+// Run on resize or orientation change
+window.addEventListener('resize', enforcePortrait);
+window.addEventListener('orientationchange', enforcePortrait);
+
+// Replace your existing resizeIframe function
+function resizeIframe() {
+    enforcePortrait(); // Call the new function instead
+}
     </script>
 </body>
   </html>
