@@ -670,14 +670,30 @@ function promptForPermission() {
 
         // Skip timing check if recently reset
         if (!lastDismissed || (Date.now() - parseInt(lastDismissed)) > ONE_WEEK || !localStorage.getItem('fcmToken')) {
+            // Function to trigger the prompt
+            const triggerPrompt = () => {
+                clearTimeout(promptTimeout); // Clear the timeout if it hasn't fired yet
+                document.removeEventListener('click', userInteracted); // Remove click listener
+                setTimeout(createNotificationPrompt, 1000); // Show prompt after 1-second delay
+            };
+
+            // Set up click interaction
+            const userInteracted = () => {
+                console.log('User clicked, triggering prompt early');
+                triggerPrompt();
+            };
+
+            // Wait for either click or 10 seconds
+            document.addEventListener('click', userInteracted, { once: true });
+            const promptTimeout = setTimeout(() => {
+                console.log('10 seconds elapsed, triggering prompt');
+                document.removeEventListener('click', userInteracted); // Clean up click listener
+                triggerPrompt();
+            }, 10000); // 10 seconds
+
+            // Initial delay of 2 seconds before starting the click/10-second logic
             setTimeout(() => {
-                const userInteracted = () => {
-                    document.removeEventListener('scroll', userInteracted);
-                    document.removeEventListener('click', userInteracted);
-                    setTimeout(createNotificationPrompt, 1000);
-                };
-                document.addEventListener('scroll', userInteracted, { once: true });
-                document.addEventListener('click', userInteracted, { once: true });
+                console.log('Starting prompt wait period (click or 10 seconds)');
             }, 2000);
         }
     }
