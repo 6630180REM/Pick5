@@ -779,17 +779,19 @@ function promptForPermission() {
             const successDiv = document.createElement('div');
             successDiv.style.cssText = `
                 position: fixed;
-                top: 30px;
+                top: 50px;
                 width: fit-content;
+                min-width: 200px;
+                white-space: nowrap;
                 left: 50%;
                 transform: translateX(-50%);
-                background: #478fdf;
+                background: rgba(0, 0, 0, 0.85);
+                border: 1px solid #478fdf;
                 color: white;
-                padding: 5px 5px;
+                padding: 3px 5px;
                 border-radius: 5px;
                 box-shadow: 0 2px 5px rgba(0,0,0,0.2);
                 z-index: 1002;
-                // font-family: Arial, sans-serif;
                 animation: fade-in 0.3s ease-in-out;
             `;
             successDiv.textContent = message;
