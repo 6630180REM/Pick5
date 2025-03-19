@@ -212,18 +212,18 @@
     </div>
 
 <div id="ios-install-banner" style="display: none; position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #f5f5f5; color: #333; padding: 10px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.2); z-index: 1001; text-align: left; max-width: 90%; font-family: Arial, sans-serif;">
-<button id="ios-install-close" style="position: absolute; top: 5px; right: 5px; background: #478fdf; border: 1px solid black; width: 24px; height: 24px; font-size: 20px; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0; line-height: 1; border-radius: 5px;">X</button>        
+    <button id="ios-install-close" style="position: absolute; top: 5px; right: 5px; background: #478fdf; border: 1px solid black; width: 24px; height: 24px; font-size: 20px; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0; line-height: 1; border-radius: 5px;">✕</button>
     <h3 style="margin: 0 0 10px 0; font-size: 18px; font-weight: bold; display: flex; align-items: center;">
-            <img src="https://raw.githubusercontent.com/6630180REM/Pick5/refs/heads/main/Pick5Logo.png" alt="Joe's Pick 5 Logo" style="width: 30px; height: 30px; margin-right: 8px; vertical-align: middle;">Install 'Pick 5' on Your Device.
-        </h3>
-        <p style="margin: 0 0 10px 0; font-size: 14px;">To install this as an app on your device, follow the below instructions.</p>
-        <p style="margin: 5px 0; font-size: 14px;">1. Tap on <img src="https://static-00.iconduck.com/assets.00/ios-share-icon-1490x2048-h3vjhu9m.png" alt="Share icon" style="width: 16px; height: 16px; object-fit: contain;vertical-align: middle;"></p>
-        <p style="margin: 5px 0; font-size: 14px;">2. Select 'Add to Home Screen'</p>
-        <p style="margin: 5px 0; font-size: 14px;">3. Click 'Add'</p>
-<!--         <div style="display: flex; justify-content: flex-end; margin-top: 0px;">
-            <button id="ios-install-dismiss" style="background: #478fdf;border: none;color: white; padding: 5px 12px;text-align: center;text-decoration: none;display: inline-block;font-size: 16px;margin: 4px 2px;cursor: pointer;border-radius: 4px;">Dismiss</button>
-        </div> -->
-    </div>
+        <img src="https://raw.githubusercontent.com/6630180REM/Pick5/refs/heads/main/Pick5Logo.png" alt="Joe's Pick 5 Logo" style="width: 30px; height: 30px; margin-right: 8px; vertical-align: middle;">Install 'Pick 5' on Your Device.
+    </h3>
+    <p style="margin: 0 0 10px 0; font-size: 14px;">To install this as an app on your device, follow the below instructions.</p>
+    <p style="margin: 5px 0; font-size: 14px;">1. Tap on <img src="https://static-00.iconduck.com/assets.00/ios-share-icon-1490x2048-h3vjhu9m.png" alt="Share icon" style="width: 16px; height: 16px; object-fit: contain; vertical-align: middle;"></p>
+    <p style="margin: 5px 0; font-size: 14px;">2. Select 'Add to Home Screen'</p>
+    <p style="margin: 5px 0; font-size: 14px;">3. Click 'Add'</p>
+    <!-- <div style="display: flex; justify-content: flex-end; margin-top: 0px;">
+        <button id="ios-install-dismiss" style="background: #478fdf;border: none;color: white; padding: 5px 12px;text-align: center;text-decoration: none;display: inline-block;font-size: 16px;margin: 4px 2px;cursor: pointer;border-radius: 4px;">Dismiss</button>
+    </div> -->
+</div>
 
     <iframe frameborder="0" scrolling="yes" allowfullscreen="yes" src="https://script.google.com/macros/s/AKfycbwuZM7KGKnS7jnpM2YN9W_AgTMqA0qJGw99K3MIUNxzI1tnh3YK76AhgeCfh2Wc7pTd/exec"></iframe>
 
@@ -833,17 +833,16 @@ function promptForPermission() {
         });
 
 
-
 function isAndroid() {
     return /Android/i.test(navigator.userAgent);
 }
+
 // Updated setupInstallPrompt function
 function setupInstallPrompt() {
     const installBanner = document.getElementById('install-banner');
     const iosInstallBanner = document.getElementById('ios-install-banner');
     const installButton = document.getElementById('install-button');
     const dismissButton = document.getElementById('dismiss-button');
-    const iosDismissButton = document.getElementById('ios-install-dismiss');
     const iosCloseButton = document.getElementById('ios-install-close');
 
     // If already installed, hide both banners
@@ -855,12 +854,7 @@ function setupInstallPrompt() {
 
     // Platform-specific handling
     if (isIOS()) {
-        iosInstallBanner.style.display = 'block'; // Show iOS banner with instructions and Dismiss
-
-        // Dismiss button: Hide the banner
-        iosDismissButton.addEventListener('click', () => {
-            iosInstallBanner.style.display = 'none';
-        });
+        iosInstallBanner.style.display = 'block'; // Show iOS banner with instructions
 
         // Close button (X): Hide the banner
         iosCloseButton.addEventListener('click', () => {
