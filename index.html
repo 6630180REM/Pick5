@@ -211,10 +211,16 @@
         <button id="dismiss-button">Dismiss</button>
     </div>
 
-<div id="ios-install-banner" style="display: none; position: fixed; bottom: 10px; left: 50%; transform: translateX(-50%); background: #478fdf; color: white; padding: 10px; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); z-index: 1001; text-align: center;">
-        <p style="margin: 5px;">Tap 'Add' to install this app</p>
-        <button id="ios-install-add" style="background: white; color: #478fdf; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; margin-right: 10px;">Add</button>
-        <button id="ios-install-dismiss" style="background: transparent; color: white; border: 1px solid white; padding: 5px 10px; border-radius: 4px; cursor: pointer;">Dismiss</button>
+<div id="ios-install-banner" style="display: none; position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #f5f5f5; color: #333; padding: 15px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.2); z-index: 1001; text-align: left; max-width: 90%; font-family: Arial, sans-serif;">
+        <button id="ios-install-close" style="position: absolute; top: 10px; right: 10px; background: none; border: none; font-size: 18px; color: #666; cursor: pointer;">✕</button>
+        <h3 style="margin: 0 0 10px 0; font-size: 18px; font-weight: bold;">Install Joe's Pick 5</h3>
+        <p style="margin: 0 0 10px 0; font-size: 14px;">Install the app on your device to easily access it anytime. No app store. No download. No hassle.</p>
+        <p style="margin: 5px 0; font-size: 14px;">1. Tap on <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAvklEQVR4nK2SwQ2DMAxFXwVbgQvYCrbgHsFe4QJ+gHoFba+g2SU0EAQTe4uCJiISJjI5MzszO9MEbsA78Apn8Cne4xtwA+dwBW8xA+8wBB7gGo7gFh7gFw7gEY7gGj7gFR7gGZ7hBb7gFR7gmb7gEZ7gFT7gGZ7gEZ7gFT7gGZ7gEZ7gFT7gGZ7gEZ7gFT7gGZ7gEZ7gFT7gGZ7gEZ7gFT7gGZ7gEZ7gFT7gGZ7gEZ7gFT7gGZ7gEZ7gFT7gGZ7gEZ7gFT7gGZ7gEZ7gFT7gAAAABJRU5ErkJggg==" alt="Share icon" style="width: 16px; vertical-align: middle;"></p>
+        <p style="margin: 5px 0; font-size: 14px;">2. Select 'Add to Home Screen'</p>
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px;">
+            <button id="ios-install-add" style="background: #007aff; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold;">Add</button>
+            <button id="ios-install-dismiss" style="background: none; color: #666; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">Dismiss</button>
+        </div>
     </div>
 
     <iframe frameborder="0" scrolling="yes" allowfullscreen="yes" src="https://script.google.com/macros/s/AKfycbwuZM7KGKnS7jnpM2YN9W_AgTMqA0qJGw99K3MIUNxzI1tnh3YK76AhgeCfh2Wc7pTd/exec"></iframe>
@@ -836,6 +842,7 @@ function setupInstallPrompt() {
     const dismissButton = document.getElementById('dismiss-button');
     const iosAddButton = document.getElementById('ios-install-add');
     const iosDismissButton = document.getElementById('ios-install-dismiss');
+    const iosCloseButton = document.getElementById('ios-install-close');
 
     // If already installed, hide both banners
     if (isStandalone()) {
@@ -857,6 +864,11 @@ function setupInstallPrompt() {
 
         // Dismiss button: Hide the banner
         iosDismissButton.addEventListener('click', () => {
+            iosInstallBanner.style.display = 'none';
+        });
+
+        // Close button (X): Hide the banner
+        iosCloseButton.addEventListener('click', () => {
             iosInstallBanner.style.display = 'none';
         });
     } else {
