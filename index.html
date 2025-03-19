@@ -802,10 +802,9 @@ function promptForPermission() {
             installBanner.style.display = 'none';
         });
 
-        // Detect iOS
-<div id="install-banner" style="display: none;">
+        <div id="install-banner" style="display: none;">
     <p style="margin: 5px;">Add to Home Screen for the best experience</p>
-    <button id="install-button">Add</button>
+    <button id="install-button">Install</button>
     <button id="dismiss-button">Dismiss</button>
 </div>
 <div id="ios-install-banner" style="display: none;">
@@ -815,6 +814,8 @@ function promptForPermission() {
 <!-- Base64 encoded image of the Share icon for iOS -->
 </div>
 
+<script>
+// Detect platform
 function isIOS() {
     return /iPhone|iPad|iPod/i.test(navigator.userAgent);
 }
@@ -885,7 +886,6 @@ function setupInstallPrompt() {
 document.addEventListener('DOMContentLoaded', () => {
     setupInstallPrompt();
 });
-        
 
         // Resize iframe
         function resizeIframe() {
