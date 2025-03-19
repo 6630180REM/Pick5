@@ -224,7 +224,7 @@
     </h3>
     <p style="margin: 0 0 10px 0; font-size: 14px;">To install this as an app on your device, follow the below instructions.</p>
     <p style="margin: 5px 0; font-size: 14px;">1. Tap on <img src="https://static-00.iconduck.com/assets.00/ios-share-icon-1490x2048-h3vjhu9m.png" alt="Share icon" style="width: 16px; height: 16px; object-fit: contain; vertical-align: middle;"></p>
-    <p style="margin: 5px 0; font-size: 14px;">2. Select 'Add to Home Screen'</p>
+    <p style="margin: 5px 0; font-size: 14px;">2. Select 'Add to Home Screen' <img src="https://static-00.iconduck.com/assets.00/plus-square-icon-2048x2048-h144q2yx.png" alt="Share icon" style="width: 16px; height: 16px; object-fit: contain; vertical-align: middle;"></p>
     <p style="margin: 5px 0; font-size: 14px;">3. Click 'Add'</p>
     <!-- <div style="display: flex; justify-content: flex-end; margin-top: 0px;">
         <button id="ios-install-dismiss" style="background: #478fdf;border: none;color: white; padding: 5px 12px;text-align: center;text-decoration: none;display: inline-block;font-size: 16px;margin: 4px 2px;cursor: pointer;border-radius: 4px;">Dismiss</button>
@@ -785,7 +785,7 @@ function promptForPermission() {
                 white-space: nowrap;
                 left: 50%;
                 transform: translateX(-50%);
-                background-color: rgba(0, 0, 0, 0.85);
+                background-color: rgba(0, 0, 0, 0.80);
                 border: 1px solid #478fdf;
                 color: white;
                 padding: 3px 5px;
@@ -798,8 +798,8 @@ function promptForPermission() {
             document.body.appendChild(successDiv);
             setTimeout(() => {
                 successDiv.style.animation = 'fade-out 0.3s ease-in-out';
-                setTimeout(() => successDiv.remove(), 300);
-            }, 7000);
+                setTimeout(() => successDiv.remove(), 500);
+            }, 9000);
         }
 
         // Call the function when the page is fully loaded
