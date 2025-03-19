@@ -211,15 +211,11 @@
         <button id="dismiss-button">Dismiss</button>
     </div>
 
-<!--             <div id="install-banner" style="display: none;">
-    <p style="margin: 5px;">Add to Home Screen for the best experience</p>
-    <button id="install-button">Install</button>
-    <button id="dismiss-button">Dismiss</button>
-</div> -->
-<div id="ios-install-banner">
-    <p style="margin: 5px;">Tap the Share icon, then select 'Add to Home Screen'</p>
-    <button onclick="this.parentElement.style.display='none'">Dismiss</button>
-</div>
+<div id="ios-install-banner" style="display: none; position: fixed; bottom: 10px; left: 50%; transform: translateX(-50%); background: #478fdf; color: white; padding: 10px; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); z-index: 1001; text-align: center;">
+        <p style="margin: 5px;">Tap 'Add' to install this app</p>
+        <button id="ios-install-add" style="background: white; color: #478fdf; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; margin-right: 10px;">Add</button>
+        <button id="ios-install-dismiss" style="background: transparent; color: white; border: 1px solid white; padding: 5px 10px; border-radius: 4px; cursor: pointer;">Dismiss</button>
+    </div>
 
     <iframe frameborder="0" scrolling="yes" allowfullscreen="yes" src="https://script.google.com/macros/s/AKfycbwuZM7KGKnS7jnpM2YN9W_AgTMqA0qJGw99K3MIUNxzI1tnh3YK76AhgeCfh2Wc7pTd/exec"></iframe>
 
@@ -828,28 +824,20 @@ function promptForPermission() {
             installBanner.style.display = 'none';
         });
 
-// Detect platform
-function isIOS() {
-    return /iPhone|iPad|iPod/i.test(navigator.userAgent);
-}
+
 
 function isAndroid() {
     return /Android/i.test(navigator.userAgent);
 }
-
-// Check if app is already installed as standalone
-function isStandalone() {
-    return window.matchMedia('(display-mode: standalone)').matches;
-}
-
-// Handle install logic
 function setupInstallPrompt() {
     const installBanner = document.getElementById('install-banner');
     const iosInstallBanner = document.getElementById('ios-install-banner');
     const installButton = document.getElementById('install-button');
     const dismissButton = document.getElementById('dismiss-button');
+    const iosAddButton = document.getElementById('ios-install-add');
+    const iosDismissButton = document.getElementById('ios-install-dismiss');
 
-    // If already installed, hide banners
+    // If already installed, hide both banners
     if (isStandalone()) {
         installBanner.style.display = 'none';
         iosInstallBanner.style.display = 'none';
@@ -858,8 +846,21 @@ function setupInstallPrompt() {
 
     // Platform-specific handling
     if (isIOS()) {
-        iosInstallBanner.style.display = 'block';
-    } else if (isAndroid() || !isIOS()) {
+        iosInstallBanner.style.display = 'block'; // Show iOS banner with Add and Dismiss
+
+        // Add button: Show instructions since direct install isn’t possible
+        iosAddButton.addEventListener('click', () => {
+            alert("To install Joe's Pick 5:\n1. Tap the Share icon (square with an upward arrow) at the bottom of Safari.\n2. Scroll down and select 'Add to Home Screen'.\n3. Tap 'Add' in the top-right corner.");
+            // Optionally dismiss the banner after showing instructions
+            // iosInstallBanner.style.display = 'none';
+        });
+
+        // Dismiss button: Hide the banner
+        iosDismissButton.addEventListener('click', () => {
+            iosInstallBanner.style.display = 'none';
+        });
+    } else {
+        // Android/PC: Show install banner when beforeinstallprompt fires
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
@@ -867,7 +868,7 @@ function setupInstallPrompt() {
         });
     }
 
-    // Install button click for Android/PC
+    // Install button for Android/PC
     installButton.addEventListener('click', () => {
         if (deferredPrompt) {
             installBanner.style.display = 'none';
@@ -883,13 +884,9 @@ function setupInstallPrompt() {
         }
     });
 
-    // Dismiss buttons
+    // Dismiss button for Android/PC banner
     dismissButton.addEventListener('click', () => {
         installBanner.style.display = 'none';
-    });
-
-    iosInstallBanner.querySelector('button')?.addEventListener('click', () => {
-        iosInstallBanner.style.display = 'none';
     });
 }
 
@@ -897,6 +894,15 @@ function setupInstallPrompt() {
 document.addEventListener('DOMContentLoaded', () => {
     setupInstallPrompt();
 });
+
+// Platform detection functions (unchanged)
+function isIOS() {
+    return /iPhone|iPad|iPod/i.test(navigator.userAgent);
+}
+
+function isStandalone() {
+    return window.matchMedia('(display-mode: standalone)').matches;
+}
 
         // Resize iframe
         function resizeIframe() {
