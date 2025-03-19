@@ -443,22 +443,30 @@
                             console.log(`Cleaned up ${sortedDocs.length - 1} duplicate device records`);
                         }
                         
-                        // Also check for any device with this token that isn't the current device
-                        const tokenQuery = await db.collection('devices')
+                        // Get all devices with this token
+                        const allDevicesWithToken = await db.collection('devices')
                             .where(`activeTokens.${currentToken}`, '==', true)
-                            .where('deviceId', '!=', deviceId)
                             .get();
-                            
-                        if (!tokenQuery.empty) {
+                        
+                        if (!allDevicesWithToken.empty) {
                             const batch = db.batch();
-                            tokenQuery.forEach(doc => {
-                                // Deactivate this token on other devices
-                                batch.update(doc.ref, {
-                                    [`activeTokens.${currentToken}`]: false
-                                });
+                            let updateCount = 0;
+                            
+                            allDevicesWithToken.forEach(doc => {
+                                const data = doc.data();
+                                // Only update devices that aren't the current one
+                                if (data.deviceId !== deviceId) {
+                                    batch.update(doc.ref, {
+                                        [`activeTokens.${currentToken}`]: false
+                                    });
+                                    updateCount++;
+                                }
                             });
-                            await batch.commit();
-                            console.log(`Deactivated current token on ${tokenQuery.size} other devices`);
+                            
+                            if (updateCount > 0) {
+                                await batch.commit();
+                                console.log(`Deactivated current token on ${updateCount} other devices`);
+                            }
                         }
                     } catch (error) {
                         console.error('Error cleaning up tokens:', error);
