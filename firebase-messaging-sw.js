@@ -116,5 +116,6 @@ self.addEventListener('activate', function(event) {
 
 // Service worker installation
 self.addEventListener('install', function(event) {
-    console.log('Service worker installed');
-    self.skipWaiting(); // Skip waiting to activate immediately
+  console.log('Service worker installed');
+  self.skipWaiting();
+});
