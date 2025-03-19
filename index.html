@@ -610,82 +610,76 @@ function checkStorageAvailability() {
 
                 // UPDATED: Check and show notifications
                 function checkAndShowNotifications() {
-                    // Check if user already has permissions
-                    if (Notification.permission === 'granted') {
-                        // Permission granted, get/verify token
-                        const storedToken = localStorage.getItem('fcmToken');
-                        const storedDeviceId = localStorage.getItem('deviceId');
-                        
-                        if (storedToken) {
-                            // Verify token is still valid by attempting to get current token
-                            messaging.getToken().then(currentToken => {
-                                if (currentToken !== storedToken) {
-                                    console.log('Token has changed, updating...');
-                                    saveTokenToFirestore(currentToken);
-                                } else {
-                                    console.log('Token still valid');
-                                    // Verify this token is marked as active in Firestore
-                                    if (storedDeviceId) {
-                                        db.collection('devices')
-                                            .where('deviceId', '==', storedDeviceId)
-                                            .get()
-                                            .then(snapshot => {
-                                                if (!snapshot.empty) {
-                                                    const doc = snapshot.docs[0];
-                                                    const data = doc.data();
-                                                    
-                                                    if (!data.activeTokens || !data.activeTokens[currentToken]) {
-                                                        // Token exists but not marked as active
-                                                        console.log('Token exists but not active, reactivating...');
-                                                        saveTokenToFirestore(currentToken);
-                                                    }
-                                                }
-                                            })
-                                            .catch(err => console.error('Error checking token status:', err));
+    console.log('Checking notification state...');
+    console.log('Current permission:', Notification.permission);
+
+    // Always prompt after reset, regardless of previous state
+    const wasReset = !localStorage.getItem('fcmToken') && !localStorage.getItem('notificationPromptDismissed');
+    
+    if (Notification.permission === 'granted' && !wasReset) {
+        // Normal flow: verify token
+        const storedToken = localStorage.getItem('fcmToken');
+        const storedDeviceId = localStorage.getItem('deviceId');
+        
+        if (storedToken) {
+            messaging.getToken().then(currentToken => {
+                if (currentToken !== storedToken) {
+                    console.log('Token has changed, updating...');
+                    saveTokenToFirestore(currentToken);
+                } else {
+                    console.log('Token still valid');
+                    if (storedDeviceId) {
+                        db.collection('devices')
+                            .where('deviceId', '==', storedDeviceId)
+                            .get()
+                            .then(snapshot => {
+                                if (!snapshot.empty) {
+                                    const doc = snapshot.docs[0];
+                                    const data = doc.data();
+                                    if (!data.activeTokens || !data.activeTokens[currentToken]) {
+                                        console.log('Token exists but not active, reactivating...');
+                                        saveTokenToFirestore(currentToken);
                                     }
                                 }
-                            }).catch(error => {
-                                console.error('Error verifying token:', error);
-                                // Token invalid, request a new one
-                                requestPermission();
-                            });
-                        } else {
-                            // No stored token but permission granted, get a new token
-                            requestPermission();
-                        }
-                    } else {
-                        // No permission yet, show prompt based on timing
-                        promptForPermission();
+                            })
+                            .catch(err => console.error('Error checking token status:', err));
                     }
                 }
+            }).catch(error => {
+                console.error('Error verifying token:', error);
+                requestPermission();
+            });
+        } else {
+            requestPermission();
+        }
+    } else {
+        // Force prompt after reset or if permission is default/denied
+        promptForPermission();
+    }
+}
 
-                function promptForPermission() {
-                    if (Notification.permission === 'granted') {
-                        // Permission already granted, get token
-                        refreshToken();
-                    } else if (Notification.permission === 'denied') {
-                        // Permission explicitly denied
-                        console.log('Notifications already denied');
-                    } else {
-                        // Permission not decided yet
-                        const lastDismissed = localStorage.getItem('notificationPromptDismissed');
-                        const ONE_WEEK = 7 * 24 * 60 * 60 * 1000;
+function promptForPermission() {
+    console.log('Prompting for permission...');
+    if (Notification.permission === 'denied') {
+        console.log('Notifications already denied');
+    } else {
+        const lastDismissed = localStorage.getItem('notificationPromptDismissed');
+        const ONE_WEEK = 7 * 24 * 60 * 60 * 1000;
 
-                        if (!lastDismissed || (Date.now() - parseInt(lastDismissed)) > ONE_WEEK) {
-                            // Show prompt after user interaction
-                            setTimeout(() => {
-                                const userInteracted = () => {
-                                    document.removeEventListener('scroll', userInteracted);
-                                    document.removeEventListener('click', userInteracted);
-                                    setTimeout(createNotificationPrompt, 1000);
-                                };
-
-                                document.addEventListener('scroll', userInteracted, { once: true });
-                                document.addEventListener('click', userInteracted, { once: true });
-                            }, 2000);
-                        }
-                    }
-                }
+        // Skip timing check if recently reset
+        if (!lastDismissed || (Date.now() - parseInt(lastDismissed)) > ONE_WEEK || !localStorage.getItem('fcmToken')) {
+            setTimeout(() => {
+                const userInteracted = () => {
+                    document.removeEventListener('scroll', userInteracted);
+                    document.removeEventListener('click', userInteracted);
+                    setTimeout(createNotificationPrompt, 1000);
+                };
+                document.addEventListener('scroll', userInteracted, { once: true });
+                document.addEventListener('click', userInteracted, { once: true });
+            }, 2000);
+        }
+    }
+}
 
                 // Add styles for animations
                 const styleSheet = document.createElement("style");
