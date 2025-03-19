@@ -191,80 +191,80 @@
     let messaging;
     let db;
 
-                        function resetNotifications() {
-                    console.log('Resetting notifications...');
+async function resetNotifications() {
+    if (!checkStorageAvailability()) {
+        showSuccessMessage('Storage unavailable. Please check browser settings.');
+        return;
+    }
 
-                    // First unregister service workers
-                    navigator.serviceWorker.getRegistrations().then(async registrations => {
-                        for (let registration of registrations) {
-                            await registration.unregister();
-                            console.log('Service worker unregistered');
-                        }
-                        
-                        // After service workers are unregistered
-                        if (messaging) {
-                            try {
-                                const token = await messaging.getToken();
-                                if (token) {
-                                    // Delete token from FCM
-                                    await messaging.deleteToken();
-                                    console.log('Token deleted from FCM');
-                                    
-                                    // Get deviceId 
-                                    const deviceId = localStorage.getItem('deviceId');
-                                    if (deviceId) {
-                                        // Update token status in Firestore
-                                        const snapshot = await db.collection('devices')
-                                            .where('deviceId', '==', deviceId)
-                                            .get();
-                                            
-                                        if (!snapshot.empty) {
-                                            const batch = db.batch();
-                                            snapshot.forEach(doc => {
-                                                const data = doc.data();
-                                                const updates = {};
-                                                
-                                                // Mark all tokens as inactive
-                                                if (data.activeTokens) {
-                                                    Object.keys(data.activeTokens).forEach(t => {
-                                                        updates[`activeTokens.${t}`] = false;
-                                                    });
-                                                    batch.update(doc.ref, updates);
-                                                }
-                                            });
-                                            await batch.commit();
-                                            console.log('All tokens marked inactive in Firestore');
-                                        }
-                                    }
-                                }
-                            } catch (err) {
-                                console.error('Error deleting token:', err);
-                            }
-                        }
-                        
-                        // Clear storage
-                        localStorage.removeItem('fcmToken');
-                        
-                        // Don't remove deviceId to maintain device identity
-                        // localStorage.removeItem('deviceId');
-                        
-                        // Reset notification prompt dismissal
-                        localStorage.removeItem('notificationPromptDismissed');
-                        
-                        // Show message based on notification permission status
-                        if (Notification.permission === 'denied') {
-                            showSuccessMessage('You have blocked notifications. Please enable them in your browser settings.');
-                        } else {
-                            showSuccessMessage('Notifications have been reset. You will receive a new prompt to enable notifications.');
-                            
-                            // Reinitialize after a short delay
-                            setTimeout(() => {
-                                console.log('Reinitializing Firebase and notifications...');
-                                setupFirebaseAndNotifications();
-                            }, 1500);
-                        }
+    console.log('Resetting notifications...');
+
+    try {
+        const registrations = await navigator.serviceWorker.getRegistrations();
+        for (let registration of registrations) {
+            await registration.unregister();
+            console.log('Service worker unregistered');
+        }
+        await new Promise(resolve => setTimeout(resolve, 1000)); // Delay
+
+        if (messaging) {
+            try {
+                const token = await messaging.getToken();
+                if (token) {
+                    await messaging.deleteToken().catch(err => {
+                        console.warn('Token deletion failed:', err);
                     });
+                    console.log('Token deleted from FCM');
+
+                    const deviceId = localStorage.getItem('deviceId');
+                    if (deviceId) {
+                        const snapshot = await db.collection('devices')
+                            .where('deviceId', '==', deviceId)
+                            .get();
+
+                        if (!snapshot.empty) {
+                            const batch = db.batch();
+                            snapshot.forEach(doc => {
+                                const data = doc.data();
+                                const updates = {};
+                                if (data.activeTokens) {
+                                    Object.keys(data.activeTokens).forEach(t => {
+                                        updates[`activeTokens.${t}`] = false;
+                                    });
+                                    batch.update(doc.ref, updates);
+                                }
+                            });
+                            await batch.commit();
+                            console.log('All tokens marked inactive in Firestore');
+                        }
+                    }
                 }
+            } catch (err) {
+                console.error('Error processing token:', err);
+            }
+        }
+
+        localStorage.removeItem('fcmToken');
+        localStorage.removeItem('notificationPromptDismissed');
+
+        if (Notification.permission === 'denied') {
+            showSuccessMessage('Notifications blocked. Enable in browser settings.');
+        } else {
+            showSuccessMessage('Notifications reset. You’ll be prompted again.');
+            setTimeout(() => {
+                console.log('Reinitializing Firebase...');
+                setupFirebaseAndNotifications();
+            }, 1500);
+        }
+    } catch (err) {
+        console.error('Reset failed:', err);
+        showSuccessMessage('Failed to reset notifications. Try again.');
+    }
+}
+
+function checkStorageAvailability() {
+    return !!(navigator.storage && window.indexedDB);
+}
         
         function setupFirebaseAndNotifications() {
             // Firebase Configuration
@@ -291,6 +291,7 @@
                 const swPath = window.location.pathname.includes('/Pick5/')
                     ? '/Pick5/firebase-messaging-sw.js'
                     : './firebase-messaging-sw.js';
+                console.log('Service worker path:', swPath);
 
                 console.log('Attempting to register service worker at:', swPath);
 
