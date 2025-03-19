@@ -802,6 +802,38 @@ function promptForPermission() {
             installBanner.style.display = 'none';
         });
 
+        // Detect iOS
+function isIOS() {
+    return /iPhone|iPad|iPod/i.test(navigator.userAgent);
+}
+
+// Show iOS-specific instructions
+function showIOSInstallInstructions() {
+    if (isIOS() && !window.matchMedia('(display-mode: standalone)').matches) {
+        const iosBanner = document.createElement('div');
+        iosBanner.id = 'ios-install-banner';
+        iosBanner.style.cssText = 'position: fixed; bottom: 10px; left: 10px; right: 10px; background: #f0f0f0; padding: 10px; text-align: center;';
+        iosBanner.innerHTML = `
+            <p style="margin: 5px;">For the best experience, tap the Share icon and select "Add to Home Screen".</p>
+            <button onclick="this.parentElement.remove()">Dismiss</button>
+        `;
+        document.body.appendChild(iosBanner);
+    }
+}
+
+// Run on page load
+document.addEventListener('DOMContentLoaded', () => {
+    showIOSInstallInstructions();
+});
+
+// Existing beforeinstallprompt logic
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    installBanner.style.display = 'block';
+});
+        
+
         // Resize iframe
         function resizeIframe() {
             var iframe = document.querySelector("iframe");
