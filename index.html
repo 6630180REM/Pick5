@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, orientation=portrait">
-    <meta name="apple-mobile-web-app-capable" content="yes">
+     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-title" content="Joe's Pick 5">
     <meta name="application-name" content="Joe's Pick 5">
@@ -24,34 +24,6 @@
 
     <title>Joe's Pick 5</title>
     <style>
-        html, body {
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background-color: black !important;
-    font-family: Arial, sans-serif;
-    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
-}
-
-iframe {
-    width: 100%;
-    height: 100%;
-    border: none;
-    display: block;
-    position: absolute;
-    top: 0;
-    left: 0;
-    background-color: black;
-    overflow: hidden; /* Prevent iframe from triggering scroll/rotation */
-}
-
-/* Force portrait layout in landscape */
-@media (orientation: landscape) {
         html, body {
             background-color: black !important;
             margin: 0;
@@ -213,7 +185,7 @@ iframe {
             0% {height: 0;}
             100% {height: 100%;}
         }
-   
+
 /*         @media (min-width: 1025px) {
     #install-banner, #ios-install-banner {
         display: none !important;
@@ -261,11 +233,11 @@ iframe {
 
     <iframe frameborder="0" scrolling="yes" allowfullscreen="yes" src="https://script.google.com/macros/s/AKfycbwuZM7KGKnS7jnpM2YN9W_AgTMqA0qJGw99K3MIUNxzI1tnh3YK76AhgeCfh2Wc7pTd/exec"></iframe>
 
-  
+
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-    
+
     <script>
     let messaging;
     let db;
@@ -368,7 +340,7 @@ function forceNotificationRePrompt() {
 function checkStorageAvailability() {
     return !!(navigator.storage && window.indexedDB);
 }
-        
+
         function setupFirebaseAndNotifications() {
             // Firebase Configuration
             const firebaseConfig = {
@@ -530,7 +502,7 @@ function checkStorageAvailability() {
 
                     // Generate a device identifier
                     const deviceId = localStorage.getItem('deviceId') || generateDeviceId();
-                    
+
                     // Store deviceId for future use
                     localStorage.setItem('deviceId', deviceId);
 
@@ -548,33 +520,33 @@ function checkStorageAvailability() {
                             const deviceQuery = await db.collection('devices')
                                             .where('deviceId', '==', deviceId)
                                             .get();
-                            
+
                             if (!deviceQuery.empty) {
                                 // Device exists in database
                                 const deviceDoc = deviceQuery.docs[0];
                                 const oldData = deviceDoc.data();
-                                
+
                                 // Prepare update data - critically, mark ALL tokens as inactive first
                                 const updateData = {
                                     lastActive: firebase.firestore.FieldValue.serverTimestamp(),
                                     userAgent: browserInfo.userAgent,
                                 };
-                                
+
                                 // Deactivate all existing tokens
                                 if (oldData.activeTokens) {
                                     Object.keys(oldData.activeTokens).forEach(oldToken => {
                                         updateData[`activeTokens.${oldToken}`] = false;
                                     });
                                 }
-                                
+
                                 // Then set only the current token as active
                                 updateData[`tokens.${browserInfo.name}`] = token;
                                 updateData[`activeTokens.${token}`] = true;
-                                
+
                                 // Update the device record
                                 await db.collection('devices').doc(deviceDoc.id).update(updateData);
                                 console.log('Device token updated successfully, old tokens deactivated');
-                                
+
                             } else {
                                 // New device, create a record
                                 await db.collection('devices').add({
@@ -591,7 +563,7 @@ function checkStorageAvailability() {
 
                             // Store token in local storage
                             localStorage.setItem('fcmToken', token);
-                            
+
                             // Clean up duplicate tokens in the system
                             await cleanupDuplicateTokens(token, deviceId);
 
@@ -606,7 +578,7 @@ function checkStorageAvailability() {
                             }
                         }
                     };
-                    
+
                     await attemptSave(1);
                 }
 
@@ -617,7 +589,7 @@ function checkStorageAvailability() {
                         const deviceQuery = await db.collection('devices')
                             .where('deviceId', '==', deviceId)
                             .get();
-                        
+
                         // Only keep the last device record, delete others
                         if (deviceQuery.size > 1) {
                             // Sort by lastActive timestamp (newest first)
@@ -626,7 +598,7 @@ function checkStorageAvailability() {
                                 const timeB = b.data().lastActive ? b.data().lastActive.toMillis() : 0;
                                 return timeB - timeA;
                             });
-                            
+
                             // Keep the first one (most recent), delete the rest
                             const batch = db.batch();
                             for (let i = 1; i < sortedDocs.length; i++) {
@@ -635,16 +607,16 @@ function checkStorageAvailability() {
                             await batch.commit();
                             console.log(`Cleaned up ${sortedDocs.length - 1} duplicate device records`);
                         }
-                        
+
                         // Get all devices with this token
                         const allDevicesWithToken = await db.collection('devices')
                             .where(`activeTokens.${currentToken}`, '==', true)
                             .get();
-                        
+
                         if (!allDevicesWithToken.empty) {
                             const batch = db.batch();
                             let updateCount = 0;
-                            
+
                             allDevicesWithToken.forEach(doc => {
                                 const data = doc.data();
                                 // Only update devices that aren't the current one
@@ -655,7 +627,7 @@ function checkStorageAvailability() {
                                     updateCount++;
                                 }
                             });
-                            
+
                             if (updateCount > 0) {
                                 await batch.commit();
                                 console.log(`Deactivated current token on ${updateCount} other devices`);
@@ -694,12 +666,12 @@ function checkStorageAvailability() {
 
     // Always prompt after reset, regardless of previous state
     const wasReset = !localStorage.getItem('fcmToken') && !localStorage.getItem('notificationPromptDismissed');
-    
+
     if (Notification.permission === 'granted' && !wasReset) {
         // Normal flow: verify token
         const storedToken = localStorage.getItem('fcmToken');
         const storedDeviceId = localStorage.getItem('deviceId');
-        
+
         if (storedToken) {
             messaging.getToken().then(currentToken => {
                 if (currentToken !== storedToken) {
@@ -850,7 +822,7 @@ function isDesktop() {
     const isLargeScreen = window.innerWidth > 1024;
     return isDesktopUA && isLargeScreen;
 }
-        
+
 function isAndroid() {
     return /Android/i.test(navigator.userAgent);
 }
@@ -939,47 +911,6 @@ function isStandalone() {
 
         window.addEventListener("resize", resizeIframe);
         window.addEventListener("load", resizeIframe);
-        
-        $(document).ready(function () {
-  function reorient(e) {
-    var portrait = (window.orientation % 180 == 0);
-    $("body > div").css("-webkit-transform", !portrait ? "rotate(-90deg)" : "");
-  }
-  window.onorientationchange = reorient;
-  window.setTimeout(reorient, 0);
-});
-
-// CSS 
-body > div { -webkit-transition: all 1s ease-in-out; }
-
-//-------------------------------------------------------------------------------------------------------
-// alternative approach (http://snook.ca/)
-// http://stackoverflow.com/questions/5298467/prevent-orientation-change-in-ios-safari
-
-window.addEventListener('onorientationchange', function () {
-    if (window.orientation == -90) {
-        document.getElementById('orient').className = 'orientright';
-    }
-    if (window.orientation == 90) {
-        document.getElementById('orient').className = 'orientleft';
-    }
-    if (window.orientation == 0) {
-        document.getElementById('orient').className = '';
-    }
-}, true);
-
-// CSS
-
-.orientleft #shell {
-    -webkit-transform: rotate(-90deg);
-    -webkit-transform-origin:160px 160px;
-}
-
-.orientright #shell {
-    -webkit-transform: rotate(90deg);
-    -webkit-transform-origin:230px 230px;
-} 
-        
     </script>
 </body>
   </html>
