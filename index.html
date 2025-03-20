@@ -381,31 +381,23 @@ function checkStorageAvailability() {
             messaging = firebase.messaging();
             db = firebase.firestore();
 
-            // Register service worker first
-            function getBasePath() {
-    // Get the directory part of the current path
-    const pathArray = window.location.pathname.split('/');
-    pathArray.pop(); // Remove the current file name or empty string
-    return pathArray.join('/') + '/';
-}
-
-// Inside your setupFirebaseAndNotifications function
 if ('serviceWorker' in navigator) {
-    const basePath = getBasePath();
-    const swPath = basePath + 'firebase-messaging-sw.js';
-    
-    console.log('Service worker path:', swPath);
-    console.log('Full URL:', window.location.origin + swPath);
+                const swPath = window.location.pathname.includes('/Pick5/')
+                    ? '/Pick5/firebase-messaging-sw.js'
+                    : './firebase-messaging-sw.js';
+                console.log('Service worker path:', swPath);
 
-    navigator.serviceWorker.register(swPath)
-        .then(registration => {
-            console.log('Service Worker registered with scope:', registration.scope);
-            initializeNotifications(registration);
-        })
-        .catch(error => {
-            console.error('Service Worker registration failed:', error.message);
-        });
-} else {
+                console.log('Attempting to register service worker at:', swPath);
+
+                navigator.serviceWorker.register(swPath)
+                    .then(registration => {
+                        console.log('Service Worker registered with scope:', registration.scope);
+                        initializeNotifications(registration);
+                    })
+                    .catch(error => {
+                        console.error('Service Worker registration failed:', error.message);
+                    });
+            } else {
                 console.log('Service workers not supported');
             }
 
