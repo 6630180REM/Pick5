@@ -913,49 +913,41 @@ function isStandalone() {
     return window.matchMedia('(display-mode: standalone)').matches;
 }
 
-let timeout; // Declare timeout outside the function to keep track of it
-
 function resizeIframe() {
-    var iframe = document.querySelector("iframe");
-    if (iframe) {
-        // Debounce the resize to prevent excessive updates
-        clearTimeout(timeout);
-        timeout = setTimeout(() => {
-            // Check orientation
-            if (window.matchMedia("(orientation: landscape)").matches) {
-                // Landscape mode: swap width and height
-                const height = window.innerWidth || document.documentElement.clientWidth || screen.width;
-                const width = window.innerHeight || document.documentElement.clientHeight || screen.height;
-            
-                iframe.style.height = height + "px";
-                iframe.style.width = width + "px";
-            } else {
-                // Portrait mode: use regular dimensions
-                const height = window.innerHeight || document.documentElement.clientHeight || screen.height;
-                const width = window.innerWidth || document.documentElement.clientWidth || screen.width;
-                
-                iframe.style.height = height + "px";
-                iframe.style.width = width + "px";
-            }
+    const iframe = document.querySelector("iframe");
+    if (!iframe) return; // Exit if no iframe exists
 
-            // Remove any potential scrollbars
-            iframe.style.border = "none";
-            iframe.style.margin = "0";
-            iframe.style.padding = "0";
-        }, 100);
-    }
+    // Get viewport dimensions
+    const viewportWidth = window.innerWidth || document.documentElement.clientWidth;
+    const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+
+    // Check orientation and swap dimensions if landscape
+    const isLandscape = window.matchMedia("(orientation: landscape)").matches;
+    iframe.style.width = (isLandscape ? viewportHeight : viewportWidth) + "px";
+    iframe.style.height = (isLandscape ? viewportWidth : viewportHeight) + "px";
+
+    // Ensure no borders or spacing
+    iframe.style.border = "none";
+    iframe.style.margin = "0";
+    iframe.style.padding = "0";
 }
+
+// Debounce function to limit rapid calls
+function debounce(func, wait) {
+    let timeout;
+    return function (...args) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(this, args), wait);
+    };
+}
+
+// Debounced resize function
+const debouncedResizeIframe = debounce(resizeIframe, 50);
 
 // Event listeners
-window.addEventListener("resize", resizeIframe);
-window.addEventListener("load", resizeIframe);
-window.addEventListener("orientationchange", resizeIframe);
-
-// Media query listener for orientation changes
-if (window.matchMedia) {
-    const mediaQuery = window.matchMedia("(orientation: portrait)");
-    mediaQuery.addEventListener("change", resizeIframe);
-}
+window.addEventListener("resize", debouncedResizeIframe);
+window.addEventListener("orientationchange", debouncedResizeIframe);
+window.addEventListener("load", resizeIframe); // No debounce on load
 
 // Initial call
 resizeIframe();
