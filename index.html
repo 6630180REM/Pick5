@@ -159,33 +159,30 @@
             background-size: cover;
         }
         #preloader-text {
-            font-size: 7rem;
-            font-weight: bold;
-            color: transparent;
-            position: relative;
-            text-align: center;
-            -webkit-text-stroke: 7px #478fdf;
-            line-height: .9;
-        }
-        #preloader-text::before {
-            content: "JOE'S\A PICK 5";
-            white-space: pre;
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 0;
-            overflow: hidden;
-            color: #478fdf;
-            border-bottom: 3px solid white;
-            animation: fill-text-bottom-up 3s linear forwards;
-            padding: 0px;
-            -webkit-text-stroke: 7px #478fdf;
-        }
-        @keyframes fill-text-bottom-up {
-            0% {height: 0;}
-            100% {height: 100%;}
-        }
+            background: 50% 100% / 50% 50% no-repeat
+            radial-gradient(ellipse at bottom, #fff, transparent, transparent);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font-size: 10vw;
+  font-family: "Source Sans Pro", sans-serif;
+  animation: reveal 3000ms ease-in-out forwards 200ms,
+             glow 2500ms linear infinite 2000ms;
+
+  @keyframes reveal {
+    80%{
+      letter-spacing: 8px;
+    }
+    100% {
+      background-size: 300% 300%;
+    }
+  }
+  @keyframes glow {
+    40% {
+      text-shadow: 0 0 8px #fff;
+    }
+  }
+}  
 
 /* @media screen and (max-width: 1100px) and (orientation: landscape) {
     body {
