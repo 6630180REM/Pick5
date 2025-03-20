@@ -915,14 +915,30 @@ function isStandalone() {
 }
 
         // Resize iframe
-        //function resizeIframe() {
-       //     var iframe = document.querySelector("iframe");
-        //    iframe.style.height = window.innerHeight + "px";
-        //    iframe.style.width = window.innerWidth + "px";
-       // }
+function resizeIframe() {
+    var iframe = document.querySelector("iframe");
+    if (iframe) {
+        // Use a small timeout to ensure dimensions are updated after orientation change
+        setTimeout(() => {
+            iframe.style.height = window.innerHeight + "px";
+            iframe.style.width = window.innerWidth + "px";
+        }, 100);
+    }
+}
 
-       // window.addEventListener("resize", resizeIframe);
-      //  window.addEventListener("load", resizeIframe);*/
+// Multiple event listeners for better cross-device compatibility
+window.addEventListener("resize", resizeIframe);
+window.addEventListener("load", resizeIframe);
+window.addEventListener("orientationchange", resizeIframe);
+
+// Optional: Add matchMedia listener for more robust orientation detection
+if (window.matchMedia) {
+    const mediaQuery = window.matchMedia("(orientation: portrait)");
+    mediaQuery.addEventListener("change", resizeIframe);
+}
+
+// Initial call to size iframe on page load
+resizeIframe();
 
 // // iOS-specific orientation lock
 // document.addEventListener('DOMContentLoaded', function() {
