@@ -409,14 +409,14 @@ if ('serviceWorker' in navigator) {
 
     console.log('Attempting to register service worker at:', swPath);
 
-    navigator.serviceWorker.register(swPath)
-        .then(registration => {
-            console.log('Service Worker registered with scope:', registration.scope);
-            initializeNotifications(registration);
-        })
-        .catch(error => {
-            console.error('Service Worker registration failed:', error.message);
-        });
+    navigator.serviceWorker.register(swPath).then(registration => {
+    console.log('Service Worker registered with scope:', registration.scope);
+
+    // Ensure Firebase uses this registration
+    getToken(messaging, { serviceWorkerRegistration: registration })
+        .then(token => console.log('FCM Token:', token))
+        .catch(error => console.error('Error getting FCM token:', error));
+});
 } else {
     console.log('Service workers not supported');
 }
