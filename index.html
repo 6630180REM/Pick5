@@ -913,11 +913,12 @@ function isStandalone() {
     return window.matchMedia('(display-mode: standalone)').matches;
 }
 
+let timeout; // Declare timeout outside the function to keep track of it
+
 function resizeIframe() {
     var iframe = document.querySelector("iframe");
     if (iframe) {
         // Debounce the resize to prevent excessive updates
-        let timeout;
         clearTimeout(timeout);
         timeout = setTimeout(() => {
             // Check orientation
@@ -925,7 +926,7 @@ function resizeIframe() {
                 // Landscape mode: swap width and height
                 const height = window.innerWidth || document.documentElement.clientWidth || screen.width;
                 const width = window.innerHeight || document.documentElement.clientHeight || screen.height;
-                
+            
                 iframe.style.height = height + "px";
                 iframe.style.width = width + "px";
             } else {
@@ -958,8 +959,6 @@ if (window.matchMedia) {
 
 // Initial call
 resizeIframe();
-
-
         
     </script>
 </body>
