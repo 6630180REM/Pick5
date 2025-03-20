@@ -66,15 +66,7 @@
             bottom: 0;
             background-color: black;
         }
-        @media (orientation: portrait) {
-  body {
-    -webkit-transform: rotate(0deg);
-    -moz-transform: rotate(0deg);
-    -o-transform: rotate(0deg);
-    -ms-transform: rotate(0deg);
-    transform: rotate(0deg);
-  }
-}
+        
         #install-banner {
             display: none;
             position: fixed;
@@ -199,9 +191,9 @@
   body {
     transform: rotate(-90deg);
     transform-origin: left top;
-    width: 100vh;
-    height: 100vw;
-    overflow-x: hidden;
+    width: 100%;
+    height: 100%;
+    //overflow-x: hidden;
     position: absolute;
     top: 100%;
     left: 0;
