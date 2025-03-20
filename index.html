@@ -913,7 +913,6 @@ function isStandalone() {
     return window.matchMedia('(display-mode: standalone)').matches;
 }
 
-        // Resize iframe
 function resizeIframe() {
     var iframe = document.querySelector("iframe");
     if (iframe) {
@@ -921,13 +920,20 @@ function resizeIframe() {
         let timeout;
         clearTimeout(timeout);
         timeout = setTimeout(() => {
-            // Use screen dimensions as fallback
-            const height = window.innerHeight || document.documentElement.clientHeight || screen.height;
-            const width = window.innerWidth || document.documentElement.clientWidth || screen.width;
-            
-            iframe.style.height = height + "px";
-            iframe.style.width = width + "px";
-            
+            // Check orientation
+            if (window.matchMedia("(orientation: landscape)").matches) {
+                // Landscape mode: swap width and height
+                iframe.style.width = window.innerHeight + "px";
+                iframe.style.height = window.innerWidth + "px";
+            } else {
+                // Portrait mode: use regular dimensions
+                const height = window.innerHeight || document.documentElement.clientHeight || screen.height;
+                const width = window.innerWidth || document.documentElement.clientWidth || screen.width;
+                
+                iframe.style.height = height + "px";
+                iframe.style.width = width + "px";
+            }
+
             // Remove any potential scrollbars
             iframe.style.border = "none";
             iframe.style.margin = "0";
@@ -941,15 +947,11 @@ window.addEventListener("resize", resizeIframe);
 window.addEventListener("load", resizeIframe);
 window.addEventListener("orientationchange", resizeIframe);
 
-// Media query listener
+// Media query listener for orientation changes
 if (window.matchMedia) {
     const mediaQuery = window.matchMedia("(orientation: portrait)");
     mediaQuery.addEventListener("change", resizeIframe);
 }
-        window.addEventListener('orientationchange', () => {
-    // Short delay to let the rotation settle
-    setTimeout(resizeIframe, 100);
-});
 
 // Initial call
 resizeIframe();
