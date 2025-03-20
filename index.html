@@ -324,7 +324,7 @@ async function resetNotifications() {
             }, 1500);
         } else {
             // Default state: prompt should appear after reinitialization
-            showSuccessMessage('Notifications reset. You'll be prompted again.');
+            showSuccessMessage('Notifications reset. You will be prompted again.');
             setTimeout(() => {
                 console.log('Reinitializing Firebase...');
                 setupFirebaseAndNotifications();
