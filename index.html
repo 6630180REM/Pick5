@@ -924,10 +924,10 @@ function resizeIframe() {
             if (window.matchMedia("(orientation: landscape)").matches) {
                 // Landscape mode: swap width and height
                 const height = window.innerWidth || document.documentElement.clientWidth || screen.width;
-                const width = window.clientHeight || document.documentElement.clientHeight || screen.height;
+                const width = window.innerHeight || document.documentElement.clientHeight || screen.height;
                 
-                iframe.style.width = height + "px";
-                iframe.style.height = width + "px";
+                iframe.style.height = height + "px";
+                iframe.style.width = width + "px";
             } else {
                 // Portrait mode: use regular dimensions
                 const height = window.innerHeight || document.documentElement.clientHeight || screen.height;
@@ -959,48 +959,7 @@ if (window.matchMedia) {
 // Initial call
 resizeIframe();
 
-// // // iOS-specific orientation lock
-//  document.addEventListener('DOMContentLoaded', function() {
-//    // First try the official Screen Orientation API
-//    if (screen.orientation) {
-//      try {
-//        screen.orientation.lock('portrait').catch(function(error) {
-//          console.log('Orientation lock failed: ' + error);
-//        });
-//      } catch (error) {
-//        console.log('Orientation API error: ' + error);
-//      }
-//    }
-  
-// //   // Back-up method: use CSS to force portrait layout
-//    function handleOrientationChange() {
-//      if (window.orientation === 90 || window.orientation === -90) {
-//        document.body.style.transform = 'rotate(-90deg)';
-//        document.body.style.transformOrigin = 'left top';
-//        document.body.style.width = '100vh';
-//        document.body.style.height = '100vw';
-//        document.body.style.position = 'absolute';
-//        document.body.style.top = '100%';
-//        document.body.style.left = '0';
-//        document.body.style.overflow = 'hidden';
-//      } else {
-//        document.body.style.transform = '';
-//        document.body.style.transformOrigin = '';
-//        document.body.style.width = '';
-//        document.body.style.height = '';
-//        document.body.style.position = '';
-//        document.body.style.top = '';
-//        document.body.style.left = '';
-//        document.body.style.overflow = '';
-//      }
-//    }
-  
-//    // Listen for orientation changes
-//    window.addEventListener('orientationchange', handleOrientationChange);
-  
-//    // Apply initial orientation
-//    handleOrientationChange();
-//  });
+
         
     </script>
 </body>
