@@ -262,21 +262,21 @@
 async function resetNotifications() {
     // Get the button element for visual feedback
     const button = document.getElementById('resetBtn');
-    
+
     // Change appearance when clicked
     button.style.backgroundColor = '#478fdf';
     button.style.color = 'white';
     button.textContent = 'Resetting...';
-    
+
     if (!checkStorageAvailability()) {
         showSuccessMessage('Storage unavailable. Please check browser settings.');
-        
+
         // Change button to indicate error
         button.style.backgroundColor = '#ff4d4d';
         button.textContent = 'Reset Failed';
         return;
     }
-    
+
     console.log('Resetting notifications...');
     try {
         // Unregister all service workers
@@ -329,11 +329,11 @@ async function resetNotifications() {
         localStorage.removeItem('fcmToken');
         localStorage.removeItem('notificationPromptDismissed');
         localStorage.removeItem('notificationPermissionDenied'); // Clear any permission denial flag
-        
+
         // Update button to indicate success
         button.style.backgroundColor = '#478fdf'; // Green color for success
         button.textContent = 'Reset Complete';
-        
+
         // Check current permission state and act accordingly
         if (Notification.permission === 'denied') {
             showSuccessMessage('Notifications blocked. Enable in browser settings.');
@@ -352,7 +352,7 @@ async function resetNotifications() {
                 setupFirebaseAndNotifications();
             }, 1500);
         }
-        
+
         // Make the button fade out after success
         setTimeout(function() {
             button.style.opacity = '0';
@@ -361,11 +361,11 @@ async function resetNotifications() {
                 button.style.display = 'none';
             }, 300); // Match this to the transition time in CSS
         }, 2500); // Give user time to see the success state
-        
+
     } catch (err) {
         console.error('Reset failed:', err);
         showSuccessMessage('Failed to reset notifications. Try again.');
-        
+
         // Change button to indicate error
         button.style.backgroundColor = '#ff4d4d'; // Red color for error
         button.textContent = 'Reset Failed';
@@ -384,8 +384,6 @@ function checkStorageAvailability() {
 }
 
         function setupFirebaseAndNotifications() {
-          import { initializeApp } from "firebase/app";
-          import { getMessaging, getToken } from "firebase/messaging";
             // Firebase Configuration
             const firebaseConfig = {
                 apiKey: "AIzaSyB5r_KL2eKVFd66VQU_5pznKrVHa9xzCfc",
@@ -396,8 +394,6 @@ function checkStorageAvailability() {
                 appId: "1:783669343677:web:d3a43a1a58b920ba9a4ed4",
                 measurementId: "G-HNPLN4XZ44"
             };
-          const app = initializeApp(firebaseConfig);
-          const messaging = getMessaging(app);
 
             // Initialize Firebase (with check to prevent duplicate initialization)
             if (!firebase.apps || !firebase.apps.length) {
@@ -408,24 +404,23 @@ function checkStorageAvailability() {
             db = firebase.firestore();
 
 if ('serviceWorker' in navigator) {
-    const swPath = '/Pick5/firebase-messaging-sw.js';
+    const swPath = '/firebase-messaging-sw.js'; // Use a static root-relative path
     console.log('Service worker path:', swPath);
 
     console.log('Attempting to register service worker at:', swPath);
 
-    navigator.serviceWorker.register(swPath).then(registration => {
-    console.log('Service Worker registered with scope:', registration.scope);
-
-    // Ensure Firebase uses this registration
-    getToken(messaging, { serviceWorkerRegistration: registration })
-        .then(token => console.log('FCM Token:', token))
-        .catch(error => console.error('Error getting FCM token:', error));
-});
+    navigator.serviceWorker.register(swPath)
+        .then(registration => {
+            console.log('Service Worker registered with scope:', registration.scope);
+            initializeNotifications(registration);
+        })
+        .catch(error => {
+            console.error('Service Worker registration failed:', error.message);
+        });
 } else {
     console.log('Service workers not supported');
 }
 
-          
             // Initialize notifications after service worker is registered
             function initializeNotifications(registration) {
                 // Set up token refresh listener
@@ -960,10 +955,10 @@ function resizeIframe() {
             // Use screen dimensions as fallback
             const height = window.innerHeight || document.documentElement.clientHeight || screen.height;
             const width = window.innerWidth || document.documentElement.clientWidth || screen.width;
-            
+
             iframe.style.height = height + "px";
             iframe.style.width = width + "px";
-            
+
             // Remove any potential scrollbars
             iframe.style.border = "none";
             iframe.style.margin = "0";
