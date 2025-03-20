@@ -52,20 +52,21 @@ iframe {
 
 /* Force portrait layout in landscape */
 @media (orientation: landscape) {
-    html, body {
-        width: 100vh; /* Use height as width to enforce portrait ratio */
-        height: 100vw;
-        position: fixed;
-        top: 0;
-        left: 50%;
-        transform: translateX(-50%);
-        overflow: hidden;
-    }
-    iframe {
-        width: 100%;
-        height: 100%;
-    }
-}
+        html, body {
+            background-color: black !important;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            width: 100%;
+            height: 100%;
+            font-family: Arial, sans-serif;
+            overscroll-behavior: none;
+        }
         * {
             -webkit-tap-highlight-color: transparent;
             -webkit-touch-callout: none;
@@ -80,7 +81,19 @@ iframe {
         input, textarea {
             font-size: 16px !important;
         }
-        
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block;
+            overflow: auto;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: black;
+        }
         #install-banner {
             display: none;
             position: fixed;
@@ -200,6 +213,18 @@ iframe {
             0% {height: 0;}
             100% {height: 100%;}
         }
+    @media screen and (min-width: 320px) and (max-width: 767px) and (orientation: landscape) {
+  html {
+    transform: rotate(-90deg);
+    transform-origin: left top;
+    width: 100vh;
+      height: 100vw;
+    overflow-x: hidden;
+    position: absolute;
+    top: 100%;
+    left: 0;
+  }
+}
 /*         @media (min-width: 1025px) {
     #install-banner, #ios-install-banner {
         display: none !important;
