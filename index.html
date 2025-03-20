@@ -946,6 +946,10 @@ if (window.matchMedia) {
     const mediaQuery = window.matchMedia("(orientation: portrait)");
     mediaQuery.addEventListener("change", resizeIframe);
 }
+        window.addEventListener('orientationchange', () => {
+    // Short delay to let the rotation settle
+    setTimeout(resizeIframe, 100);
+});
 
 // Initial call
 resizeIframe();
