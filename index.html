@@ -384,6 +384,8 @@ function checkStorageAvailability() {
 }
 
         function setupFirebaseAndNotifications() {
+          import { initializeApp } from "firebase/app";
+          import { getMessaging, getToken } from "firebase/messaging";
             // Firebase Configuration
             const firebaseConfig = {
                 apiKey: "AIzaSyB5r_KL2eKVFd66VQU_5pznKrVHa9xzCfc",
@@ -421,6 +423,7 @@ if ('serviceWorker' in navigator) {
     console.log('Service workers not supported');
 }
 
+          
             // Initialize notifications after service worker is registered
             function initializeNotifications(registration) {
                 // Set up token refresh listener
