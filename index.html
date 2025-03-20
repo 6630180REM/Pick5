@@ -188,19 +188,17 @@
         }
 
 @media screen and (max-width: 1100px) and (orientation: landscape) {
-    body, iframe {
-        transform: rotate(-45deg);
-        transform-origin: center;
-        width: 100vh;
-        height: 100vw;
-        position: fixed;
-        top: 0;
-        left: 0;
+    body {
+        transform: rotate(-90deg);
+        left: -22%;
+        top: -39%;
     }
 
     @supports (-webkit-touch-callout: none) {
-        body, iframe {
-            transform: rotate(45deg);
+        body {
+            transform: rotate(90deg);
+            left: 22%;
+            top: 39%;
         }
     }
 }
