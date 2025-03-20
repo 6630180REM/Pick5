@@ -192,7 +192,7 @@ background: 50% 100% / 50% 50% no-repeat radial-gradient(ellipse at bottom, #478
         <div id="preloader-text">JOE'S<br>PICK 5</div>
             <button id="resetBtn" onclick="resetNotifications()" style="
                     position: fixed;
-                    bottom: 15px;
+                    bottom: 20px;
                     right: 12px;
                     background-color: transparent;
                     color: #478fdf;
@@ -309,7 +309,7 @@ async function resetNotifications() {
         localStorage.removeItem('notificationPermissionDenied'); // Clear any permission denial flag
         
         // Update button to indicate success
-        button.style.backgroundColor = '#4CAF50'; // Green color for success
+        button.style.backgroundColor = '#478fdf'; // Green color for success
         button.textContent = 'Reset Complete';
         
         // Check current permission state and act accordingly
@@ -823,7 +823,7 @@ function promptForPermission() {
             setTimeout(() => {
                 successDiv.style.animation = 'fade-out 0.3s ease-in-out';
                 setTimeout(() => successDiv.remove(), 500);
-            }, 9000);
+            }, 5000);
         }
 
         // Call the function when the page is fully loaded
