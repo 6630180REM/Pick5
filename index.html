@@ -939,6 +939,47 @@ function isStandalone() {
 
         window.addEventListener("resize", resizeIframe);
         window.addEventListener("load", resizeIframe);
+        
+        $(document).ready(function () {
+  function reorient(e) {
+    var portrait = (window.orientation % 180 == 0);
+    $("body > div").css("-webkit-transform", !portrait ? "rotate(-90deg)" : "");
+  }
+  window.onorientationchange = reorient;
+  window.setTimeout(reorient, 0);
+});
+
+// CSS 
+body > div { -webkit-transition: all 1s ease-in-out; }
+
+//-------------------------------------------------------------------------------------------------------
+// alternative approach (http://snook.ca/)
+// http://stackoverflow.com/questions/5298467/prevent-orientation-change-in-ios-safari
+
+window.addEventListener('onorientationchange', function () {
+    if (window.orientation == -90) {
+        document.getElementById('orient').className = 'orientright';
+    }
+    if (window.orientation == 90) {
+        document.getElementById('orient').className = 'orientleft';
+    }
+    if (window.orientation == 0) {
+        document.getElementById('orient').className = '';
+    }
+}, true);
+
+// CSS
+
+.orientleft #shell {
+    -webkit-transform: rotate(-90deg);
+    -webkit-transform-origin:160px 160px;
+}
+
+.orientright #shell {
+    -webkit-transform: rotate(90deg);
+    -webkit-transform-origin:230px 230px;
+} 
+        
     </script>
 </body>
   </html>
