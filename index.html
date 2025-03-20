@@ -187,7 +187,7 @@
             100% {height: 100%;}
         }
 
-@media screen and (max-width: 1100px) and (orientation: landscape) {
+/* @media screen and (max-width: 1100px) and (orientation: landscape) {
     body {
         transform: rotate(-90deg);
         left: -22%;
@@ -201,7 +201,7 @@
             top: 39%;
         }
     }
-}
+} */
     </style>
 </head>
 <body>
@@ -914,40 +914,37 @@ function isStandalone() {
 }
 
 function resizeIframe() {
-    const iframe = document.querySelector("iframe");
-    if (!iframe) return; // Exit if no iframe exists
-
-    // Get viewport dimensions
-    const viewportWidth = window.innerWidth || document.documentElement.clientWidth;
-    const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
-
-    // Check orientation and swap dimensions if landscape
-    const isLandscape = window.matchMedia("(orientation: landscape)").matches;
-    iframe.style.width = (isLandscape ? viewportHeight : viewportWidth) + "px";
-    iframe.style.height = (isLandscape ? viewportWidth : viewportHeight) + "px";
-
-    // Ensure no borders or spacing
-    iframe.style.border = "none";
-    iframe.style.margin = "0";
-    iframe.style.padding = "0";
-}
-
-// Debounce function to limit rapid calls
-function debounce(func, wait) {
-    let timeout;
-    return function (...args) {
+    var iframe = document.querySelector("iframe");
+    if (iframe) {
+        // Debounce the resize to prevent excessive updates
+        let timeout;
         clearTimeout(timeout);
-        timeout = setTimeout(() => func.apply(this, args), wait);
-    };
+        timeout = setTimeout(() => {
+            // Use screen dimensions as fallback
+            const height = window.innerHeight || document.documentElement.clientHeight || screen.height;
+            const width = window.innerWidth || document.documentElement.clientWidth || screen.width;
+            
+            iframe.style.height = height + "px";
+            iframe.style.width = width + "px";
+            
+            // Remove any potential scrollbars
+            iframe.style.border = "none";
+            iframe.style.margin = "0";
+            iframe.style.padding = "0";
+        }, 100);
+    }
 }
-
-// Debounced resize function
-const debouncedResizeIframe = debounce(resizeIframe, 50);
 
 // Event listeners
-window.addEventListener("resize", debouncedResizeIframe);
-window.addEventListener("orientationchange", debouncedResizeIframe);
-window.addEventListener("load", resizeIframe); // No debounce on load
+window.addEventListener("resize", resizeIframe);
+window.addEventListener("load", resizeIframe);
+window.addEventListener("orientationchange", resizeIframe);
+
+// Media query listener
+if (window.matchMedia) {
+    const mediaQuery = window.matchMedia("(orientation: portrait)");
+    mediaQuery.addEventListener("change", resizeIframe);
+}
 
 // Initial call
 resizeIframe();
