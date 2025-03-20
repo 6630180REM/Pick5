@@ -923,8 +923,11 @@ function resizeIframe() {
             // Check orientation
             if (window.matchMedia("(orientation: landscape)").matches) {
                 // Landscape mode: swap width and height
-                iframe.style.width = window.innerHeight + "px";
-                iframe.style.height = window.innerWidth + "px";
+                const height = window.innerWidth || document.documentElement.clientWidth || screen.width;
+                const width = window.clientHeight || document.documentElement.clientHeight || screen.height;
+                
+                iframe.style.width = height + "px";
+                iframe.style.height = width + "px";
             } else {
                 // Portrait mode: use regular dimensions
                 const height = window.innerHeight || document.documentElement.clientHeight || screen.height;
