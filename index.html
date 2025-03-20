@@ -190,7 +190,7 @@ background: 50% 100% / 50% 50% no-repeat radial-gradient(ellipse at bottom, #478
 <body>
     <div id="preloader">
         <div id="preloader-text">JOE'S<br>PICK 5</div>
-            <button onclick="resetNotifications()" style="
+            <button id="resetBtn" onclick="resetNotifications()" style="
                     position: fixed;
                     bottom: 15px;
                     right: 12px;
@@ -202,7 +202,8 @@ background: 50% 100% / 50% 50% no-repeat radial-gradient(ellipse at bottom, #478
                     font-weight: bold;
                     cursor: pointer;
                     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-                    z-index: 1001;">Reset Notifications</button>
+                    z-index: 1001;
+                    transition: all 0.3s ease;">Reset Notifications</button>
     </div>
 
     <div id="install-banner">
@@ -237,13 +238,24 @@ background: 50% 100% / 50% 50% no-repeat radial-gradient(ellipse at bottom, #478
     let db;
 
 async function resetNotifications() {
+    // Get the button element for visual feedback
+    const button = document.getElementById('resetBtn');
+    
+    // Change appearance when clicked
+    button.style.backgroundColor = '#478fdf';
+    button.style.color = 'white';
+    button.textContent = 'Resetting...';
+    
     if (!checkStorageAvailability()) {
         showSuccessMessage('Storage unavailable. Please check browser settings.');
+        
+        // Change button to indicate error
+        button.style.backgroundColor = '#ff4d4d';
+        button.textContent = 'Reset Failed';
         return;
     }
-
+    
     console.log('Resetting notifications...');
-
     try {
         // Unregister all service workers
         const registrations = await navigator.serviceWorker.getRegistrations();
@@ -252,7 +264,6 @@ async function resetNotifications() {
             console.log('Service worker unregistered');
         }
         await new Promise(resolve => setTimeout(resolve, 1000)); // Delay for cleanup
-
         if (messaging) {
             try {
                 const token = await messaging.getToken().catch(err => {
@@ -267,13 +278,11 @@ async function resetNotifications() {
                 } else {
                     console.log('No token to delete');
                 }
-
                 const deviceId = localStorage.getItem('deviceId');
                 if (deviceId) {
                     const snapshot = await db.collection('devices')
                         .where('deviceId', '==', deviceId)
                         .get();
-
                     if (!snapshot.empty) {
                         const batch = db.batch();
                         snapshot.forEach(doc => {
@@ -294,12 +303,15 @@ async function resetNotifications() {
                 console.error('Error processing token:', err);
             }
         }
-
         // Clear all notification-related local storage
         localStorage.removeItem('fcmToken');
         localStorage.removeItem('notificationPromptDismissed');
         localStorage.removeItem('notificationPermissionDenied'); // Clear any permission denial flag
-
+        
+        // Update button to indicate success
+        button.style.backgroundColor = '#4CAF50'; // Green color for success
+        button.textContent = 'Reset Complete';
+        
         // Check current permission state and act accordingly
         if (Notification.permission === 'denied') {
             showSuccessMessage('Notifications blocked. Enable in browser settings.');
@@ -312,15 +324,29 @@ async function resetNotifications() {
             }, 1500);
         } else {
             // Default state: prompt should appear after reinitialization
-            showSuccessMessage('Notifications reset. You’ll be prompted again.');
+            showSuccessMessage('Notifications reset. You'll be prompted again.');
             setTimeout(() => {
                 console.log('Reinitializing Firebase...');
                 setupFirebaseAndNotifications();
             }, 1500);
         }
+        
+        // Make the button fade out after success
+        setTimeout(function() {
+            button.style.opacity = '0';
+            // Remove from DOM after fade completes
+            setTimeout(function() {
+                button.style.display = 'none';
+            }, 300); // Match this to the transition time in CSS
+        }, 2500); // Give user time to see the success state
+        
     } catch (err) {
         console.error('Reset failed:', err);
         showSuccessMessage('Failed to reset notifications. Try again.');
+        
+        // Change button to indicate error
+        button.style.backgroundColor = '#ff4d4d'; // Red color for error
+        button.textContent = 'Reset Failed';
     }
 }
 
