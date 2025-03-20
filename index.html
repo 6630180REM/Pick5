@@ -1,196 +1,213 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, orientation=portrait">
-     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-title" content="Joe's Pick 5">
-    <meta name="application-name" content="Joe's Pick 5">
-    <meta name="theme-color" content="#333">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta charset="UTF-8">
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, orientation=portrait">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Joe's Pick 5">
+  <meta name="application-name" content="Joe's Pick 5">
+  <meta name="theme-color" content="#333">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
-    <link rel="icon" type="image/png" sizes="32x32" href="Pick5Logo.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="Pick5Logo.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="Pick5Logo.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="Pick5Logo.png">
 
-    <link rel="apple-touch-icon" href="Pick5Logo.png">
-    <link rel="apple-touch-icon" sizes="152x152" href="Pick5Logo.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="Pick5Logo.png">
-    <link rel="apple-touch-icon" sizes="167x167" href="Pick5Logo.png">
+  <link rel="apple-touch-icon" href="Pick5Logo.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="Pick5Logo.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="Pick5Logo.png">
+  <link rel="apple-touch-icon" sizes="167x167" href="Pick5Logo.png">
 
-    <link rel="shortcut icon" href="Pick5Logo.png">
+  <link rel="shortcut icon" href="Pick5Logo.png">
 
-    <link rel="manifest" href="manifest.json">
+  <link rel="manifest" href="manifest.json">
 
-    <title>Joe's Pick 5</title>
-    <style>
-        html, body {
-            background-color: black !important;
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            width: 100%;
-            height: 100%;
-            font-family: Arial, sans-serif;
-            overscroll-behavior: none;
-        }
-        * {
-            -webkit-tap-highlight-color: transparent;
-            -webkit-touch-callout: none;
-            -webkit-user-select: none;
-            -khtml-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
-            -webkit-text-size-adjust: none;
-            text-size-adjust: none;
-        }
-        input, textarea {
-            font-size: 16px !important;
-        }
-        iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-            display: block;
-            overflow: auto;
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: black;
-        }
-        
-        #install-banner {
-            display: none;
-            position: fixed;
-            margin: 5px;
-            border: 2px solid rgb(71, 143, 223);
-            background: rgba(0, 0, 0, 0.85);
-            bottom: 1px;
-            left: 0;
-            right: 0;
-            color: white;
-            text-align: center;
-            padding: 5px;
-            box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2);
-            z-index: 1000;
-            width: max-content;
-            margin: 0px auto;
-        }
-        #install-banner button {
-            background-color: #478fdf;
-            border: none;
-            color: white;
-            padding: 8px 16px;
-            text-align: center;
-            text-decoration: none;
-            display: inline-block;
-            font-size: 16px;
-            margin: 4px 2px;
-            cursor: pointer;
-            border-radius: 4px;
-        }
-                #ios-install-banner {
-            display: none;
-            position: fixed;
-            margin: 5px;
-            border: 2px solid rgb(71, 143, 223);
-            background: rgba(0, 0, 0, 0.85);
-            bottom: 1px;
-            left: 0;
-            right: 0;
-            color: white;
-            text-align: center;
-            padding: 5px;
-            box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2);
-            z-index: 1000;
-            width: max-content;
-            margin: 0px auto;
-        }
-        #ios-install-banner button {
-            background-color: #478fdf;
-            border: none;
-            color: white;
-            padding: 8px 16px;
-            text-align: center;
-            text-decoration: none;
-            display: inline-block;
-            font-size: 16px;
-            margin: 4px 2px;
-            cursor: pointer;
-            border-radius: 4px;
-        }
-        .notification {
-            margin: 0 0 15px 0; 
-            font-size: 18px;
-            font-weight: 700;
-            width: 350px;
-        }
-        @media (max-width: 768px) {
-            .notification {
-            width: -webkit-fill-available;
-        }
-        }
-        #preloader {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: #333;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            overflow: hidden;
-            background: linear-gradient(to top, #000 3%, rgba(0, 0, 0, 0.8) 5%, rgba(0, 0, 0, 0) 7%, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0.8) 90%, #000 99%),
-                        url(https://img.freepik.com/premium-photo/3d-rendering-empty-Americans-football-field-with-stadium_493806-8391.jpg?semt=ais_hybrid);
-            color: white;
-            padding: 0px;
-            background-attachment: fixed;
-            background-repeat: round;
-            background-size: cover;
-        }
-        #preloader-text {
-background: 50% 100% / 50% 50% no-repeat radial-gradient(ellipse at bottom, #478fdf, transparent, transparent);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    font-size: 7rem;
-    /* font-family: "Source Sans Pro", sans-serif; */
-    animation: reveal 3000ms ease-in-out forwards 200ms, glow 2500ms linear infinite 2000ms;
-    font-weight: 900;
-    white-space: nowrap;
-    line-height: 1;
-    text-align: center;
-        }
-  @keyframes reveal {
-    80%{
-      letter-spacing: 8px;
+  <title>Joe's Pick 5</title>
+  <style>
+    html,
+    body {
+      background-color: black !important;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      width: 100%;
+      height: 100%;
+      font-family: Arial, sans-serif;
+      overscroll-behavior: none;
     }
-    100% {
-      background-size: 300% 300%;
-    }
-  }
-  @keyframes glow {
-    40% {
-      text-shadow: 0 0 8px #478fdf;
-    }
-  }
 
-    </style>
+    * {
+      -webkit-tap-highlight-color: transparent;
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      -khtml-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+      -webkit-text-size-adjust: none;
+      text-size-adjust: none;
+    }
+
+    input,
+    textarea {
+      font-size: 16px !important;
+    }
+
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+      overflow: auto;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: black;
+    }
+
+    #install-banner {
+      display: none;
+      position: fixed;
+      margin: 5px;
+      border: 2px solid rgb(71, 143, 223);
+      background: rgba(0, 0, 0, 0.85);
+      bottom: 1px;
+      left: 0;
+      right: 0;
+      color: white;
+      text-align: center;
+      padding: 5px;
+      box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2);
+      z-index: 1000;
+      width: max-content;
+      margin: 0px auto;
+    }
+
+    #install-banner button {
+      background-color: #478fdf;
+      border: none;
+      color: white;
+      padding: 8px 16px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      margin: 4px 2px;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+
+    #ios-install-banner {
+      display: none;
+      position: fixed;
+      margin: 5px;
+      border: 2px solid rgb(71, 143, 223);
+      background: rgba(0, 0, 0, 0.85);
+      bottom: 1px;
+      left: 0;
+      right: 0;
+      color: white;
+      text-align: center;
+      padding: 5px;
+      box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2);
+      z-index: 1000;
+      width: max-content;
+      margin: 0px auto;
+    }
+
+    #ios-install-banner button {
+      background-color: #478fdf;
+      border: none;
+      color: white;
+      padding: 8px 16px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      margin: 4px 2px;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+
+    .notification {
+      margin: 0 0 15px 0;
+      font-size: 18px;
+      font-weight: 700;
+      width: 350px;
+    }
+
+    @media (max-width: 768px) {
+      .notification {
+        width: -webkit-fill-available;
+      }
+    }
+
+    #preloader {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #333;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      overflow: hidden;
+      background: linear-gradient(to top, #000 3%, rgba(0, 0, 0, 0.8) 5%, rgba(0, 0, 0, 0) 7%, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0.8) 90%, #000 99%),
+        url(https://img.freepik.com/premium-photo/3d-rendering-empty-Americans-football-field-with-stadium_493806-8391.jpg?semt=ais_hybrid);
+      color: white;
+      padding: 0px;
+      background-attachment: fixed;
+      background-repeat: round;
+      background-size: cover;
+    }
+
+    #preloader-text {
+      background: 50% 100% / 50% 50% no-repeat radial-gradient(ellipse at bottom, #478fdf, transparent, transparent);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      font-size: 7rem;
+      /* font-family: "Source Sans Pro", sans-serif; */
+      animation: reveal 3000ms ease-in-out forwards 200ms, glow 2500ms linear infinite 2000ms;
+      font-weight: 900;
+      white-space: nowrap;
+      line-height: 1;
+      text-align: center;
+    }
+
+    @keyframes reveal {
+      80% {
+        letter-spacing: 8px;
+      }
+
+      100% {
+        background-size: 300% 300%;
+      }
+    }
+
+    @keyframes glow {
+      40% {
+        text-shadow: 0 0 8px #478fdf;
+      }
+    }
+  </style>
 </head>
+
 <body>
-    <div id="preloader">
-        <div id="preloader-text">JOE'S<br>PICK 5</div>
-            <button id="resetBtn" onclick="resetNotifications()" style="
+  <div id="preloader">
+    <div id="preloader-text">JOE'S<br>PICK 5</div>
+    <button id="resetBtn" onclick="resetNotifications()" style="
                     position: fixed;
                     bottom: 20px;
                     right: 12px;
@@ -204,36 +221,41 @@ background: 50% 100% / 50% 50% no-repeat radial-gradient(ellipse at bottom, #478
                     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
                     z-index: 1001;
                     transition: all 0.3s ease;">Reset Notifications</button>
-    </div>
+  </div>
 
-    <div id="install-banner">
-        <p style="margin: 5px;">Add to Home Screen for the best experience</p>
-        <button id="install-button">Add</button>
-        <button id="dismiss-button">Dismiss</button>
-    </div>
+  <div id="install-banner">
+    <p style="margin: 5px;">Add to Home Screen for the best experience</p>
+    <button id="install-button">Add</button>
+    <button id="dismiss-button">Dismiss</button>
+  </div>
 
-<div id="ios-install-banner" style="display: none; position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: rgba(0, 0, 0, 0.85); color: white; padding: 10px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.2); z-index: 1001; text-align: left; max-width: 90%; font-family: Arial, sans-serif;">
+  <div id="ios-install-banner"
+    style="display: none; position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: rgba(0, 0, 0, 0.85); color: white; padding: 10px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.2); z-index: 1001; text-align: left; max-width: 90%; font-family: Arial, sans-serif;">
     <button id="ios-install-close" style="position: absolute; top: 5px; right: 5px; background: #478fdf; border: 1px solid black; width: 24px; height: 24px; font-size: 20px; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0; line-height: 1; border-radius: 5px;">✕</button>
     <h3 style="margin: 0 0 10px 0; font-size: 18px; font-weight: bold; display: flex; align-items: center;">
-        <img src="https://raw.githubusercontent.com/6630180REM/Pick5/refs/heads/main/Pick5Logo.png" alt="Joe's Pick 5 Logo" style="width: 30px; height: 30px; margin-right: 8px; vertical-align: middle;border: 1px solid white; border-radius: 8px;">Install 'Pick 5' on Your Device.
+      <img src="https://raw.githubusercontent.com/6630180REM/Pick5/refs/heads/main/Pick5Logo.png" alt="Joe's Pick 5 Logo" style="width: 30px; height: 30px; margin-right: 8px; vertical-align: middle;border: 1px solid white; border-radius: 8px;">Install 'Pick 5' on Your Device.
     </h3>
-    <p style="margin: 0 0 10px 0; font-size: 14px;">To install this as an app on your device, follow the below instructions.</p>
-    <p style="margin: 5px 0; font-size: 14px;">1. Tap on share <img src="https://static-00.iconduck.com/assets.00/ios-share-icon-1490x2048-h3vjhu9m.png" alt="Share icon" style="width: 16px; height: 16px; object-fit: contain; vertical-align: middle;filter: invert(100%);"></p>
-    <p style="margin: 5px 0; font-size: 14px;">2. Select 'Add to Home Screen' <img src="https://static-00.iconduck.com/assets.00/plus-square-icon-2048x2048-h144q2yx.png" alt="Share icon" style="width: 16px; height: 16px; object-fit: contain; vertical-align: middle;filter: invert(100%);"></p>
+    <p style="margin: 0 0 10px 0; font-size: 14px;">To install this as an app on your device, follow the below
+      instructions.</p>
+    <p style="margin: 5px 0; font-size: 14px;">1. Tap on share <img src="https://static-00.iconduck.com/assets.00/ios-share-icon-1490x2048-h3vjhu9m.png" alt="Share icon" style="width: 16px; height: 16px; object-fit: contain; vertical-align: middle;filter: invert(100%);">
+    </p>
+    <p style="margin: 5px 0; font-size: 14px;">2. Select 'Add to Home Screen' <img src="https://static-00.iconduck.com/assets.00/plus-square-icon-2048x2048-h144q2yx.png" alt="Share icon" style="width: 16px; height: 16px; object-fit: contain; vertical-align: middle;filter: invert(100%);">
+    </p>
     <p style="margin: 5px 0; font-size: 14px;">3. Click 'Add'</p>
     <!-- <div style="display: flex; justify-content: flex-end; margin-top: 0px;">
         <button id="ios-install-dismiss" style="background: #478fdf;border: none;color: white; padding: 5px 12px;text-align: center;text-decoration: none;display: inline-block;font-size: 16px;margin: 4px 2px;cursor: pointer;border-radius: 4px;">Dismiss</button>
     </div> -->
-</div>
+  </div>
 
-    <iframe frameborder="0" scrolling="yes" allowfullscreen="yes" src="https://script.google.com/macros/s/AKfycbwuZM7KGKnS7jnpM2YN9W_AgTMqA0qJGw99K3MIUNxzI1tnh3YK76AhgeCfh2Wc7pTd/exec"></iframe>
+  <iframe frameborder="0" scrolling="yes" allowfullscreen="yes"
+    src="https://script.google.com/macros/s/AKfycbwuZM7KGKnS7jnpM2YN9W_AgTMqA0qJGw99K3MIUNxzI1tnh3YK76AhgeCfh2Wc7pTd/exec"></iframe>
 
 
-    <script src="https://www.gstatic.com/firebasejs/11.1.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/11.1.0/firebase-messaging-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.1.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.1.0/firebase-messaging-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore-compat.js"></script>
 
-    <script>
+  <script>
     let messaging;
     let db;
 
@@ -959,6 +981,7 @@ if (window.matchMedia) {
 // Initial call
 resizeIframe();
         
-    </script>
+  </script>
 </body>
-  </html>
+
+</html>
