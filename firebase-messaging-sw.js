@@ -22,7 +22,7 @@ messaging.onBackgroundMessage(function(payload) {
     console.log('Received background message:', payload);
     
     // Check if the notification has data or notification property
-    let notificationTitle = 'Joe\'s Pick 5';
+    // let notificationTitle = 'Joe\'s Pick 5';
     let notificationOptions = {
         body: 'New update available!',
         icon: '/Pick5Logo.png',
@@ -37,13 +37,13 @@ messaging.onBackgroundMessage(function(payload) {
     
     // Handle notification in payload.notification format
     if (payload.notification) {
-        notificationTitle = payload.notification.title || notificationTitle;
+        // notificationTitle = payload.notification.title || notificationTitle;
         notificationOptions.body = payload.notification.body || notificationOptions.body;
     }
     
     // Handle notification in payload.data format
     if (payload.data) {
-        notificationTitle = payload.data.title || notificationTitle;
+        // notificationTitle = payload.data.title || notificationTitle;
         notificationOptions.body = payload.data.body || notificationOptions.body;
         
         // Add URL if provided
@@ -51,8 +51,8 @@ messaging.onBackgroundMessage(function(payload) {
             notificationOptions.data.url = payload.data.url;
         }
     }
-    
-    return self.registration.showNotification(notificationTitle, notificationOptions);
+    // return self.registration.showNotification(notificationTitle, notificationOptions);
+    return self.registration.showNotification(notificationOptions);
 });
 
 // Handle notification click
