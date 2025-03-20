@@ -1,6 +1,6 @@
 // firebase-messaging-sw.js
-importScripts('https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js');
-importScripts('https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-compat.js');
+importScripts('https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js');
+importScripts('https://www.gstatic.com/firebasejs/10.13.2/firebase-messaging-compat.js');
 
 // Firebase configuration
 const firebaseConfig = {
@@ -19,7 +19,7 @@ const messaging = firebase.messaging();
 
 // Handle background messages
 messaging.onBackgroundMessage(function(payload) {
-    console.log('Received background message:', payload);
+    console.log('[firebase-messaging-sw.js] Received background message ', payload);
     
     // Check if the notification has data or notification property
     // let notificationTitle = 'Joe\'s Pick 5';
