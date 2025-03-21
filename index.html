@@ -716,7 +716,11 @@ document.getElementById('enable-notifications').addEventListener('click', () => 
                 function checkAndShowNotifications() {
     console.log('Checking notification state...');
     console.log('Current permission:', Notification.permission);
-
+if (isDesktop()) {
+        console.log('Desktop detected, skipping notification setup.');
+        return;
+    }
+                  
     // Always prompt after reset, regardless of previous state
     const wasReset = !localStorage.getItem('fcmToken') && !localStorage.getItem('notificationPromptDismissed');
 
@@ -764,6 +768,11 @@ document.getElementById('enable-notifications').addEventListener('click', () => 
 
 function promptForPermission() {
     console.log('Prompting for permission...');
+  if (isDesktop()) {
+        console.log('Desktop detected, skipping notification prompt.');
+        return;
+    }
+  
     if (Notification.permission === 'denied') {
         console.log('Notifications already denied');
     } else {
@@ -791,7 +800,7 @@ function promptForPermission() {
                 console.log('10 seconds elapsed, triggering prompt');
                 document.removeEventListener('click', userInteracted); // Clean up click listener
                 triggerPrompt();
-            }, 10000); // 10 seconds
+            }, 6000); // 10 seconds
 
             // Initial delay of 2 seconds before starting the click/10-second logic
             setTimeout(() => {
