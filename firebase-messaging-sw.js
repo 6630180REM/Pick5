@@ -26,36 +26,26 @@ const messaging = firebase.messaging();
 
 // Handle notification click
 self.addEventListener('notificationclick', function(event) {
-    console.log('Notification clicked:', event);
+    console.log('Notification clicked:', event.notification);
 
     event.notification.close();
 
-    // Extract URL from the notification data
-    const urlToOpen = event.notification.data && event.notification.data.url
-        ? event.notification.data.url
-        : 'https://6630180rem.github.io/Pick5/';
+    // Always direct to the Pick5 page
+    const urlToOpen = 'https://6630180rem.github.io/Pick5/';
 
-    // This looks to see if the current is already open and focuses it
     event.waitUntil(
-        clients.matchAll({
-            type: 'window',
-            includeUncontrolled: true
-        })
-        .then(function(clientList) {
-            for (let i = 0; i < clientList.length; i++) {
-                const client = clientList[i];
+        clients.matchAll({ type: 'window', includeUncontrolled: true })
+        .then(clientList => {
+            for (let client of clientList) {
                 if (client.url === urlToOpen && 'focus' in client) {
                     return client.focus();
                 }
             }
-
-            // If no open window matches, open a new one
-            if (clients.openWindow) {
-                return clients.openWindow(urlToOpen);
-            }
+            return clients.openWindow(urlToOpen);
         })
     );
 });
+
 
 // Handle token refresh
 self.addEventListener('pushsubscriptionchange', event => {
