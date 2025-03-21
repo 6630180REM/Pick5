@@ -17,12 +17,36 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const messaging = firebase.messaging();
 
-// REMOVE the onBackgroundMessage handler entirely
-// messaging.onBackgroundMessage(function(payload) {
-//     console.log('[firebase-messaging-sw.js] Received background message ', payload);
-//
-//     // ... removed ...
-// });
+// Handle background messages (ONLY data messages)
+messaging.onBackgroundMessage(function(payload) {
+    console.log('[firebase-messaging-sw.js] Received background message ', payload);
+
+    let notificationTitle = 'Joe\'s Pick 5';
+    let notificationOptions = {
+        body: 'New update available!',
+        icon: '/Pick5Logo.png',
+        badge: '/Pick5Logo.png',
+        tag: 'joe-pick5-notification',
+        renotify: true,
+        data: {
+            url: 'https://6630180rem.github.io/Pick5/',
+            source: 'joespick5'
+        }
+    };
+
+    // Handle notification in payload.data format ONLY
+    if (payload.data) {
+        notificationTitle = payload.data.title || notificationTitle;
+        notificationOptions.body = payload.data.body || notificationOptions.body;
+
+        // Add URL if provided
+        if (payload.data.url) {
+            notificationOptions.data.url = payload.data.url;
+        }
+    }
+
+    return self.registration.showNotification(notificationTitle, notificationOptions);
+});
 
 // Handle notification click
 self.addEventListener('notificationclick', function(event) {
