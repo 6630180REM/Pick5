@@ -613,10 +613,7 @@ async function saveTokenToFirestore(token, retries = 3) {
                 // Device exists in database
                 const deviceDoc = deviceQuery.docs[0];
                 const oldData = deviceDoc.data();
-            if (!deviceDoc.id) {
-                console.error("Document ID is missing, unable to update");
-                return;
-            }
+
               await db.collection('devices').doc(deviceDoc.id).update(updateData);
                 // Prepare update data
                 const updateData = {
