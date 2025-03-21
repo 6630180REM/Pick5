@@ -646,7 +646,7 @@ const attemptSave = async (attempt) => {
             console.log('Device token updated successfully, old tokens deleted');
 
             // Fetch updated document to confirm `lastActive` change
-            const updatedDoc = await db.collection('devices').doc(deviceDoc.id).get();
+            const updatedDoc = await db.collection('devices').doc(deviceDoc.id).get({ source: 'server' });
             console.log('Updated lastActive:', updatedDoc.data().lastActive);
 
         } else {
