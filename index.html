@@ -682,6 +682,7 @@ const attemptSave = async (attempt) => {
 };
     await attemptSave(1);
 }
+              
 
 // Updated cleanupDuplicateTokens to delete tokens instead of deactivating
 async function cleanupDuplicateTokens(currentToken, deviceId) {
@@ -1052,7 +1053,12 @@ if (window.matchMedia) {
 
 // Initial call
 resizeIframe();
-        
+
+    document.addEventListener('DOMContentLoaded', function() {
+            attemptSave(1);  // Call attemptSave when the page loads
+        });
+    
+    
   </script>
 </body>
 
