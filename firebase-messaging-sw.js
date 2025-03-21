@@ -17,55 +17,24 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const messaging = firebase.messaging();
 
-// Handle background messages
-messaging.onBackgroundMessage(function(payload) {
-    console.log('[firebase-messaging-sw.js] Received background message ', payload);
-    
-    // Check if the notification has data or notification property
-    let notificationTitle = 'Joe\'s Pick 5';
-    let notificationOptions = {
-        body: 'New update available!',
-        icon: '/Pick5Logo.png',
-        badge: '/Pick5Logo.png',
-        tag: 'joe-pick5-notification',
-        renotify: true,
-        data: {
-            url: 'https://6630180rem.github.io/Pick5/',
-            source: 'joespick5'
-        }
-    };
-    
-    // Handle notification in payload.notification format
-    if (payload.notification) {
-        notificationTitle = payload.notification.title || notificationTitle;
-        notificationOptions.body = payload.notification.body || notificationOptions.body;
-    }
-    
-    // Handle notification in payload.data format
-    if (payload.data) {
-        notificationTitle = payload.data.title || notificationTitle;
-        notificationOptions.body = payload.data.body || notificationOptions.body;
-        
-        // Add URL if provided
-        if (payload.data.url) {
-            notificationOptions.data.url = payload.data.url;
-        }
-    }
-    return self.registration.showNotification(notificationTitle, notificationOptions);
-    // return self.registration.showNotification(notificationOptions);
-});
+// REMOVE the onBackgroundMessage handler entirely
+// messaging.onBackgroundMessage(function(payload) {
+//     console.log('[firebase-messaging-sw.js] Received background message ', payload);
+//
+//     // ... removed ...
+// });
 
 // Handle notification click
 self.addEventListener('notificationclick', function(event) {
     console.log('Notification clicked:', event);
-    
+
     event.notification.close();
-    
+
     // Extract URL from the notification data
-    const urlToOpen = event.notification.data && event.notification.data.url 
-        ? event.notification.data.url 
+    const urlToOpen = event.notification.data && event.notification.data.url
+        ? event.notification.data.url
         : 'https://6630180rem.github.io/Pick5/';
-    
+
     // This looks to see if the current is already open and focuses it
     event.waitUntil(
         clients.matchAll({
@@ -79,7 +48,7 @@ self.addEventListener('notificationclick', function(event) {
                     return client.focus();
                 }
             }
-            
+
             // If no open window matches, open a new one
             if (clients.openWindow) {
                 return clients.openWindow(urlToOpen);
@@ -91,7 +60,7 @@ self.addEventListener('notificationclick', function(event) {
 // Handle token refresh
 self.addEventListener('pushsubscriptionchange', event => {
     console.log('Push subscription change detected');
-    
+
     event.waitUntil(
         clients.matchAll({
             type: 'window',
@@ -116,6 +85,6 @@ self.addEventListener('activate', function(event) {
 
 // Service worker installation
 self.addEventListener('install', function(event) {
-  console.log('Service worker installed');
-  self.skipWaiting();
+    console.log('Service worker installed');
+    self.skipWaiting();
 });
