@@ -613,11 +613,16 @@ async function saveTokenToFirestore(token, retries = 3) {
                 // Device exists in database
                 const deviceDoc = deviceQuery.docs[0];
                 const oldData = deviceDoc.data();
-
+            if (!deviceDoc.id) {
+                console.error("Document ID is missing, unable to update");
+                return;
+            }
+              await db.collection('devices').doc(deviceDoc.id).update(updateData);
                 // Prepare update data
                 const updateData = {
-                    lastActive: firebase.firestore.FieldValue.serverTimestamp(),
-                    userAgent: browserInfo.userAgent,
+                  lastActive: firebase.firestore.FieldValue.serverTimestamp(),
+                  userAgent: browserInfo.userAgent,
+                  forceUpdate: Math.random() // Ensures Firestore sees this as a change
                 };
 
                 // Delete all existing tokens and activeTokens entries
@@ -639,6 +644,10 @@ async function saveTokenToFirestore(token, retries = 3) {
                 // Update the device record
                 await db.collection('devices').doc(deviceDoc.id).update(updateData);
                 console.log('Device token updated successfully, old tokens deleted');
+                
+                // Fetch the updated document to verify the lastActive timestamp
+                const updatedDoc = await db.collection('devices').doc(deviceDoc.id).get();
+                console.log('Updated lastActive:', updatedDoc.data().lastActive);
 
             } else {
                 // New device, create a record
