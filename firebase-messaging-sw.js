@@ -21,6 +21,7 @@ const messaging = firebase.messaging();
 messaging.onBackgroundMessage(function(payload) {
     console.log('[firebase-messaging-sw.js] Received background message ', payload);
 
+    // Default values (only used if data is missing)
     let notificationTitle = 'Joe\'s Pick 5';
     let notificationOptions = {
         body: 'New update available!',
@@ -36,16 +37,19 @@ messaging.onBackgroundMessage(function(payload) {
 
     // Handle notification in payload.data format ONLY
     if (payload.data) {
+        // Override default values with data from payload
         notificationTitle = payload.data.title || notificationTitle;
         notificationOptions.body = payload.data.body || notificationOptions.body;
-
-        // Add URL if provided
         if (payload.data.url) {
             notificationOptions.data.url = payload.data.url;
         }
     }
 
-    return self.registration.showNotification(notificationTitle, notificationOptions);
+    // Only show notification if payload.data exists. This is critical.
+    if (payload.data) {
+        return self.registration.showNotification(notificationTitle, notificationOptions);
+    }
+    return null; // Do not show notification if payload.data is missing.
 });
 
 // Handle notification click
