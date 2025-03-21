@@ -547,149 +547,155 @@ document.getElementById('enable-notifications').addEventListener('click', () => 
                 }
 
                 // Save token to Firestore - UPDATED
-                async function saveTokenToFirestore(token, retries = 3) {
-                    if (!token) {
-                        console.error('No token provided to saveTokenToFirestore');
-                        return;
-                    }
+async function saveTokenToFirestore(token, retries = 3) {
+    if (!token) {
+        console.error('No token provided to saveTokenToFirestore');
+        return;
+    }
 
-                    // Generate a device identifier
-                    const deviceId = localStorage.getItem('deviceId') || generateDeviceId();
+    // Generate a device identifier
+    const deviceId = localStorage.getItem('deviceId') || generateDeviceId();
 
-                    // Store deviceId for future use
-                    localStorage.setItem('deviceId', deviceId);
+    // Store deviceId for future use
+    localStorage.setItem('deviceId', deviceId);
 
-                    const browserInfo = {
-                        name: /Chrome/i.test(navigator.userAgent) ? 'Chrome' : 
-                            /Safari/i.test(navigator.userAgent) ? 'Safari' : 
-                            /Firefox/i.test(navigator.userAgent) ? 'Firefox' : 
-                            /Edge/i.test(navigator.userAgent) ? 'Edge' : 'Other',
-                        userAgent: navigator.userAgent,
-                    };
+    const browserInfo = {
+        name: /Chrome/i.test(navigator.userAgent) ? 'Chrome' : 
+            /Safari/i.test(navigator.userAgent) ? 'Safari' : 
+            /Firefox/i.test(navigator.userAgent) ? 'Firefox' : 
+            /Edge/i.test(navigator.userAgent) ? 'Edge' : 'Other',
+        userAgent: navigator.userAgent,
+    };
 
-                    const attemptSave = async (attempt) => {
-                        try {
-                            // First, deactivate all previous tokens for this device
-                            const deviceQuery = await db.collection('devices')
-                                            .where('deviceId', '==', deviceId)
-                                            .get();
+    const attemptSave = async (attempt) => {
+        try {
+            // Query existing device records
+            const deviceQuery = await db.collection('devices')
+                .where('deviceId', '==', deviceId)
+                .get();
 
-                            if (!deviceQuery.empty) {
-                                // Device exists in database
-                                const deviceDoc = deviceQuery.docs[0];
-                                const oldData = deviceDoc.data();
+            if (!deviceQuery.empty) {
+                // Device exists in database
+                const deviceDoc = deviceQuery.docs[0];
+                const oldData = deviceDoc.data();
 
-                                // Prepare update data - critically, mark ALL tokens as inactive first
-                                const updateData = {
-                                    lastActive: firebase.firestore.FieldValue.serverTimestamp(),
-                                    userAgent: browserInfo.userAgent,
-                                };
+                // Prepare update data
+                const updateData = {
+                    lastActive: firebase.firestore.FieldValue.serverTimestamp(),
+                    userAgent: browserInfo.userAgent,
+                };
 
-                                // Deactivate all existing tokens
-                                if (oldData.activeTokens) {
-                                    Object.keys(oldData.activeTokens).forEach(oldToken => {
-                                        updateData[`activeTokens.${oldToken}`] = false;
-                                    });
-                                }
-
-                                // Then set only the current token as active
-                                updateData[`tokens.${browserInfo.name}`] = token;
-                                updateData[`activeTokens.${token}`] = true;
-
-                                // Update the device record
-                                await db.collection('devices').doc(deviceDoc.id).update(updateData);
-                                console.log('Device token updated successfully, old tokens deactivated');
-
-                            } else {
-                                // New device, create a record
-                                await db.collection('devices').add({
-                                    deviceId: deviceId,
-                                    platform: navigator.platform,
-                                    tokens: {[browserInfo.name]: token},
-                                    activeTokens: {[token]: true},
-                                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                                    lastActive: firebase.firestore.FieldValue.serverTimestamp(),
-                                    userAgent: browserInfo.userAgent
-                                });
-                                console.log('New device record created successfully');
-                            }
-
-                            // Store token in local storage
-                            localStorage.setItem('fcmToken', token);
-
-                            // Clean up duplicate tokens in the system
-                            await cleanupDuplicateTokens(token, deviceId);
-
-                        } catch (error) {
-                            console.error(`Attempt ${attempt} failed:`, error.message);
-                            if (attempt < retries) {
-                                console.log(`Retrying... (${attempt + 1}/${retries})`);
-                                await new Promise(resolve => setTimeout(resolve, 1000));
-                                await attemptSave(attempt + 1);
-                            } else {
-                                console.error('Max retries reached. Device save failed.');
-                            }
-                        }
-                    };
-
-                    await attemptSave(1);
+                // Delete all existing tokens and activeTokens entries
+                if (oldData.tokens) {
+                    Object.keys(oldData.tokens).forEach(oldTokenKey => {
+                        updateData[`tokens.${oldTokenKey}`] = firebase.firestore.FieldValue.delete();
+                    });
+                }
+                if (oldData.activeTokens) {
+                    Object.keys(oldData.activeTokens).forEach(oldToken => {
+                        updateData[`activeTokens.${oldToken}`] = firebase.firestore.FieldValue.delete();
+                    });
                 }
 
-                // NEW: Clean up duplicate tokens
-                async function cleanupDuplicateTokens(currentToken, deviceId) {
-                    try {
-                        // Find all devices with this device ID
-                        const deviceQuery = await db.collection('devices')
-                            .where('deviceId', '==', deviceId)
-                            .get();
+                // Set the new token as the only active token
+                updateData[`tokens.${browserInfo.name}`] = token;
+                updateData[`activeTokens.${token}`] = true;
 
-                        // Only keep the last device record, delete others
-                        if (deviceQuery.size > 1) {
-                            // Sort by lastActive timestamp (newest first)
-                            const sortedDocs = deviceQuery.docs.sort((a, b) => {
-                                const timeA = a.data().lastActive ? a.data().lastActive.toMillis() : 0;
-                                const timeB = b.data().lastActive ? b.data().lastActive.toMillis() : 0;
-                                return timeB - timeA;
-                            });
+                // Update the device record
+                await db.collection('devices').doc(deviceDoc.id).update(updateData);
+                console.log('Device token updated successfully, old tokens deleted');
 
-                            // Keep the first one (most recent), delete the rest
-                            const batch = db.batch();
-                            for (let i = 1; i < sortedDocs.length; i++) {
-                                batch.delete(sortedDocs[i].ref);
-                            }
-                            await batch.commit();
-                            console.log(`Cleaned up ${sortedDocs.length - 1} duplicate device records`);
-                        }
+            } else {
+                // New device, create a record
+                await db.collection('devices').add({
+                    deviceId: deviceId,
+                    platform: navigator.platform,
+                    tokens: {[browserInfo.name]: token},
+                    activeTokens: {[token]: true},
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    lastActive: firebase.firestore.FieldValue.serverTimestamp(),
+                    userAgent: browserInfo.userAgent
+                });
+                console.log('New device record created successfully');
+            }
 
-                        // Get all devices with this token
-                        const allDevicesWithToken = await db.collection('devices')
-                            .where(`activeTokens.${currentToken}`, '==', true)
-                            .get();
+            // Store token in local storage
+            localStorage.setItem('fcmToken', token);
 
-                        if (!allDevicesWithToken.empty) {
-                            const batch = db.batch();
-                            let updateCount = 0;
+            // Clean up duplicate tokens in the system
+            await cleanupDuplicateTokens(token, deviceId);
 
-                            allDevicesWithToken.forEach(doc => {
-                                const data = doc.data();
-                                // Only update devices that aren't the current one
-                                if (data.deviceId !== deviceId) {
-                                    batch.update(doc.ref, {
-                                        [`activeTokens.${currentToken}`]: false
-                                    });
-                                    updateCount++;
-                                }
-                            });
+        } catch (error) {
+            console.error(`Attempt ${attempt} failed:`, error.message);
+            if (attempt < retries) {
+                console.log(`Retrying... (${attempt + 1}/${retries})`);
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                await attemptSave(attempt + 1);
+            } else {
+                console.error('Max retries reached. Device save failed.');
+            }
+        }
+    };
 
-                            if (updateCount > 0) {
-                                await batch.commit();
-                                console.log(`Deactivated current token on ${updateCount} other devices`);
-                            }
-                        }
-                    } catch (error) {
-                        console.error('Error cleaning up tokens:', error);
-                    }
+    await attemptSave(1);
+}
+
+// Updated cleanupDuplicateTokens to delete tokens instead of deactivating
+async function cleanupDuplicateTokens(currentToken, deviceId) {
+    try {
+        // Find all devices with this device ID
+        const deviceQuery = await db.collection('devices')
+            .where('deviceId', '==', deviceId)
+            .get();
+
+        // Only keep the last device record, delete others
+        if (deviceQuery.size > 1) {
+            // Sort by lastActive timestamp (newest first)
+            const sortedDocs = deviceQuery.docs.sort((a, b) => {
+                const timeA = a.data().lastActive ? a.data().lastActive.toMillis() : 0;
+                const timeB = b.data().lastActive ? b.data().lastActive.toMillis() : 0;
+                return timeB - timeA;
+            });
+
+            // Keep the first one (most recent), delete the rest
+            const batch = db.batch();
+            for (let i = 1; i < sortedDocs.length; i++) {
+                batch.delete(sortedDocs[i].ref);
+            }
+            await batch.commit();
+            console.log(`Cleaned up ${sortedDocs.length - 1} duplicate device records`);
+        }
+
+        // Get all devices with this token
+        const allDevicesWithToken = await db.collection('devices')
+            .where(`activeTokens.${currentToken}`, '==', true)
+            .get();
+
+        if (!allDevicesWithToken.empty) {
+            const batch = db.batch();
+            let updateCount = 0;
+
+            allDevicesWithToken.forEach(doc => {
+                const data = doc.data();
+                // Only update devices that aren't the current one
+                if (data.deviceId !== deviceId) {
+                    batch.update(doc.ref, {
+                        [`activeTokens.${currentToken}`]: firebase.firestore.FieldValue.delete(),
+                        [`tokens.${Object.keys(data.tokens).find(key => data.tokens[key] === currentToken)}`]: firebase.firestore.FieldValue.delete()
+                    });
+                    updateCount++;
                 }
+            });
+
+            if (updateCount > 0) {
+                await batch.commit();
+                console.log(`Deleted current token from ${updateCount} other devices`);
+            }
+        }
+    } catch (error) {
+        console.error('Error cleaning up tokens:', error);
+    }
+}
 
                 // Generate consistent device ID - NEW
                 function generateDeviceId() {
