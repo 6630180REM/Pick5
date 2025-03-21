@@ -1,4 +1,4 @@
-navigator.serviceWorker.register('/firebase-messaging-sw.js')
+navigator.serviceWorker.register('/Pick5/firebase-messaging-sw.js')
   .then((registration) => {
     console.log('Firebase messaging service worker registered:', registration);
   }).catch((error) => {
