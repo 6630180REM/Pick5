@@ -412,7 +412,7 @@ function checkStorageAvailability() {
             db = firebase.firestore();
 
 if ('serviceWorker' in navigator) {
-    const swPath = '/Pick5/firebase-messaging-sw.js'; // Use a static root-relative path
+    const swPath = '/Pick5/firebase-messaging-sw.js';
     console.log('Service worker path:', swPath);
 
     console.log('Attempting to register service worker at:', swPath);
@@ -428,6 +428,7 @@ if ('serviceWorker' in navigator) {
 } else {
     console.log('Service workers not supported');
 }
+
 
             // Initialize notifications after service worker is registered
             function initializeNotifications(registration) {
@@ -523,16 +524,17 @@ if ('serviceWorker' in navigator) {
 
                     document.body.appendChild(promptDiv);
 
-                    document.getElementById('enable-notifications').addEventListener('click', () => {
-                        promptDiv.remove();
-                        requestPermission()
-                            .then(() => {
-                                showSuccessMessage('Notifications enabled successfully!');
-                            })
-                            .catch(error => {
-                                console.error('Error enabling notifications:', error);
-                            });
-                    });
+document.getElementById('enable-notifications').addEventListener('click', () => {
+    promptDiv.remove();
+    requestPermission()
+        .then(() => {
+            showSuccessMessage('Notifications enabled successfully!');
+        })
+        .catch(error => {
+            console.error('Error enabling notifications:', error);
+        });
+});
+
 
                     document.getElementById('decline-notifications').addEventListener('click', () => {
                         promptDiv.remove();
