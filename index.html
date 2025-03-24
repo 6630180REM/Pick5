@@ -1007,6 +1007,11 @@ function setupInstallPrompt() {
 // Run when page loads
 document.addEventListener('DOMContentLoaded', () => {
     setupInstallPrompt();
+  gtag('event', 'app_mode', {
+        'event_category': 'User Engagement',
+        'event_label': isStandalone() ? 'Standalone App' : 'Browser',
+        'value': isStandalone() ? 1 : 0
+    });
 });
 
 // Platform detection functions (unchanged)
@@ -1059,7 +1064,7 @@ resizeIframe();
   gtag('js', new Date());
 
   gtag('config', 'G-J8ZSHET5RJ');
-    
+   
   </script>
 </body>
 
