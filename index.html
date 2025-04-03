@@ -190,7 +190,7 @@
       filter: blur(16px);
       opacity: 0.9;
       transform: translateX(-50%) scale(1);
-      animation: smoke-rise 3s infinite ease-in-out;
+      animation: smoke-rise 5s infinite ease-in-out;
       pointer-events: none;
 }
 
@@ -212,10 +212,10 @@
     @keyframes smoke-rise {
   0% {
     transform: translateX(-50%) translateY(0) scale(1);
-    opacity: 0.8;
+    opacity: 0.9;
   }
   50% {
-    opacity: 0.4;
+    opacity: 0.5;
   }
   100% {
     transform: translateX(-50%) translateY(-80px) scale(1.2);
@@ -927,7 +927,7 @@ function promptForPermission() {
             setTimeout(() => {
                 preloader.style.display = 'none';
                 setupFirebaseAndNotifications();
-            }, 5000);
+            }, 7000);
         });
 
         // PWA Install Prompt
