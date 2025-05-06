@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport"
-    content="width=device-width, initial-scale=1, maximum-scale=3, user-scalable=no, orientation=portrait">
+    content="width=device-width, initial-scale=1, maximum-scale=1.5, user-scalable=no, orientation=portrait">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Pick 5">
@@ -193,6 +193,11 @@
       animation: smoke-rise 5s infinite ease-in-out;
       pointer-events: none;
 }
+    .pre-load-fade-out {
+      opacity: 0;
+      transition: opacity 1s ease-out;
+      pointer-events: none;
+    }
 
     @keyframes reveal {
       80% {
@@ -924,6 +929,7 @@ function promptForPermission() {
         // Call the function when the page is fully loaded
         document.addEventListener('DOMContentLoaded', function() {
             const preloader = document.getElementById('preloader');
+                  preloader.classList.add("pre-load-fade-out");
             setTimeout(() => {
                 preloader.style.display = 'none';
                 setupFirebaseAndNotifications();
