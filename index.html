@@ -1056,41 +1056,41 @@ function isStandalone() {
     return window.matchMedia('(display-mode: standalone)').matches;
 }
 
-function resizeIframe() {
-    var iframe = document.querySelector("iframe");
-    if (iframe) {
-        // Debounce the resize to prevent excessive updates
-        let timeout;
-        clearTimeout(timeout);
-        timeout = setTimeout(() => {
-            // Use screen dimensions as fallback
-            const height = window.innerHeight || document.documentElement.clientHeight || screen.height;
-            const width = window.innerWidth || document.documentElement.clientWidth || screen.width;
+// function resizeIframe() {
+//     var iframe = document.querySelector("iframe");
+//     if (iframe) {
+//         // Debounce the resize to prevent excessive updates
+//         let timeout;
+//         clearTimeout(timeout);
+//         timeout = setTimeout(() => {
+//             // Use screen dimensions as fallback
+//             const height = window.innerHeight || document.documentElement.clientHeight || screen.height;
+//             const width = window.innerWidth || document.documentElement.clientWidth || screen.width;
 
-            iframe.style.height = height + "px";
-            iframe.style.width = width + "px";
+//             iframe.style.height = height + "px";
+//             iframe.style.width = width + "px";
 
-            // Remove any potential scrollbars
-            iframe.style.border = "none";
-            iframe.style.margin = "0";
-            iframe.style.padding = "0";
-        }, 100);
-    }
-}
+//             // Remove any potential scrollbars
+//             iframe.style.border = "none";
+//             iframe.style.margin = "0";
+//             iframe.style.padding = "0";
+//         }, 100);
+//     }
+// }
 
-// Event listeners
-window.addEventListener("resize", resizeIframe);
-window.addEventListener("load", resizeIframe);
-window.addEventListener("orientationchange", resizeIframe);
+// // Event listeners
+// window.addEventListener("resize", resizeIframe);
+// window.addEventListener("load", resizeIframe);
+// window.addEventListener("orientationchange", resizeIframe);
 
-// Media query listener
-if (window.matchMedia) {
-    const mediaQuery = window.matchMedia("(orientation: portrait)");
-    mediaQuery.addEventListener("change", resizeIframe);
-}
+// // Media query listener
+// if (window.matchMedia) {
+//     const mediaQuery = window.matchMedia("(orientation: portrait)");
+//     mediaQuery.addEventListener("change", resizeIframe);
+// }
 
-// Initial call
-resizeIframe();  
+// // Initial call
+// resizeIframe();  
 
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
