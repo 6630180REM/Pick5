@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport"
-    content="width=device-width, initial-scale=1, maximum-scale=1.5, user-scalable=no, orientation=portrait">
+    content="width=device-width, initial-scale=1, maximum-scale=1.5, user-scalable=no, orientation=portrait, viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Pick 5">
@@ -228,7 +228,13 @@
   }
 }
 
-    @media (max-width: 768px) {
+    @media (max-width: 1100px) {
+          iframe {
+            position: fixed;
+                overflow-x: clip;
+    overflow-y: auto;
+    }
+      
       .notification {
         width: -webkit-fill-available;
       }
@@ -298,7 +304,7 @@
     </div> -->
   </div>
 
-  <iframe frameborder="0" scrolling="yes" allowfullscreen="yes"
+  <iframe frameborder="0" scrolling="yes" allowfullscreen="yes" viewport-fit="cover"
     src="https://script.google.com/macros/s/AKfycbwuZM7KGKnS7jnpM2YN9W_AgTMqA0qJGw99K3MIUNxzI1tnh3YK76AhgeCfh2Wc7pTd/exec"></iframe>
 
 
