@@ -238,17 +238,8 @@
   background-color: black;
   overflow: hidden;
 }
-
-body {
-  padding-bottom: env(safe-area-inset-bottom);
-  padding-top: env(safe-area-inset-top);
-  padding-left: env(safe-area-inset-left);
-  padding-right: env(safe-area-inset-right);
-  box-sizing: border-box;
-  outline: 2px solid red;
-}
       
-          iframe {
+  iframe {
     position:fixed;
     top:0;
     left:0;
@@ -256,7 +247,7 @@ body {
     bottom:0;
     padding:0;
     margin:0;
-  overflow: auto;
+    overflow: auto;
     box-sizing:border-box;
     }
       
@@ -285,7 +276,11 @@ body {
     @media (orientation: portrait) {
   body {
     padding-top: env(safe-area-inset-top);
-  }
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+    box-sizing: border-box;
+}
 }
 
   </style>
